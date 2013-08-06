@@ -1,0 +1,38 @@
+<form class=form-horizontal ng-submit=login()>
+    <!-- flash -->
+    <div class="alert alert-error" ng-show=flash>
+        <strong>[[ flash ]]</strong>
+    </div>
+
+    <!-- username -->
+    <div class=control-group>
+        <label for=username class=control-label>Username</label>
+        <div class=controls>
+            <input type=text
+                   name=username
+                   class=span2
+                   autofocus
+                   ng-model=credentials.username />
+        </div>
+    </div>
+
+    <!-- password -->
+    <div class=control-group>
+        <label for=password class=control-label>Password</label>
+        <div class=controls>
+            <input type=password
+                   name=password
+                   class=span2
+                   ng-model=credentials.password />
+        </div>
+    </div>
+
+    <!-- submit button -->
+    <div class=control-group>
+        <div class=controls>
+            <button class="btn btn-primary"
+                    type=submit
+                    ng-disabled="!credentials.username || !credentials.password">Login</button>
+        </div>
+    </div>
+</form>
