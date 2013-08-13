@@ -1,1 +1,1 @@
-app.controller 'HomeController', ($scope, $routeParams, $location, FlashService) ->
+app.controller 'HomeController', ($scope, $routeParams, $location, SocketService) ->

@@ -166,24 +166,70 @@
     });
   });
 
-  app.factory('FlashService', function($rootScope, SupplierResource) {
-    humane.clickToClose = true;
-    humane.waitForMove = true;
-    return {
-      log: function(message, isQueue) {
-        return humane.log(message);
+  app.factory('FlashService', function($rootScope) {
+    $.noty.defaults = {
+      timeout: 2500,
+      theme: 'defaultTheme',
+      dismissQueue: true,
+      template: '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>',
+      animation: {
+        open: {
+          height: 'toggle'
+        },
+        close: {
+          height: 'toggle'
+        },
+        easing: 'swing',
+        speed: 500
       },
+      callback: function() {
+        return {
+          onShow: function() {},
+          afterShow: function() {},
+          onClose: function() {},
+          afterClose: function() {}
+        };
+      }
+    };
+    return {
       info: function(message) {
-        humane.info = humane.spawn({
-          addnCls: 'humane-libnotify-info'
+        return noty({
+          text: message,
+          type: 'information',
+          layout: 'bottom',
+          closeWith: ['click', 'hover']
         });
-        return humane.info(message);
       },
       error: function(message) {
-        humane.error = humane.spawn({
-          addnCls: 'humane-libnotify-error'
+        return noty({
+          text: message,
+          type: 'error',
+          layout: 'bottom',
+          closeWith: ['click', 'hover']
         });
-        return humane.error(message);
+      },
+      confirm: function(message, callback) {
+        return noty({
+          text: message,
+          type: 'confirm',
+          layout: 'top',
+          buttons: [
+            {
+              addClass: 'btn btn-primary',
+              text: 'Yes',
+              onClick: function($noty) {
+                callback();
+                return $noty.close();
+              }
+            }, {
+              addClass: 'btn btn-danger',
+              text: 'No',
+              onClick: function($noty) {
+                return $noty.close();
+              }
+            }
+          ]
+        });
       }
     };
   });
@@ -294,7 +340,7 @@
     });
   });
 
-  app.controller('HomeController', function($scope, $routeParams, $location, FlashService) {});
+  app.controller('HomeController', function($scope, $routeParams, $location, SocketService) {});
 
   app.controller('ItemController', function($scope, $routeParams, $location, FlashService, ItemResource, SupplierResource, SocketService, filterFilter) {
     var resource;
@@ -315,9 +361,13 @@
       });
     });
     SocketService.on('delete:item', function(data) {
-      return resource.query(function(res) {
-        $scope.data = res;
-        return FlashService.info("Barang " + data.name + " telah dihapus");
+      return resource.remove({
+        id: data.id
+      }, function() {
+        FlashService.info("Barang " + data.item.name + " telah dihapus");
+        return resource.query(function(res) {
+          return $scope.data = res;
+        });
       });
     });
     SupplierResource.query(function(res) {
@@ -370,10 +420,11 @@
       return resource.get({
         id: id
       }, function(removedItem) {
-        return resource.remove({
-          id: id
-        }, function() {
-          return SocketService.emit('delete:item', removedItem[0]);
+        return FlashService.confirm("Apakah Anda yakin untuk menghapus " + removedItem[0].name + "?", function() {
+          return SocketService.emit('delete:item', {
+            id: id,
+            item: removedItem[0]
+          });
         });
       });
     };
@@ -382,6 +433,8 @@
       $scope.filteredData = filterFilter($scope.data, val);
       if (val !== void 0) {
         return SocketService.emit('search:item', (_ref = $scope.filteredData) != null ? _ref.length : void 0);
+      } else {
+        return SocketService.emit('search:item', $scope.data.length);
       }
     });
   });

@@ -1,14 +1,47 @@
-app.factory 'FlashService', ($rootScope, SupplierResource) ->
-    humane.clickToClose = true
-    humane.waitForMove = true
+app.factory 'FlashService', ($rootScope) ->
+    $.noty.defaults =
+        timeout: 2500
+        theme: 'defaultTheme'
+        dismissQueue: true
+        template: '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>'
+        animation:
+            open: height: 'toggle'
+            close: height: 'toggle'
+            easing: 'swing'
+            speed: 500
+        callback: ->
+            onShow: ->
+            afterShow: ->
+            onClose: ->
+            afterClose: ->
 
     return {
-        log: (message, isQueue) ->
-            humane.log message
         info: (message) ->
-            humane.info = humane.spawn addnCls: 'humane-libnotify-info'
-            humane.info message
+            noty
+                text: message
+                type: 'information'
+                layout: 'bottom'
+                closeWith: ['click', 'hover']
         error: (message) ->
-            humane.error = humane.spawn addnCls: 'humane-libnotify-error'
-            humane.error message
+            noty
+                text: message
+                type: 'error'
+                layout: 'bottom'
+                closeWith: ['click', 'hover']
+        confirm: (message, callback) ->
+            noty
+                text: message
+                type: 'confirm'
+                layout: 'top'
+                buttons: [
+                    addClass: 'btn btn-primary'
+                    text: 'Yes'
+                    onClick: ($noty) ->
+                        callback()
+                        $noty.close()
+                ,
+                    addClass: 'btn btn-danger'
+                    text: 'No'
+                    onClick: ($noty) -> $noty.close()
+                ]
     }

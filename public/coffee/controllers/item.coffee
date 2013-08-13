@@ -16,9 +16,9 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
             FlashService.info "Barang #{data} telah diedit"
 
     SocketService.on 'delete:item', (data) ->
-        resource.query (res) ->
-            $scope.data = res
-            FlashService.info "Barang #{data.name} telah dihapus"
+        resource.remove id: data.id, ->
+            FlashService.info "Barang #{data.item.name} telah dihapus"
+            resource.query (res) -> $scope.data = res
 
     SupplierResource.query (res) -> $scope.suppliers = res
 
@@ -48,10 +48,13 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
 
     $scope.remove = (id) ->
         resource.get id: id, (removedItem)->
-            resource.remove id: id, -> SocketService.emit 'delete:item', removedItem[0]
+            FlashService.confirm "Apakah Anda yakin untuk menghapus #{removedItem[0].name}?", ->
+                SocketService.emit 'delete:item', { id: id, item: removedItem[0] }
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)
 
         if val isnt undefined
             SocketService.emit 'search:item', $scope.filteredData?.length
+        else
+            SocketService.emit 'search:item', $scope.data.length

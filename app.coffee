@@ -23,10 +23,6 @@ io.sockets.on 'connection', (socket) ->
     socket.on 'update:item', (data) -> io.sockets.emit('update:item', data)
     socket.on 'delete:item', (data) -> io.sockets.emit('delete:item', data)
     socket.on 'search:item', (data) -> socket.emit('search:item', data)
-    #socket.on 'create:item', (data) -> io.sockets.emit('create:item', data)
-    #socket.on 'update:item', (data) -> io.sockets.emit('update:item', data)
-    #socket.on 'delete:item', (data) -> io.sockets.emit('delete:item', data)
-    #socket.on 'search:item', (data) -> socket.emit('search:item', data)
     # SUPPLIER
     socket.on 'create:supplier', (data) -> io.sockets.emit('create:supplier', data)
     socket.on 'update:supplier', (data) -> io.sockets.emit('update:supplier', data)
