@@ -1,0 +1,20 @@
+{
+  "name": "TemanBan",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan AS",
+  "license": "BSD",
+  "dependencies": {
+    "nodemon": "~0.7.10",
+    "express": "~3.3.4",
+    "express-resource": "~1.0.0",
+    "mysql": "~2.0.0-alpha8",
+    "async": "~0.2.9",
+    "node-inspector": "~0.3.2",
+    "socket.io": "~0.9.16"
+  }
+}

@@ -22,6 +22,11 @@ table {
 
 h2.title { color: #1f6377; }
 
+h2.title-login {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
 .red-alert {
     margin-top: 5px;
     color: #b94a48;
@@ -47,4 +52,17 @@ h2.title { color: #1f6377; }
 .ui-match {
     background: yellow;
     border: 1px solid orange;
+}
+
+#login-box {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding-top: 35px;
+    width: 420px;
+    margin: 0 auto;
+}
+
+.active .badge-info {
+    background: #f6f6f6;
+    color: #3a87ad;
 }

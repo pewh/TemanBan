@@ -1,0 +1,54 @@
+<h2 class=title>Edit Barang</h2>
+
+<form class=form-horizontal name=updateForm ng-init=load()>
+    <!-- name -->
+    <div class=control-group>
+        <label for=name class=control-label>name</label>
+        <div class=controls>
+            <input type=text name=name id=name ng-model=item.name autocomplete=off maxlength=30 required />
+        </div>
+    </div>
+
+    <!-- stock -->
+    <div class=control-group>
+        <label for=stock class=control-label>stock</label>
+        <div class=controls>
+            <input type=number name=stock id=stock ng-model=item.stock min=0 required />
+        </div>
+    </div>
+
+    <!-- purchase_price -->
+    <div class=control-group>
+        <label for=purchase_price class=control-label>Harga Beli (Rp)</label>
+        <div class=controls>
+            <input type=number name=purchase_price id=purchase_price ng-model=item.purchase_price autocomplete=off min=0 required />
+        </div>
+    </div>
+
+    <!-- sales_price -->
+    <div class=control-group>
+        <label for=sales_price class=control-label>Harga Jual (Rp)</label>
+        <div class=controls>
+            <input type=number name=sales_price ng-model=item.sales_price autocomplete=off min=0 required />
+        </div>
+    </div>
+
+    <!-- supplier_id 
+    <div class=control-group>
+        <label for=supplier_id class=control-label>Pemasok</label>
+        <div class=controls>
+            <select ng-model=item.supplier_id
+                    ng-options="supplier.id as supplier.nama for supplier in suppliers"
+                    required />
+        </div>
+    </div>
+    -->
+
+    <!-- submit -->
+    <div class=control-group>
+        <div class=controls>
+            <button class="btn btn-primary" ng-click=update() ng-disabled=!updateForm.$valid>Update</button> or
+            <a href="/item">Back</a>
+        </div>
+    </div>
+</form>

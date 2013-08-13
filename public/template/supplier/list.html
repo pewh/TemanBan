@@ -1,0 +1,32 @@
+<div class="form-head">
+    <h2 class="pull-left title">Pemasok</h2>
+    <a class="btn btn-info btn-preposition-header" href="/supplier/new">
+        <i class="icon-plus icon-white"></i>
+    </a>
+
+    <div class="navbar-form pull-right">
+        <input type="text" ng-model="search" class="search-query" placeholder="Pencarian" />
+    </div>
+    <br class="clearfix"/>
+</div>
+
+<table class="table">
+    <tr>
+        <th>Nama</th>
+        <th>Alamat</th>
+        <th>Kontak</th>
+        <th>Action</th>
+    </tr>
+
+    <tr ng-repeat="d in data | filter:search">
+        <td ng-bind-html-unsafe="d.name | highlight:search"/>
+        <td ng-bind-html-unsafe="d.address || '-' | highlight:search"/>
+        <td ng-bind-html-unsafe="d.contact || '-' | highlight:search"/>
+        <td>
+            <a ng-href="/supplier/{{ d.id }}">Edit</a>
+            |
+            <a href=# ng-click="remove(d.id)">Delete</a>
+        </td>
+    </tr>
+
+</table>

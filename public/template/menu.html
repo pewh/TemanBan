@@ -1,26 +1,34 @@
 <ul class="nav nav-list" ng-controller=MenuController>
-    <li class=home><a href=/#!>PD Teman Ban</a></li>
+    <li class=home><a href="/">PD Teman Ban</a></li>
 
     <li class=nav-header>BASIC</li>
-    <li active-link><a href=/#!/item>Barang</a></li>
-    <li active-link><a href=/#!/supplier>Pemasok</a></li>
-    <li active-link><a href=/#!/customer>Pelanggan</a></li>
+    <li active-link><a href=/item>
+        Barang
+        <span class="badge badge-info pull-right" ng-bind=count.item />
+    </a></li>
+    <li active-link><a href=/supplier>
+        Pemasok
+        <span class="badge badge-info pull-right" ng-bind=count.supplier />
+    </a></li>
+    <li active-link><a href=/customer>
+        Pelanggan
+        <span class="badge badge-info pull-right" ng-bind=count.customer />
+    </a></li>
 
     <li class=divider></li>
 
     <li class=nav-header>FAKTUR</li>
-    <li active-link><a href=/#!/purchase_invoice>Faktur Pembelian</a></li>
-    <li active-link><a href=/#!/sale_invoice>Faktur Penjualan</a></li>
+    <li active-link><a href=/purchase_invoice>Faktur Pembelian</a></li>
+    <li active-link><a href=/sale_invoice>Faktur Penjualan</a></li>
 
     <li class=divider></li>
 
     <li class=nav-header>TRANSAKSI</li>
-    <li active-link><a href=/#!/purchase_transaction>Transaksi Pembelian</a></li>
-    <li active-link><a href=/#!/sale_transaction>Transaksi Penjualan</a></li>
+    <li active-link><a href=/purchase_transaction>Transaksi Pembelian</a></li>
+    <li active-link><a href=/sale_transaction>Transaksi Penjualan</a></li>
 
     <li class=divider></li>
 
-    <li class=nav-header>ACCOUNT</li>
-    <li active-link><a href=/#!/login ng-hide=isLoggedIn()>Login</a></li>
-    <li active-link><a href=/#! ng-click=logout() ng-show=isLoggedIn()>Logout</a></li>
+    <li class=nav-header>ACCOUNT [{{ currentUser }}]</li>
+    <li active-link><a href=/login.html ng-click=logout()>Logout</a></li>
 </ul>

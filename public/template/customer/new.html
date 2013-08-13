@@ -1,0 +1,36 @@
+<h2 class=title>Tambah Pelanggan</h2>
+
+<form class=form-horizontal name=addForm>
+    <!-- name -->
+    <div class=control-group>
+        <label for=name class=control-label>Nama</label>
+        <div class=controls>
+            <input type=text name=name id=name ng-model=customer.name autocomplete=off maxlength=30 required />
+        </div>
+    </div>
+
+    <!-- address -->
+    <div class=control-group>
+        <label for=address class=control-label>Alamat</label>
+        <div class=controls>
+            <input type=text name=address id=address ng-model=customer.address autocomplete=off maxlength=50 required />
+        </div>
+    </div>
+
+    <!-- contact
+    <div class=control-group>
+        <label for=contact class=control-label>Kontak</label>
+        <div class=controls>
+            <input type=text name=contact id=contact ng-model=customer.contact autocomplete=off maxlength=50 required />
+        </div>
+    </div>
+    -->
+
+    <!-- submit -->
+    <div class=control-group>
+        <div class=controls>
+            <button class="btn btn-primary" ng-click=add() ng-disabled=!addForm.$valid>Save</button> or
+            <a href="/customer">Back</a>
+        </div>
+    </div>
+</form>

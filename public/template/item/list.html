@@ -1,0 +1,34 @@
+<div class="form-head">
+    <h2 class="pull-left title">Barang</h2>
+    <a class="btn btn-info btn-preposition-header" href="/item/new">
+        <i class="icon-plus icon-white"></i>
+    </a>
+
+    <div class="navbar-form pull-right">
+        <input type="text" ng-model="search" class="search-query" placeholder="Pencarian" />
+    </div>
+    <br class="clearfix"/>
+</div>
+
+<table class="table">
+    <tr>
+        <th>Nama</th>
+        <th>Stok</th>
+        <th>Harga Beli</th>
+        <th>Harga Jual</th>
+        <th>Action</th>
+    </tr>
+
+    <tr ng-repeat="d in data | filter:search" ng-class="{'error': stockStatus.isEmpty($index), 'warning': stockStatus.isWarning($index) }">
+        <td ng-bind-html-unsafe="d.name | highlight:search"/>
+        <td ng-bind-html-unsafe="d.stock || '-' | highlight:search"/>
+        <td ng-bind-html-unsafe="d.purchase_price | rupiah | highlight:search"/>
+        <td ng-bind-html-unsafe="d.sales_price | rupiah | highlight:search"/>
+        <td>
+            <a ng-href="/item/{{ d.id }}">Edit</a>
+            |
+            <a href=# ng-click="remove(d.id)">Delete</a>
+        </td>
+    </tr>
+
+</table>
