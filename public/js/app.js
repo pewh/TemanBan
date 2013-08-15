@@ -294,10 +294,8 @@
       });
     };
     $scope.update = function() {
-      var modifiedCustomer;
-      modifiedCustomer = $scope.customer.name;
       return $scope.customer.$update(function() {
-        SocketService.emit('update:customer', modifiedCustomer);
+        SocketService.emit('update:customer', $scope.customer);
         return $location.path('/customer');
       }, function(err) {
         if (err.status === 500) {

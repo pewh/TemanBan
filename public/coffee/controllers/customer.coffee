@@ -5,18 +5,15 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
 
     SocketService.on 'create:customer', (data) ->
         FlashService.info "Pelanggan #{data.name} telah ditambah"
-        resource.query (res) ->
-            $scope.data = res
+        resource.query (res) -> $scope.data = res
 
     SocketService.on 'update:customer', (data) ->
         FlashService.info "Pelanggan #{data} telah diedit"
-        resource.query (res) ->
-            $scope.data = res
+        resource.query (res) -> $scope.data = res
 
     SocketService.on 'delete:customer', (data) ->
         FlashService.info "Pelanggan #{data.name} telah dihapus"
-        resource.query (res) ->
-            $scope.data = res
+        resource.query (res) -> $scope.data = res
 
     $scope.load = ->
         resource.get id: $routeParams.id, (res) -> $scope.customer = res
@@ -32,9 +29,8 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
         , (err) -> FlashService.error err.data if err.status == 500
 
     $scope.update = ->
-        modifiedCustomer = $scope.customer.name
         $scope.customer.$update ->
-            SocketService.emit 'update:customer', modifiedCustomer
+            SocketService.emit 'update:customer', $scope.customer
             $location.path '/customer'
         , (err) -> FlashService.error err.data if err.status == 500
 
