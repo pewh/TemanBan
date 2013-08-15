@@ -1,5 +1,5 @@
 app.controller 'MenuController', ($scope, AuthenticationService, ItemResource, SupplierResource, CustomerResource, SocketService) ->
-    $scope.$on '$destroy', (event) -> SocketService.destroy()
+    #$scope.$on '$destroy', (event) -> SocketService.destroy()
 
     $scope.isLoggedIn = AuthenticationService.isLoggedIn()
     $scope.logout = -> AuthenticationService.logout()
@@ -19,7 +19,6 @@ app.controller 'MenuController', ($scope, AuthenticationService, ItemResource, S
         scopeName: 'customer'
         event: ['connect', 'create:customer', 'delete:customer', 'search:customer']
     ]
-
 
     categories.map (category) ->
         category.event.map (event) ->

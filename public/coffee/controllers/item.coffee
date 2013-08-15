@@ -4,21 +4,18 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
     resource.query (res) -> $scope.data = res
 
     SocketService.on 'create:item', (data) ->
-        resource.query (res) ->
-            $scope.data = res
-            FlashService.info "Barang #{data.name} telah ditambah"
+        FlashService.info "Barang #{data.name} telah ditambah"
+        resource.query (res) -> $scope.data = res
 
     SocketService.on 'update:item', (data) ->
         # BUG called triple times
         # TODO show what's part that has modified
-        resource.query (res) ->
-            $scope.data = res
-            FlashService.info "Barang #{data} telah diedit"
+        FlashService.info "Barang #{data.name} telah diedit"
+        resource.query (res) -> $scope.data = res
 
     SocketService.on 'delete:item', (data) ->
-        resource.remove id: data.id, ->
-            FlashService.info "Barang #{data.item.name} telah dihapus"
-            resource.query (res) -> $scope.data = res
+        FlashService.info "Barang #{data.name} telah dihapus"
+        resource.query (res) -> $scope.data = res
 
     SupplierResource.query (res) -> $scope.suppliers = res
 
@@ -27,7 +24,7 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
         isWarning: (index) -> 0 < $scope.data[index].stock < 5
 
     $scope.load = ->
-        resource.get id: $routeParams.id, (res) -> $scope.item = res[0]
+        resource.get id: $routeParams.id, (res) -> $scope.item = res
 
     $scope.add = ->
         resource.save $scope.item, ->
@@ -40,21 +37,22 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
         , (err) -> FlashService.error err.data if err.status == 500
 
     $scope.update = ->
-        modifiedItem = $scope.item.name
         $scope.item.$update ->
-            SocketService.emit 'update:item', modifiedItem
+            SocketService.emit 'update:item', $scope.item
             $location.path '/item'
         , (err) -> FlashService.error err.data if err.status == 500
 
     $scope.remove = (id) ->
-        resource.get id: id, (removedItem)->
-            FlashService.confirm "Apakah Anda yakin untuk menghapus #{removedItem[0].name}?", ->
-                SocketService.emit 'delete:item', { id: id, item: removedItem[0] }
+        item = _.where($scope.data, _id: id)[0]
+        #FlashService.confirm "Apakah Anda yakin untuk menghapus #{item.name}?", ->
+        resource.remove id: id, ->
+            SocketService.emit 'delete:item', item
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)
 
         if val isnt undefined
             SocketService.emit 'search:item', $scope.filteredData?.length
-        else
-            SocketService.emit 'search:item', $scope.data.length
+
+    $scope.$on '$routeChangeStart', (scope, next, current) ->
+        SocketService.emit 'search:item', $scope.data.length

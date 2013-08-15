@@ -1,23 +1,37 @@
-sql = require './sql'
+db = require './db'
 
 exports.index = (req, res) ->
-    sql.execute res, 'SELECT * FROM User'
-
-exports.create = (req, res) ->
-    query = """
-            INSERT INTO User(username, password, role)
-            VALUES ('#{req.body.username}', '#{req.body.password}', '#{req.body.role}')
-            """
-    sql.execute res, query
+    db.index
+        res: res
+        model: db.UserModel
 
 exports.show = (req, res) ->
-    sql.execute res, "SELECT * FROM User WHERE id = #{req.params.user}"
+    db.show
+        res: res
+        model: db.UserModel
+        id: req.params.user
+
+exports.create = (req, res) ->
+    db.create
+        res: res
+        model: UserModel
+        body:
+            username: req.body.username
+            password: req.body.password
+            role: req.body.contact
 
 exports.update = (req, res) ->
-    params = []
-    params.push "#{key} = '#{val}'" for key, val of req.body
-    set = params.join(', ')
-    sql.execute res, "UPDATE User SET #{set} WHERE id = #{req.params.user}"
+    db.update
+        res: res
+        model: db.UserModel
+        id: req.params.user
+        replace: (data) ->
+            data.username = req.body.username
+            data.password = req.body.password
+            data.role = req.body.role
 
 exports.destroy = (req, res) ->
-    sql.execute res, "DELETE FROM User WHERE id = #{req.params.user}"
+    db.destroy
+        res: res
+        model: db.UserModel
+        id: req.params.user

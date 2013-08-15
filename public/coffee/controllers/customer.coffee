@@ -4,22 +4,22 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
     resource.query (res) -> $scope.data = res
 
     SocketService.on 'create:customer', (data) ->
+        FlashService.info "Pelanggan #{data.name} telah ditambah"
         resource.query (res) ->
             $scope.data = res
-            FlashService.info "Pelanggan #{data.name} telah ditambah"
 
     SocketService.on 'update:customer', (data) ->
+        FlashService.info "Pelanggan #{data} telah diedit"
         resource.query (res) ->
             $scope.data = res
-            FlashService.info "Pelanggan #{data} telah diedit"
 
     SocketService.on 'delete:customer', (data) ->
+        FlashService.info "Pelanggan #{data.name} telah dihapus"
         resource.query (res) ->
             $scope.data = res
-            FlashService.info "Pelanggan #{data.name} telah dihapus"
 
     $scope.load = ->
-        resource.get id: $routeParams.id, (res) -> $scope.customer = res[0]
+        resource.get id: $routeParams.id, (res) -> $scope.customer = res
 
     $scope.add = ->
         resource.save $scope.customer, ->
@@ -27,7 +27,7 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
             $scope.customer =
                 name: ''
                 address: ''
-                contact: []
+                contact: ''
             ($ '#name').focus()
         , (err) -> FlashService.error err.data if err.status == 500
 
@@ -39,11 +39,19 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
         , (err) -> FlashService.error err.data if err.status == 500
 
     $scope.remove = (id) ->
-        resource.get id: id, (removedCustomer)->
-            resource.remove id: id, -> SocketService.emit 'delete:customer', removedCustomer[0]
+        customer = _.where($scope.data, _id: id)[0]
+        #FlashService.confirm "Apakah Anda yakin untuk menghapus #{customer.name}?", ->
+        resource.remove id: id, ->
+            SocketService.emit 'delete:customer', customer
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)
 
         if val isnt undefined
             SocketService.emit 'search:customer', $scope.filteredData?.length
+
+    $scope.$on '$routeChangeStart', (scope, next, current) ->
+        SocketService.emit 'search:customer', $scope.data.length
+
+    $scope.$on '$destroy', (event) ->
+        SocketService.removeAllListeners()

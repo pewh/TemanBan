@@ -1,26 +1,37 @@
-sql = require './sql'
+db = require './db'
 
 exports.index = (req, res) ->
-    sql.execute res, 'SELECT * FROM Supplier'
-
-exports.create = (req, res) ->
-    query = """
-            INSERT INTO Supplier(name, address, contact) VALUES (
-                '#{req.body.name}',
-                '#{req.body.address}',
-                '#{req.body.contact}'
-            )
-            """
-    sql.execute res, query
+    db.index
+        res: res
+        model: db.SupplierModel
 
 exports.show = (req, res) ->
-    sql.execute res, "SELECT * FROM Supplier WHERE id = #{req.params.supplier}"
+    db.show
+        res: res
+        model: db.SupplierModel
+        id: req.params.supplier
+
+exports.create = (req, res) ->
+    db.create
+        res: res
+        model: db.SupplierModel
+        body:
+            name: req.body.name
+            address: req.body.address
+            contact: req.body.contact
 
 exports.update = (req, res) ->
-    params = []
-    params.push "#{key} = '#{val}'" for key, val of req.body
-    set = params.join(', ')
-    sql.execute res, "UPDATE Supplier SET #{set} WHERE id = #{req.params.supplier}"
+    db.update
+        res: res
+        model: db.SupplierModel
+        id: req.params.supplier
+        replace: (data) ->
+            data.name = req.body.name
+            data.address = req.body.address
+            data.contact = req.body.contact
 
 exports.destroy = (req, res) ->
-    sql.execute res, "DELETE FROM Supplier WHERE id = #{req.params.supplier}"
+    db.destroy
+        res: res
+        model: db.SupplierModel
+        id: req.params.supplier

@@ -1,20 +1,4 @@
-app = angular.module 'app', ['ngResource', 'ui.highlight', 'app.services']
-
-services = angular.module 'app.services', []
-
-services.factory 'SocketService', ($rootScope) ->
-    socket = io.connect()
-    return {
-        on: (eventName, callback) ->
-            socket.on eventName, ->
-                args = arguments
-                $rootScope.$apply -> callback.apply(socket, args)
-        emit: (eventName, data, callback) ->
-            socket.emit eventName, data, ->
-                args = arguments
-                $rootScope.$apply -> callback.apply(socket, args) if callback
-    }
-
+app = angular.module 'app', ['ngResource', 'ui.highlight']
 
 app.config ($locationProvider, $routeProvider) ->
     # hashbang mode
@@ -71,8 +55,7 @@ app.config ($locationProvider, $routeProvider) ->
 
 
 app.run ($rootScope, $location, AuthenticationService, SocketService) ->
-    routesThatRequireAuth = ['/', '/item']
     location.replace '/' if location.pathname == '/login.html' and AuthenticationService.isLoggedIn()
 
     $rootScope.$on '$routeChangeStart', (event, next, current) ->
-        location.replace '/login.html' if _.contains(routesThatRequireAuth, $location.path()) and not AuthenticationService.isLoggedIn()
+        location.replace '/login.html' if $location.path() is '/' and not AuthenticationService.isLoggedIn()

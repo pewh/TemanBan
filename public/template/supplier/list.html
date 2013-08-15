@@ -23,9 +23,9 @@
         <td ng-bind-html-unsafe="d.address || '-' | highlight:search"/>
         <td ng-bind-html-unsafe="d.contact || '-' | highlight:search"/>
         <td>
-            <a ng-href="/supplier/{{ d.id }}">Edit</a>
+            <a ng-href="/supplier/{{ d._id }}">Edit</a>
             |
-            <a href=# ng-click="remove(d.id)">Delete</a>
+            <a href=# ng-click="remove(d._id)">Delete</a>
         </td>
     </tr>
 

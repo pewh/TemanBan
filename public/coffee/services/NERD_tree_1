@@ -1,0 +1,56 @@
+" Press ? for help
+
+.. (up a dir)
+<Dropbox/Documents/KP/TemanBan/
+▸ data/
+▸ node_modules/
+▾ public/
+  ▾ coffee/
+    ▾ controllers/
+        customer.coffee
+        home.coffee
+        item.coffee
+        login.coffee
+        menu.coffee
+        supplier.coffee
+    ▾ services/
+        auth.coffee
+        customer.coffee
+        flash.coffee
+        item.coffee
+        socket.coffee
+        supplier.coffee
+      _compile.sh*
+      app.coffee
+      directive.coffee
+      filter.coffee
+  ▸ css/
+  ▸ js/
+  ▾ template/
+    ▾ customer/
+        edit.html
+        list.html
+        new.html
+    ▾ item/
+        edit.html
+        list.html
+        new.html
+    ▾ supplier/
+        edit.html
+        list.html
+        new.html
+      home.html
+      menu.html
+  ▸ vendor/
+    index.html
+    login.html
+    robots.txt
+▾ resource/
+    auth.coffee
+    customers.coffee
+    db.coffee
+    items.coffee
+    suppliers.coffee
+    users.coffee
+  app.coffee
+  package.json

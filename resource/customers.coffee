@@ -1,26 +1,37 @@
-sql = require './sql'
+db = require './db'
 
 exports.index = (req, res) ->
-    sql.execute res, 'SELECT * FROM Customer'
-
-exports.create = (req, res) ->
-    query = """
-            INSERT INTO Customer(name, address, contact) VALUES (
-                '#{req.body.name}',
-                '#{req.body.address}',
-                '#{req.body.contact}'
-            )
-            """
-    sql.execute res, query
+    db.index
+        res: res
+        model: db.CustomerModel
 
 exports.show = (req, res) ->
-    sql.execute res, "SELECT * FROM Customer WHERE id = #{req.params.customer}"
+    db.show
+        res: res
+        model: db.CustomerModel
+        id: req.params.customer
+
+exports.create = (req, res) ->
+    db.create
+        res: res
+        model: db.CustomerModel
+        body:
+            name: req.body.name
+            address: req.body.address
+            contact: req.body.contact
 
 exports.update = (req, res) ->
-    params = []
-    params.push "#{key} = '#{val}'" for key, val of req.body
-    set = params.join(', ')
-    sql.execute res, "UPDATE Customer SET #{set} WHERE id = #{req.params.customer}"
+    db.update
+        res: res
+        model: db.CustomerModel
+        id: req.params.customer
+        replace: (data) ->
+            data.name = req.body.name
+            data.address = req.body.address
+            data.contact = req.body.contact
 
 exports.destroy = (req, res) ->
-    sql.execute res, "DELETE FROM Customer WHERE id = #{req.params.customer}"
+    db.destroy
+        res: res
+        model: db.CustomerModel
+        id: req.params.customer

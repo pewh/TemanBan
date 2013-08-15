@@ -1,27 +1,39 @@
-sql = require './sql'
+db = require './db'
 
 exports.index = (req, res) ->
-    sql.execute res, 'SELECT * FROM Item'
-
-exports.create = (req, res) ->
-    query = """
-            INSERT INTO Item(name, stock, purchase_price, sales_price) VALUES (
-                '#{req.body.name}',
-                #{req.body.stock},
-                #{req.body.purchase_price},
-                #{req.body.sales_price}
-            )
-            """
-    sql.execute res, query
+    db.index
+        res: res
+        model: db.ItemModel
 
 exports.show = (req, res) ->
-    sql.execute res, "SELECT * FROM Item WHERE id = #{req.params.item}"
+    db.show
+        res: res
+        model: db.ItemModel
+        id: req.params.item
+
+exports.create = (req, res) ->
+    db.create
+        res: res
+        model: db.ItemModel
+        body:
+            name: req.body.name
+            stock: req.body.stock
+            purchase_price: req.body.purchase_price
+            sales_price: req.body.sales_price
 
 exports.update = (req, res) ->
-    params = []
-    params.push "#{key} = '#{val}'" for key, val of req.body
-    set = params.join(', ')
-    sql.execute res, "UPDATE Item SET #{set} WHERE id = #{req.params.item}"
+    db.update
+        res: res
+        model: db.ItemModel
+        id: req.params.item
+        replace: (data) ->
+            data.name = req.body.name
+            data.stock = req.body.stock
+            data.purchase_price = req.body.purchase_price
+            data.sales_price = req.body.sales_price
 
 exports.destroy = (req, res) ->
-    sql.execute res, "DELETE FROM Item WHERE id = #{req.params.item}"
+    db.destroy
+        res: res
+        model: db.ItemModel
+        id: req.params.item

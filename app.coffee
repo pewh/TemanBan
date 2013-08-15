@@ -5,9 +5,10 @@ auth = require './resource/auth'
 server = require('http').createServer(app)
 io = require('socket.io').listen(server)
 
-app.configure ->
-    app.use express.bodyParser()
-    app.use express.static('public')
+app.set 'port', process.env.PORT || 8000
+app.use express.bodyParser()
+app.use express.static('public')
+app.use express.errorHandler()
 
 app.resource 'api/users', require './resource/users'
 app.resource 'api/items', require './resource/items'
@@ -15,7 +16,7 @@ app.resource 'api/suppliers', require './resource/suppliers'
 app.resource 'api/customers', require './resource/customers'
 app.post '/auth/login', (req, res) -> auth.credentials(req, res)
 
-server.listen 8000, -> console.log 'Running on http://localhost:8000'
+server.listen app.get('port'), -> console.log 'Running on http://localhost:8000'
 
 io.sockets.on 'connection', (socket) ->
     # ITEM
