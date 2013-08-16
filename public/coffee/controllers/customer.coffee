@@ -8,7 +8,7 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
         resource.query (res) -> $scope.data = res
 
     SocketService.on 'update:customer', (data) ->
-        FlashService.info "Pelanggan #{data} telah diedit"
+        FlashService.info "Pelanggan #{data.name} telah diedit"
         resource.query (res) -> $scope.data = res
 
     SocketService.on 'delete:customer', (data) ->
@@ -36,9 +36,9 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
 
     $scope.remove = (id) ->
         customer = _.where($scope.data, _id: id)[0]
-        #FlashService.confirm "Apakah Anda yakin untuk menghapus #{customer.name}?", ->
-        resource.remove id: id, ->
-            SocketService.emit 'delete:customer', customer
+        FlashService.confirm "Apakah Anda yakin untuk menghapus #{customer.name}?", ->
+            resource.remove id: id, ->
+                SocketService.emit 'delete:customer', customer
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)

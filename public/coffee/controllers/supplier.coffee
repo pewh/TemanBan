@@ -48,3 +48,6 @@ app.controller 'SupplierController', ($scope, $routeParams, $location, FlashServ
 
     $scope.$on '$routeChangeStart', (scope, next, current) ->
         SocketService.emit 'search:supplier', $scope.data.length
+
+    $scope.$on '$destroy', (event) ->
+        SocketService.removeAllListeners()

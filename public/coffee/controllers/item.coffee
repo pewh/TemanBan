@@ -56,3 +56,6 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
 
     $scope.$on '$routeChangeStart', (scope, next, current) ->
         SocketService.emit 'search:item', $scope.data.length
+
+    $scope.$on '$destroy', (event) ->
+        SocketService.removeAllListeners()

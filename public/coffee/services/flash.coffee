@@ -37,8 +37,9 @@ app.factory 'FlashService', ($rootScope) ->
                     addClass: 'btn btn-primary'
                     text: 'Yes'
                     onClick: ($noty) ->
-                        callback()
-                        $noty.close()
+                        $rootScope.$apply ->
+                            callback()
+                            $noty.close()
                 ,
                     addClass: 'btn btn-danger'
                     text: 'No'

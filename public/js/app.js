@@ -183,8 +183,10 @@
               addClass: 'btn btn-primary',
               text: 'Yes',
               onClick: function($noty) {
-                callback();
-                return $noty.close();
+                return $rootScope.$apply(function() {
+                  callback();
+                  return $noty.close();
+                });
               }
             }, {
               addClass: 'btn btn-danger',
@@ -260,7 +262,7 @@
       });
     });
     SocketService.on('update:customer', function(data) {
-      FlashService.info("Pelanggan " + data + " telah diedit");
+      FlashService.info("Pelanggan " + data.name + " telah diedit");
       return resource.query(function(res) {
         return $scope.data = res;
       });
@@ -308,10 +310,12 @@
       customer = _.where($scope.data, {
         _id: id
       })[0];
-      return resource.remove({
-        id: id
-      }, function() {
-        return SocketService.emit('delete:customer', customer);
+      return FlashService.confirm("Apakah Anda yakin untuk menghapus " + customer.name + "?", function() {
+        return resource.remove({
+          id: id
+        }, function() {
+          return SocketService.emit('delete:customer', customer);
+        });
       });
     };
     $scope.$watch('search', function(val) {
@@ -417,8 +421,11 @@
         return SocketService.emit('search:item', (_ref = $scope.filteredData) != null ? _ref.length : void 0);
       }
     });
-    return $scope.$on('$routeChangeStart', function(scope, next, current) {
+    $scope.$on('$routeChangeStart', function(scope, next, current) {
       return SocketService.emit('search:item', $scope.data.length);
+    });
+    return $scope.$on('$destroy', function(event) {
+      return SocketService.removeAllListeners();
     });
   });
 
@@ -543,8 +550,11 @@
         return SocketService.emit('search:supplier', (_ref = $scope.filteredData) != null ? _ref.length : void 0);
       }
     });
-    return $scope.$on('$routeChangeStart', function(scope, next, current) {
+    $scope.$on('$routeChangeStart', function(scope, next, current) {
       return SocketService.emit('search:supplier', $scope.data.length);
+    });
+    return $scope.$on('$destroy', function(event) {
+      return SocketService.removeAllListeners();
     });
   });
 

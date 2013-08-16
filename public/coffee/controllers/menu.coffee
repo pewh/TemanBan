@@ -1,6 +1,4 @@
 app.controller 'MenuController', ($scope, AuthenticationService, ItemResource, SupplierResource, CustomerResource, SocketService) ->
-    #$scope.$on '$destroy', (event) -> SocketService.destroy()
-
     $scope.isLoggedIn = AuthenticationService.isLoggedIn()
     $scope.logout = -> AuthenticationService.logout()
 
