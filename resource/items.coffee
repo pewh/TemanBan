@@ -4,6 +4,7 @@ exports.index = (req, res) ->
     db.index
         res: res
         model: db.ItemModel
+        populateField: 'supplier_id'
 
 exports.show = (req, res) ->
     db.show
@@ -20,6 +21,7 @@ exports.create = (req, res) ->
             stock: req.body.stock
             purchase_price: req.body.purchase_price
             sales_price: req.body.sales_price
+            supplier_id: req.body.supplier_id
 
 exports.update = (req, res) ->
     db.update
@@ -31,6 +33,7 @@ exports.update = (req, res) ->
             data.stock = req.body.stock
             data.purchase_price = req.body.purchase_price
             data.sales_price = req.body.sales_price
+            data.supplier_id = req.body.supplier_id
 
 exports.destroy = (req, res) ->
     db.destroy

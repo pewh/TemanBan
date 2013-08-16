@@ -33,27 +33,37 @@ Item = new Schema
         type: Number
         required: true
         min: 0
+    supplier_id:
+        type: Schema.Types.ObjectId
+        ref: 'Supplier'
+        #required: true
 
 Supplier = new Schema
     name:
         type: String
         required: true
         unique: true
-    address: type: String
-    contact: type: String
+    address:
+        type: String
+    contact:
+        type: String
 
 Customer = new Schema
     name:
         type: String
         required: true
         unique: true
-    address: type: String
-    contact: type: String
+    address:
+        type: String
+    contact:
+        type: String
 
 module.exports =
     index: (options) ->
-        options.model.find (err, data) ->
+        model = options.model.find (err, data) ->
             if err then options.res.json(err) else options.res.json(data)
+
+        model.populate(options.populateField) if options.populateField?
 
     show: (options) ->
         options.model.findById options.id, (err, data) ->

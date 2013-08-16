@@ -33,16 +33,14 @@
         </div>
     </div>
 
-    <!-- supplier_id 
+    <!-- supplier_id -->
     <div class=control-group>
         <label for=supplier_id class=control-label>Pemasok</label>
         <div class=controls>
             <select ng-model=item.supplier_id
-                    ng-options="supplier.id as supplier.nama for supplier in suppliers"
-                    required />
+                    ng-options="supplier._id as supplier.name for supplier in suppliers" />
         </div>
     </div>
-    -->
 
     <!-- submit -->
     <div class=control-group>
