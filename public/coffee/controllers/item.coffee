@@ -8,8 +8,6 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
         resource.query (res) -> $scope.data = res
 
     SocketService.on 'update:item', (data) ->
-        # BUG called triple times
-        # TODO show what's part that has modified
         FlashService.info "Barang #{data.name} telah diedit"
         resource.query (res) -> $scope.data = res
 

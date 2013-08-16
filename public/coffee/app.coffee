@@ -22,7 +22,7 @@ app.config ($locationProvider, $routeProvider) ->
             templateUrl: '/template/item/new.html'
             controller: 'ItemController'
         .when '/item/:id',
-            templateUrl: (params) -> '/template/item/edit.html'
+            templateUrl: '/template/item/edit.html'
             controller: 'ItemController'
         # ----------
         # SUPPLIER
@@ -34,7 +34,7 @@ app.config ($locationProvider, $routeProvider) ->
             templateUrl: '/template/supplier/new.html'
             controller: 'SupplierController'
         .when '/supplier/:id',
-            templateUrl: (params) -> '/template/supplier/edit.html'
+            templateUrl: '/template/supplier/edit.html'
             controller: 'SupplierController'
         # ----------
         # CUSTOMER
@@ -46,7 +46,7 @@ app.config ($locationProvider, $routeProvider) ->
             templateUrl: '/template/customer/new.html'
             controller: 'CustomerController'
         .when '/customer/:id',
-            templateUrl: (params) -> '/template/customer/edit.html'
+            templateUrl: '/template/customer/edit.html'
             controller: 'CustomerController'
         # ----------
         # REDIRECT

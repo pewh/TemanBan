@@ -69,6 +69,7 @@ module.exports =
         options.model.findById options.id, (err, data) ->
             if err then options.res.json(err) else options.res.json(data)
 
+    # TODO remove
     isExist: (options) ->
         options.model.count _id: options.id, (err, count) ->
             options.callback? and options.callback(count)

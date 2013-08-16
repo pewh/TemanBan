@@ -18,6 +18,9 @@ app.controller 'SupplierController', ($scope, $routeParams, $location, FlashServ
     $scope.load = ->
         resource.get id: $routeParams.id, (res) -> $scope.supplier = res
 
+    $scope.itemlist = (supplierId) ->
+        # TODO itemlist based on supplier id
+
     $scope.add = ->
         resource.save $scope.supplier, ->
             SocketService.emit 'create:supplier', $scope.supplier

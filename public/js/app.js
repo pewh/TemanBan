@@ -16,9 +16,7 @@
       templateUrl: '/template/item/new.html',
       controller: 'ItemController'
     }).when('/item/:id', {
-      templateUrl: function(params) {
-        return '/template/item/edit.html';
-      },
+      templateUrl: '/template/item/edit.html',
       controller: 'ItemController'
     }).when('/supplier', {
       templateUrl: '/template/supplier/list.html',
@@ -27,9 +25,7 @@
       templateUrl: '/template/supplier/new.html',
       controller: 'SupplierController'
     }).when('/supplier/:id', {
-      templateUrl: function(params) {
-        return '/template/supplier/edit.html';
-      },
+      templateUrl: '/template/supplier/edit.html',
       controller: 'SupplierController'
     }).when('/customer', {
       templateUrl: '/template/customer/list.html',
@@ -38,9 +34,7 @@
       templateUrl: '/template/customer/new.html',
       controller: 'CustomerController'
     }).when('/customer/:id', {
-      templateUrl: function(params) {
-        return '/template/customer/edit.html';
-      },
+      templateUrl: '/template/customer/edit.html',
       controller: 'CustomerController'
     }).otherwise({
       redirectTo: '/'
@@ -72,6 +66,20 @@
             return element.removeClass('active');
           }
         });
+      }
+    };
+  });
+
+  app.directive('collapseTable', function() {
+    return {
+      restrict: 'A',
+      scope: true,
+      link: function(scope, element, attribute) {
+        if (element.hasClass('label')) {
+          return element.removeClass('label label-info');
+        } else {
+          return element.addClass('label label-info');
+        }
       }
     };
   });
@@ -507,6 +515,7 @@
         return $scope.supplier = res;
       });
     };
+    $scope.itemlist = function(supplierId) {};
     $scope.add = function() {
       return resource.save($scope.supplier, function() {
         SocketService.emit('create:supplier', $scope.supplier);

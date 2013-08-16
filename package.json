@@ -16,6 +16,7 @@
     "async": "~0.2.9",
     "node-inspector": "~0.3.2",
     "socket.io": "~0.9.16",
-    "mongoose": "~3.6.16"
+    "mongoose": "~3.6.16",
+    "bower": "~1.1.2"
   }
 }
