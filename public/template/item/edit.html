@@ -38,6 +38,7 @@
         <label for=supplier_id class=control-label>Pemasok</label>
         <div class=controls>
             <select ui-select2
+                    required
                     ng-model=item.supplier_id
                     ng-options="supplier._id as supplier.name for supplier in suppliers" />
         </div>

@@ -13,8 +13,8 @@ User = new Schema
         required: true
     role:
         type: String
-        #required: true
-        #enum: ['manager', 'staff', 'commissioner']
+        required: true
+        enum: ['manager', 'staff', 'commissioner']
 
 Item = new Schema
     name:
@@ -36,7 +36,7 @@ Item = new Schema
     supplier_id:
         type: Schema.Types.ObjectId
         ref: 'Supplier'
-        #required: true
+        required: true
 
 Supplier = new Schema
     name:
@@ -67,7 +67,7 @@ module.exports =
         model.populate(options.populateField) if options.populateField?
 
     show: (options) ->
-        options.model.findbyid options.id, (err, data) ->
+        options.model.findById options.id, (err, data) ->
             if err then options.res.json(err) else options.res.json(data)
 
     search: (options) ->
