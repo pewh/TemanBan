@@ -37,7 +37,7 @@ table {
 
 .dark-table-background {
     background: #f6f6f6;
-    display: none;
+    //display: none;
     border-bottom: 3px solid #ddd;
 }
 

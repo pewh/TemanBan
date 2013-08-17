@@ -18,8 +18,15 @@ app.controller 'SupplierController', ($scope, $routeParams, $location, FlashServ
     $scope.load = ->
         resource.get id: $routeParams.id, (res) -> $scope.supplier = res
 
+    $scope.collapseSupplier = {}
+
     $scope.itemlist = (supplierId) ->
-        # TODO itemlist based on supplier id
+        #if $scope.collapseSupplier[supplierId] is undefined
+        #    $scope.collapseSupplier[supplierId] = true
+        #else
+        #    $scope.collapseSupplier[supplierId] = false
+
+        $scope.collapseSupplier[supplierId] = not $scope.collapseSupplier[supplierId]
 
     $scope.add = ->
         resource.save $scope.supplier, ->

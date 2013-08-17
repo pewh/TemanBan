@@ -22,7 +22,11 @@
             <td ng-bind-html-unsafe="d.address || '-' | highlight:search"/>
             <td ng-bind-html-unsafe="d.contact || '-' | highlight:search"/>
             <td>
-                <a href=# collapse-table ng-click="itemList(d._id)">Detail</a>
+                <a href=#
+                   ng-click="itemlist(d._id)"
+                   ng-show=d.items.length
+                   ng-class="{true: 'label label-info', false: ''}[collapseSupplier[d._id]]">Detail</a>
+                <span class=disabled-text ng-hide=d.items.length>Detail</span>
                 |
                 <a ng-href="/supplier/{{ d._id }}">Edit</a>
                 |
@@ -30,20 +34,24 @@
             </td>
         </tr>
 
-        <tr class=dark-table-background>
-            <td />
-            <td colspan=3>
-                <table class="table table-bordered">
-                    <tr class=dark-footer-table>
-                        <th>No</th>
-                        <th>Nama Barang</th>
-                        <th>Stok</th>
-                        <th>Harga Beli</th>
-                    </tr>
-                    <tr ng-repeat="item in itemlist(d._id)">
-
-                    </tr>
-                </table>
+        <tr class=dark-table-background ng-show="collapseSupplier[d._id]">
+            <td colspan=5 class=row>
+                <div class=col-lg-6>
+                    <table class="table table-bordered">
+                        <tr class=dark-footer-table>
+                            <th>No</th>
+                            <th>Nama Barang</th>
+                            <th>Stok</th>
+                            <th>Harga Beli</th>
+                        </tr>
+                        <tr ng-repeat="item in d.items">
+                            <td ng-bind-html-unsafe="$index + 1" />
+                            <td ng-bind-html-unsafe=item.name />
+                            <td ng-bind-html-unsafe=item.stock />
+                            <td ng-bind-html-unsafe=item.purchase_price />
+                        </tr>
+                    </table>
+                </div>
             </td>
         </tr>
     </tbody>

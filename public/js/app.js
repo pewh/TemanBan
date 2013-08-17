@@ -565,7 +565,10 @@
         return $scope.supplier = res;
       });
     };
-    $scope.itemlist = function(supplierId) {};
+    $scope.collapseSupplier = {};
+    $scope.itemlist = function(supplierId) {
+      return $scope.collapseSupplier[supplierId] = !$scope.collapseSupplier[supplierId];
+    };
     $scope.add = function() {
       return resource.save($scope.supplier, function() {
         SocketService.emit('create:supplier', $scope.supplier);

@@ -1,6 +1,5 @@
 db = require './db'
 async = require 'async'
-_ = require 'lodash'
 
 exports.index = (req, res) ->
     db.SupplierModel.find (err, data) ->
@@ -16,7 +15,7 @@ exports.index = (req, res) ->
                     return d
 
             async.parallel insertionFn, (err, results) ->
-                _.map data, (d, i) ->
+                data.map (d, i) ->
                     d.items = results[i]
                 res.json data
 
