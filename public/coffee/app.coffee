@@ -1,4 +1,4 @@
-app = angular.module 'app', ['ngResource', 'ui.highlight']
+app = angular.module 'app', ['ngResource', 'ui.highlight', 'ui.select2']
 
 app.config ($locationProvider, $routeProvider) ->
     # hashbang mode

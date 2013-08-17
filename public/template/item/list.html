@@ -1,12 +1,10 @@
 <div class="form-head">
     <h2 class="pull-left title">Barang</h2>
-    <a class="btn btn-primary btn-preposition-header" href="/item/new">
+    <a class="btn btn-info btn-preposition-header" href="/item/new">
         <i class="glyphicon glyphicon-plus"></i>
     </a>
 
-    <div class="navbar-form pull-right">
-        <input type="text" ng-model="search" class="form-control" placeholder="Pencarian" />
-    </div>
+        <input type="text" ng-model="search" class="pull-right" placeholder="Pencarian" />
 </div>
 
 <table class="table">
@@ -19,7 +17,7 @@
         <th>Action</th>
     </tr>
 
-    <tr ng-repeat="d in data | filter:search" ng-class="{'error': stockStatus.isEmpty($index), 'warning': stockStatus.isWarning($index) }">
+    <tr ng-repeat="d in data | filter:search" ng-class="{'danger': stockStatus.isEmpty($index), 'warning': stockStatus.isWarning($index) }">
         <td ng-bind-html-unsafe="d.name | highlight:search"/>
         <td ng-bind-html-unsafe="d.stock || '-' | highlight:search"/>
         <td ng-bind-html-unsafe="d.purchase_price | rupiah | highlight:search"/>

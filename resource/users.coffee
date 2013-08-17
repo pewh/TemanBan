@@ -14,7 +14,7 @@ exports.show = (req, res) ->
 exports.create = (req, res) ->
     db.create
         res: res
-        model: UserModel
+        model: db.UserModel
         body:
             username: req.body.username
             password: req.body.password

@@ -13,8 +13,8 @@ User = new Schema
         required: true
     role:
         type: String
-        required: true
-        enum: ['manager', 'staff', 'commissioner']
+        #required: true
+        #enum: ['manager', 'staff', 'commissioner']
 
 Item = new Schema
     name:
@@ -47,6 +47,7 @@ Supplier = new Schema
         type: String
     contact:
         type: String
+    items: [Item]
 
 Customer = new Schema
     name:
@@ -66,23 +67,16 @@ module.exports =
         model.populate(options.populateField) if options.populateField?
 
     show: (options) ->
-        options.model.findById options.id, (err, data) ->
+        options.model.findbyid options.id, (err, data) ->
             if err then options.res.json(err) else options.res.json(data)
 
-    # TODO remove
-    isExist: (options) ->
-        options.model.count _id: options.id, (err, count) ->
-            options.callback? and options.callback(count)
+    search: (options) ->
+        options.model.find options.criteria, (err, data) ->
+            if err then options.res.json(err) else options.res.json(data)
 
     create: (options) ->
         model = new options.model(options.body)
         model.save (err) =>
-            @isExist
-                res: options.res
-                model: options.model
-                id: model._id
-                callback: (count) ->
-                    console.log count
             if err then options.res.json(err) else options.res.json(model)
 
     update: (options) ->

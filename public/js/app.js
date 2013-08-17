@@ -2,7 +2,7 @@
 (function() {
   var app;
 
-  app = angular.module('app', ['ngResource', 'ui.highlight']);
+  app = angular.module('app', ['ngResource', 'ui.highlight', 'ui.select2']);
 
   app.config(function($locationProvider, $routeProvider) {
     $locationProvider.html5Mode(true);
@@ -112,19 +112,29 @@
     return {
       login: function(credentials) {
         return $http.post('/auth/login', credentials).success(function(data) {
-          SessionService.set('authenticated', true);
           if (data.length) {
+            SessionService.set('authenticated', true);
+            SessionService.set('username', credentials.username);
+            SessionService.set('role', credentials.role);
             return location.replace('/');
+          } else {
+            return FlashService.error('Username atau password salah');
           }
-        }).error(function(message) {
-          return FlashService.error('Username atau password salah');
         });
       },
       logout: function() {
-        return SessionService.unset('authenticated');
+        SessionService.unset('authenticated');
+        SessionService.unset('username');
+        return SessionService.unset('role');
       },
       isLoggedIn: function() {
         return SessionService.get('authenticated');
+      },
+      currentUser: function() {
+        return SessionService.get('username');
+      },
+      currentRole: function() {
+        return SessionService.get('role');
       }
     };
   });
@@ -327,10 +337,10 @@
       });
     };
     $scope.$watch('search', function(val) {
-      var _ref;
       $scope.filteredData = filterFilter($scope.data, val);
       if (val !== void 0) {
-        return SocketService.emit('search:customer', (_ref = $scope.filteredData) != null ? _ref.length : void 0);
+        SocketService.emit('search:customer', $scope.filteredData.length);
+        return console.log($scope.filteredData.length);
       }
     });
     $scope.$on('$routeChangeStart', function(scope, next, current) {
@@ -416,17 +426,18 @@
       item = _.where($scope.data, {
         _id: id
       })[0];
-      return resource.remove({
-        id: id
-      }, function() {
-        return SocketService.emit('delete:item', item);
+      return FlashService.confirm("Apakah Anda yakin untuk menghapus " + item.name + "?", function() {
+        return resource.remove({
+          id: id
+        }, function() {
+          return SocketService.emit('delete:item', item);
+        });
       });
     };
     $scope.$watch('search', function(val) {
-      var _ref;
       $scope.filteredData = filterFilter($scope.data, val);
       if (val !== void 0) {
-        return SocketService.emit('search:item', (_ref = $scope.filteredData) != null ? _ref.length : void 0);
+        return SocketService.emit('search:item', $scope.filteredData.length);
       }
     });
     $scope.$on('$routeChangeStart', function(scope, next, current) {
@@ -450,6 +461,8 @@
   app.controller('MenuController', function($scope, AuthenticationService, ItemResource, SupplierResource, CustomerResource, SocketService) {
     var categories;
     $scope.isLoggedIn = AuthenticationService.isLoggedIn();
+    $scope.currentUser = AuthenticationService.currentUser();
+    $scope.currentRole = AuthenticationService.currentRole();
     $scope.logout = function() {
       return AuthenticationService.logout();
     };
@@ -482,6 +495,43 @@
         });
       });
     });
+    /*
+    
+    SocketService.on 'connect', (data) ->
+        ItemResource.query (res) -> $scope.count.item = res.length
+        SupplierResource.query (res) -> $scope.count.supplier = res.length
+        CustomerResource.query (res) -> $scope.count.customer = res.length
+    
+    # ITEM
+    SocketService.on 'create:item', (data) ->
+        ItemResource.query (res) ->
+            $scope.count.item = res.length
+    
+    SocketService.on 'delete:item', (data) ->
+        console.log 'oe'
+        ItemResource.query (res) -> $scope.count.item = res.length
+    
+    SocketService.on 'search:item', (data) -> $scope.count.item = data
+    
+    # SUPPLIER
+    SocketService.on 'create:supplier', (data) ->
+        SupplierResource.query (res) -> $scope.count.supplier = res.length
+    
+    SocketService.on 'delete:supplier', (data) ->
+        SupplierResource.query (res) -> $scope.count.supplier = res.length
+    
+    SocketService.on 'search:supplier', (data) -> $scope.count.supplier = data
+    
+    # CUSTOMER
+    SocketService.on 'create:customer', (data) ->
+        CustomerResource.query (res) -> $scope.count.customer = res.length
+    
+    SocketService.on 'delete:customer', (data) ->
+        CustomerResource.query (res) -> $scope.count.customer = res.length
+    
+    SocketService.on 'search:customer', (data) -> $scope.count.customer = data
+    */
+
   });
 
   app.controller('SupplierController', function($scope, $routeParams, $location, FlashService, SupplierResource, SocketService, filterFilter) {
@@ -546,10 +596,12 @@
       supplier = _.where($scope.data, {
         _id: id
       })[0];
-      return resource.remove({
-        id: id
-      }, function() {
-        return SocketService.emit('delete:supplier', supplier);
+      return FlashService.confirm("Apakah Anda yakin untuk menghapus " + supplier.name + "?", function() {
+        return resource.remove({
+          id: id
+        }, function() {
+          return SocketService.emit('delete:supplier', supplier);
+        });
       });
     };
     $scope.$watch('search', function(val) {

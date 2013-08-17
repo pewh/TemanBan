@@ -39,9 +39,9 @@ app.controller 'SupplierController', ($scope, $routeParams, $location, FlashServ
 
     $scope.remove = (id) ->
         supplier = _.where($scope.data, _id: id)[0]
-        #FlashService.confirm "Apakah Anda yakin untuk menghapus #{item.name}?", ->
-        resource.remove id: id, ->
-            SocketService.emit 'delete:supplier', supplier
+        FlashService.confirm "Apakah Anda yakin untuk menghapus #{supplier.name}?", ->
+            resource.remove id: id, ->
+                SocketService.emit 'delete:supplier', supplier
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)

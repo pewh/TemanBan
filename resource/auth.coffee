@@ -1,19 +1,9 @@
-mysql = require 'mysql'
-
-connection = mysql.createConnection
-    host: 'localhost'
-    user: 'root'
-    database: 'TemanBan'
+db = require './db'
 
 module.exports.credentials = (req, res) ->
-    if connection
-        query = """
-                SELECT * FROM User
-                WHERE username = '#{req.body.username}'
-                AND password = '#{req.body.password}'
-                """
-        connection.query query, (error, rows, fields) ->
-            if rows.length
-                res.json rows
-            else
-                res.json flash: 'Username atau password salah', 500
+    db.search
+        res: res
+        model: db.UserModel
+        criteria:
+            username: req.body.username
+            password: req.body.password

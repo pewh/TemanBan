@@ -1,9 +1,24 @@
 db = require './db'
+async = require 'async'
+_ = require 'lodash'
 
 exports.index = (req, res) ->
-    db.index
-        res: res
-        model: db.SupplierModel
+    db.SupplierModel.find (err, data) ->
+        if err
+            res.json(err)
+        else
+            insertionFn = []
+
+            data.map (d) ->
+                insertionFn.push (callback) ->
+                    db.ItemModel.find supplier_id: d._id, (err, item) ->
+                        callback null, item
+                    return d
+
+            async.parallel insertionFn, (err, results) ->
+                _.map data, (d, i) ->
+                    d.items = results[i]
+                res.json data
 
 exports.show = (req, res) ->
     db.show

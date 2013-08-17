@@ -3,7 +3,7 @@
 <form class=form-horizontal name=updateForm ng-init=load()>
     <!-- name -->
     <div class=control-group>
-        <label for=name class=control-label>name</label>
+        <label for=name class=control-label>Name</label>
         <div class=controls>
             <input type=text name=name id=name ng-model=item.name autocomplete=off maxlength=30 required autofocus />
         </div>
@@ -11,7 +11,7 @@
 
     <!-- stock -->
     <div class=control-group>
-        <label for=stock class=control-label>stock</label>
+        <label for=stock class=control-label>Stok</label>
         <div class=controls>
             <input type=number name=stock id=stock ng-model=item.stock min=0 required />
         </div>
@@ -37,7 +37,8 @@
     <div class=control-group>
         <label for=supplier_id class=control-label>Pemasok</label>
         <div class=controls>
-            <select ng-model=item.supplier_id
+            <select ui-select2
+                    ng-model=item.supplier_id
                     ng-options="supplier._id as supplier.name for supplier in suppliers" />
         </div>
     </div>

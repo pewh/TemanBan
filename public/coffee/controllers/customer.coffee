@@ -44,7 +44,8 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
         $scope.filteredData = filterFilter($scope.data, val)
 
         if val isnt undefined
-            SocketService.emit 'search:customer', $scope.filteredData?.length
+            SocketService.emit 'search:customer', $scope.filteredData.length
+            console.log $scope.filteredData.length
 
     $scope.$on '$routeChangeStart', (scope, next, current) ->
         SocketService.emit 'search:customer', $scope.data.length

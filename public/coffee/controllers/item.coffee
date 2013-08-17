@@ -42,15 +42,15 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
 
     $scope.remove = (id) ->
         item = _.where($scope.data, _id: id)[0]
-        #FlashService.confirm "Apakah Anda yakin untuk menghapus #{item.name}?", ->
-        resource.remove id: id, ->
-            SocketService.emit 'delete:item', item
+        FlashService.confirm "Apakah Anda yakin untuk menghapus #{item.name}?", ->
+            resource.remove id: id, ->
+                SocketService.emit 'delete:item', item
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)
 
         if val isnt undefined
-            SocketService.emit 'search:item', $scope.filteredData?.length
+            SocketService.emit 'search:item', $scope.filteredData.length
 
     $scope.$on '$routeChangeStart', (scope, next, current) ->
         SocketService.emit 'search:item', $scope.data.length
