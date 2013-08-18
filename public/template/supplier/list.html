@@ -8,7 +8,7 @@
     <br class="clearfix"/>
 </div>
 
-<table class="table">
+<table class="table" ng-show="data || data | filter:search">
     <tr>
         <th>Nama</th>
         <th>Alamat</th>
@@ -44,16 +44,21 @@
                             <th>Stok</th>
                             <th>Harga Beli</th>
                         </tr>
-                        <tr ng-repeat="item in d.items">
+                        <tr ng-repeat="item in d.items" ng-class="{'danger': stockStatus.isEmpty($parent.$index, $index), 'warning': stockStatus.isWarning($parent.$index, $index) }">
                             <td ng-bind-html-unsafe="$index + 1" />
-                            <td ng-bind-html-unsafe=item.name />
-                            <td ng-bind-html-unsafe=item.stock />
-                            <td ng-bind-html-unsafe=item.purchase_price />
+                            <td ng-bind-html-unsafe="item.name | highlight:search" />
+                            <td ng-bind-html-unsafe="item.stock || '0' | highlight:search" />
+                            <td ng-bind-html-unsafe="item.purchase_price || '0' | highlight:search" />
                         </tr>
                     </table>
                 </div>
             </td>
         </tr>
     </tbody>
-
 </table>
+
+<pre ng-hide=data>
+Klik tombol <span class="label label-info">+</span> utk menambah data
+</pre>
+
+<pre ng-hide="!(data && search) || (data | filter:search)">Data tidak ditemukan</pre>

@@ -26,7 +26,8 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
                 address: ''
                 contact: ''
             ($ '#name').focus()
-        , (err) -> FlashService.error err.data if err.status == 500
+        , (err) ->
+            FlashService.error err.data.err if err.status == 500
 
     $scope.update = ->
         $scope.customer.$update ->
@@ -42,6 +43,7 @@ app.controller 'CustomerController', ($scope, $routeParams, $location, FlashServ
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)
+        console.log $scope.data, $scope.search, $scope.filteredData
 
         if val isnt undefined
             SocketService.emit 'search:customer', $scope.filteredData.length

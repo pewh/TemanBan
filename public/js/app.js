@@ -309,7 +309,7 @@
         return ($('#name')).focus();
       }, function(err) {
         if (err.status === 500) {
-          return FlashService.error(err.data);
+          return FlashService.error(err.data.err);
         }
       });
     };
@@ -338,6 +338,7 @@
     };
     $scope.$watch('search', function(val) {
       $scope.filteredData = filterFilter($scope.data, val);
+      console.log($scope.data, $scope.search, $scope.filteredData);
       if (val !== void 0) {
         SocketService.emit('search:customer', $scope.filteredData.length);
         return console.log($scope.filteredData.length);
@@ -407,7 +408,9 @@
         return ($('#name')).focus();
       }, function(err) {
         if (err.status === 500) {
-          return FlashService.error(err.data);
+          if (err.data.code === 11000) {
+            return FlashService.error('Nama barang sudah ada');
+          }
         }
       });
     };
@@ -565,6 +568,15 @@
         return $scope.supplier = res;
       });
     };
+    $scope.stockStatus = {
+      isEmpty: function(dataIndex, itemIndex) {
+        return !$scope.data[dataIndex].items[itemIndex].stock;
+      },
+      isWarning: function(dataIndex, itemIndex) {
+        var _ref;
+        return (0 < (_ref = $scope.data[dataIndex].items[itemIndex].stock) && _ref < 5);
+      }
+    };
     $scope.collapseSupplier = {};
     $scope.itemlist = function(supplierId) {
       return $scope.collapseSupplier[supplierId] = !$scope.collapseSupplier[supplierId];
@@ -580,7 +592,9 @@
         return ($('#name')).focus();
       }, function(err) {
         if (err.status === 500) {
-          return FlashService.error(err.data);
+          if (err.data.code === 11000) {
+            return FlashService.error('Nama pemasok sudah ada');
+          }
         }
       });
     };

@@ -18,14 +18,13 @@ app.controller 'SupplierController', ($scope, $routeParams, $location, FlashServ
     $scope.load = ->
         resource.get id: $routeParams.id, (res) -> $scope.supplier = res
 
+    $scope.stockStatus =
+        isEmpty: (dataIndex, itemIndex) -> !$scope.data[dataIndex].items[itemIndex].stock
+        isWarning: (dataIndex, itemIndex) -> 0 < $scope.data[dataIndex].items[itemIndex].stock < 5
+
     $scope.collapseSupplier = {}
 
     $scope.itemlist = (supplierId) ->
-        #if $scope.collapseSupplier[supplierId] is undefined
-        #    $scope.collapseSupplier[supplierId] = true
-        #else
-        #    $scope.collapseSupplier[supplierId] = false
-
         $scope.collapseSupplier[supplierId] = not $scope.collapseSupplier[supplierId]
 
     $scope.add = ->
@@ -36,7 +35,9 @@ app.controller 'SupplierController', ($scope, $routeParams, $location, FlashServ
                 address: ''
                 contact: ''
             ($ '#name').focus()
-        , (err) -> FlashService.error err.data if err.status == 500
+        , (err) ->
+            if err.status == 500
+                FlashService.error 'Nama pemasok sudah ada' if err.data.code == 11000
 
     $scope.update = ->
         $scope.supplier.$update ->

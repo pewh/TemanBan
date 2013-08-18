@@ -53,7 +53,6 @@ Customer = new Schema
     name:
         type: String
         required: true
-        unique: true
     address:
         type: String
     contact:
@@ -62,33 +61,33 @@ Customer = new Schema
 module.exports =
     index: (options) ->
         model = options.model.find (err, data) ->
-            if err then options.res.json(err) else options.res.json(data)
+            if err then options.res.json(err, 500) else options.res.json(data)
 
         model.populate(options.populateField) if options.populateField?
 
     show: (options) ->
         options.model.findById options.id, (err, data) ->
-            if err then options.res.json(err) else options.res.json(data)
+            if err then options.res.json(err, 500) else options.res.json(data)
 
     search: (options) ->
         options.model.find options.criteria, (err, data) ->
-            if err then options.res.json(err) else options.res.json(data)
+            if err then options.res.json(err, 500) else options.res.json(data)
 
     create: (options) ->
         model = new options.model(options.body)
         model.save (err) =>
-            if err then options.res.json(err) else options.res.json(model)
+            if err then options.res.json(err, 500) else options.res.json(model)
 
     update: (options) ->
         options.model.findById options.id, (err, data) ->
             options.replace(data)
             data.save (err) ->
-                if err then options.res.json(err) else options.res.json(data)
+                if err then options.res.json(err, 500) else options.res.json(data)
 
     destroy: (options) ->
         options.model.findById options.id, (err, data) ->
             data? and data.remove (err) ->
-                if err then options.res.json(err) else options.res.json(data)
+                if err then options.res.json(err, 500) else options.res.json(data)
 
     UserModel: mongoose.model('User', User)
     ItemModel: mongoose.model('Item', Item)

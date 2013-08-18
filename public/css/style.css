@@ -71,3 +71,5 @@ table {
 .badge-menu { margin-left: 7px }
 
 .select2-container { width: 260px }
+
+.table tbody+tbody { border-top: none }

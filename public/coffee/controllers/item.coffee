@@ -32,7 +32,9 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
                 purchase_price: 1
                 sales_price: 1
             ($ '#name').focus()
-        , (err) -> FlashService.error err.data if err.status == 500
+        , (err) ->
+            if err.status == 500
+                FlashService.error 'Nama barang sudah ada' if err.data.code == 11000
 
     $scope.update = ->
         $scope.item.$update ->

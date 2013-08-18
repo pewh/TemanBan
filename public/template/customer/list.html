@@ -4,13 +4,13 @@
         <i class="glyphicon glyphicon-plus"></i>
     </a>
 
-    <div class="navbar-form pull-right">
+    <div class="navbar-form pull-right" ng-show=data>
         <input type="text" ng-model="search" class="search-query" placeholder="Pencarian" />
     </div>
     <br class="clearfix"/>
 </div>
 
-<table class="table">
+<table class="table" ng-show="data || data | filter:search">
     <tr>
         <th>Nama</th>
         <th>Alamat</th>
@@ -28,5 +28,10 @@
             <a href=# ng-click="remove(d._id)">Delete</a>
         </td>
     </tr>
-
 </table>
+
+<pre ng-hide=data>
+Klik tombol <span class="label label-info">+</span> utk menambah data
+</pre>
+
+<pre ng-hide="!(data && search) || (data | filter:search)">Data tidak ditemukan</pre>

@@ -7,7 +7,7 @@
         <input type="text" ng-model="search" class="pull-right" placeholder="Pencarian" />
 </div>
 
-<table class="table">
+<table class="table" ng-show="data || data | filter:search">
     <tr>
         <th>Nama</th>
         <th>Stok</th>
@@ -29,5 +29,10 @@
             <a href=# ng-click="remove(d._id)">Delete</a>
         </td>
     </tr>
-
 </table>
+
+<pre ng-hide=data>
+Klik tombol <span class="label label-info">+</span> utk menambah data
+</pre>
+
+<pre ng-hide="!(data && search) || (data | filter:search)">Data tidak ditemukan</pre>
