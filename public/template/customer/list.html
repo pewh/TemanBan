@@ -1,13 +1,16 @@
-<div class="form-head">
-    <h2 class="pull-left title">Pelanggan</h2>
-    <a class="btn btn-info btn-preposition-header" href="/customer/new">
-        <i class="glyphicon glyphicon-plus"></i>
-    </a>
-
-    <div class="navbar-form pull-right" ng-show=data>
-        <input type="text" ng-model="search" class="search-query" placeholder="Pencarian" />
+<div>
+    <div class=pull-left>
+        <h2 class="pull-left title">Pelanggan</h2>
+        <a class="btn btn-primary btn-preposition-header" href="/customer/new">
+            <i class="glyphicon glyphicon-plus"></i>
+        </a>
     </div>
-    <br class="clearfix"/>
+
+    <div style="width: 200px" class="pull-right">
+        <input type=search ng-model=search ng-show=data class="form-control" placeholder="Pencarian" />
+    </div>
+
+    <div class=clearfix>
 </div>
 
 <table class="table" ng-show="data || data | filter:search">
@@ -30,8 +33,14 @@
     </tr>
 </table>
 
-<pre ng-hide=data>
-Klik tombol <span class="label label-info">+</span> utk menambah data
-</pre>
+<div class="panel panel-default" ng-hide=data>
+    <div class=panel-body>
+        Klik tombol + utk menambah data
+    </div>
+</div>
 
-<pre ng-hide="!(data && search) || (data | filter:search)">Data tidak ditemukan</pre>
+<div class="panel panel-default" ng-hide="!(data && search) || (data | filter:search)">
+    <div class=panel-body>
+        Data tidak ditemukan
+    </div>
+</div>

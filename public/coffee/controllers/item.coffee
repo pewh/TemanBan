@@ -22,12 +22,13 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
         isWarning: (index) -> 0 < $scope.data[index].stock < 5
 
     $scope.load = ->
-        resource.get id: $routeParams.id, (res) -> $scope.item = res
+        if $routeParams.id
+            resource.get id: $routeParams.id, (res) -> $scope.item = res
 
     $scope.add = ->
-        resource.save $scope.item, ->
-            SocketService.emit 'create:item', $scope.item
-            $scope.item =
+        resource.save @item, =>
+            SocketService.emit 'create:item', @item
+            @item =
                 stock: 1
                 purchase_price: 1
                 sales_price: 1
@@ -35,6 +36,12 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
         , (err) ->
             if err.status == 500
                 FlashService.error 'Nama barang sudah ada' if err.data.code == 11000
+
+    $scope.edit = (id) ->
+        $scope.showEditForm = true
+        $scope.showNewForm = false
+        $scope.selectedId = id
+        $routeParams.id = id
 
     $scope.update = ->
         $scope.item.$update ->
@@ -44,9 +51,8 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
 
     $scope.remove = (id) ->
         item = _.where($scope.data, _id: id)[0]
-        FlashService.confirm "Apakah Anda yakin untuk menghapus #{item.name}?", ->
-            resource.remove id: id, ->
-                SocketService.emit 'delete:item', item
+        resource.remove id: id, ->
+            SocketService.emit 'delete:item', item
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)
@@ -59,3 +65,6 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
 
     $scope.$on '$destroy', (event) ->
         SocketService.removeAllListeners()
+
+    $scope.tes = ->
+        console.log 'as'

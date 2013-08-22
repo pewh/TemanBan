@@ -1,0 +1,13 @@
+{
+  "name": "angularjs-popover-confirm",
+  "homepage": "https://github.com/clouddueling/angularjs-popover-confirm",
+  "_release": "18ec283f05",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "18ec283f0507908539f0c3b032ae369cae8a0f1a"
+  },
+  "_source": "git://github.com/clouddueling/angularjs-popover-confirm.git",
+  "_target": "*",
+  "_direct": true
+}

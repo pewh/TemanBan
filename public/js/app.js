@@ -70,19 +70,63 @@
     };
   });
 
-  app.directive('collapseTable', function() {
+  app.directive('buttonToggle', function() {
     return {
       restrict: 'A',
-      scope: true,
-      link: function(scope, element, attribute) {
-        if (element.hasClass('label')) {
-          return element.removeClass('label label-info');
-        } else {
-          return element.addClass('label label-info');
-        }
+      require: 'ngModel',
+      link: function($scope, element, attr, ctrl) {
+        var classToToggle;
+        classToToggle = attr.buttonToggle;
+        element.bind('click', function() {
+          var checked;
+          checked = ctrl.$viewValue;
+          return $scope.$apply(function(scope) {
+            return ctrl.$setViewValue(!checked);
+          });
+        });
+        return $scope.$watch(attr.ngModel, function(newValue, oldValue) {
+          if (newValue) {
+            return element.addClass(classToToggle);
+          } else {
+            return element.removeClass(classToToggle);
+          }
+        });
       }
     };
   });
+
+  app.directive('confirmDelete', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        deleteAction: '&ngClick'
+      },
+      template: " {{ yep }}\n<span ng-hide=confirm>\n    <a href=# ng-click=\"confirm = true\">Delete</a>\n</span>\n<span ng-show=confirm>\n    <a href=# class=\"label label-danger\" ng-click=\"deleteAction()\">Yes</a>\n    <a href=# class=\"label label-default\" ng-click=\"confirm = false\">No</a>\n</span>"
+    };
+  });
+
+  /*
+  app.directive 'contenteditable', ->
+      link: (scope, element, attr, ctrl) ->
+          element.bind 'blur', ->
+              scope.$apply ->
+                  ctrl.$setViewValue(element.html())
+  
+          ctrl.render = (value) ->
+              element.html(value)
+  
+          ctrl.$setViewValue(element.html())
+  
+          element.bind 'keydown', (event) ->
+              esc = event.which is 27
+              el = event.target
+  
+              if esc
+                  ctrl.$setViewValue(element.html())
+                  element.blur()
+                  event.preventDefault()
+  */
+
 
   app.filter('rupiah', function() {
     return function(string) {
@@ -391,16 +435,19 @@
       }
     };
     $scope.load = function() {
-      return resource.get({
-        id: $routeParams.id
-      }, function(res) {
-        return $scope.item = res;
-      });
+      if ($routeParams.id) {
+        return resource.get({
+          id: $routeParams.id
+        }, function(res) {
+          return $scope.item = res;
+        });
+      }
     };
     $scope.add = function() {
-      return resource.save($scope.item, function() {
-        SocketService.emit('create:item', $scope.item);
-        $scope.item = {
+      var _this = this;
+      return resource.save(this.item, function() {
+        SocketService.emit('create:item', _this.item);
+        _this.item = {
           stock: 1,
           purchase_price: 1,
           sales_price: 1
@@ -413,6 +460,12 @@
           }
         }
       });
+    };
+    $scope.edit = function(id) {
+      $scope.showEditForm = true;
+      $scope.showNewForm = false;
+      $scope.selectedId = id;
+      return $routeParams.id = id;
     };
     $scope.update = function() {
       return $scope.item.$update(function() {
@@ -429,12 +482,10 @@
       item = _.where($scope.data, {
         _id: id
       })[0];
-      return FlashService.confirm("Apakah Anda yakin untuk menghapus " + item.name + "?", function() {
-        return resource.remove({
-          id: id
-        }, function() {
-          return SocketService.emit('delete:item', item);
-        });
+      return resource.remove({
+        id: id
+      }, function() {
+        return SocketService.emit('delete:item', item);
       });
     };
     $scope.$watch('search', function(val) {
@@ -446,9 +497,12 @@
     $scope.$on('$routeChangeStart', function(scope, next, current) {
       return SocketService.emit('search:item', $scope.data.length);
     });
-    return $scope.$on('$destroy', function(event) {
+    $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();
     });
+    return $scope.tes = function() {
+      return console.log('as');
+    };
   });
 
   app.controller('LoginController', function($scope, AuthenticationService) {

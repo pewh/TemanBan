@@ -11,9 +11,8 @@ User = new Schema
     password:
         type: String
         required: true
-    role:
+    authority:
         type: String
-        required: true
         enum: ['manager', 'staff', 'commissioner']
 
 Item = new Schema

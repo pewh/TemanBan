@@ -1,54 +1,40 @@
-<h2 class=title>Tambah Barang</h2>
-
 <form class=form-horizontal name=addForm>
     <!-- name -->
-    <div class=control-group>
-        <label for=name class=control-label>Nama</label>
-        <div class=controls>
-            <input type=text name=name id=name ng-model=item.name autocomplete=off maxlength=30 required autofocus />
-        </div>
+    <div class=form-group>
+        <label for=name>Nama</label>
+        <input type=text id=name class=form-control ng-model=item.name autocomplete=off maxlength=30 required autofocus />
     </div>
 
     <!-- stock -->
-    <div class=control-group>
-        <label for=stock class=control-label>Stok</label>
-        <div class=controls>
-            <input type=number name=stock id=stock ng-model=item.stock ng-init="item.stock=1" min=1 required />
-        </div>
+    <div class=form-group>
+        <label for=stock>Stok</label>
+        <input type=number id=stock class=form-control ng-model=item.stock ng-init="item.stock=1" min=1 required />
     </div>
 
     <!-- purchase_price -->
-    <div class=control-group>
-        <label for=purchase_price class=control-label>Harga Beli (Rp)</label>
-        <div class=controls>
-            <input type=number name=purchase_price id=purchase_price ng-model=item.purchase_price ng-init="item.purchase_price=1" autocomplete=off min=1 required />
-        </div>
+    <div class=form-group>
+        <label for=purchase_price>Harga Beli</label>
+        <input type=number id=purchase_price class=form-control ng-model=item.purchase_price ng-init="item.purchase_price=1" autocomplete=off min=1 required />
     </div>
 
     <!-- sales_price -->
-    <div class=control-group>
-        <label for=sales_price class=control-label>Harga Jual (Rp)</label>
-        <div class=controls>
-            <input type=number name=sales_price ng-model=item.sales_price ng-init="item.sales_price=1" autocomplete=off min=1 required />
-        </div>
+    <div class=form-group>
+        <label for=sales_price>Harga Jual</label>
+        <input type=number id=sales_price class=form-control ng-model=item.sales_price ng-init="item.sales_price=1" autocomplete=off min=1 required />
     </div>
 
     <!-- supplier_id -->
-    <div class=control-group>
-        <label for=supplier_id class=control-label>Pemasok</label>
-        <div class=controls>
-            <select ui-select2
-                    required
-                    ng-model=item.supplier_id
-                    ng-options="supplier._id as supplier.name for supplier in suppliers" />
-        </div>
+    <div class=form-group>
+        <label for=supplier_id>Pemasok</label>
+        <select id=supplier_id
+                class=form-control
+                required
+                ng-model=item.supplier_id
+                ng-options="supplier._id as supplier.name for supplier in suppliers" />
     </div>
 
     <!-- submit -->
-    <div class=control-group>
-        <div class=controls>
-            <button class="btn btn-primary" ng-click=add() ng-disabled=!addForm.$valid>Save</button> or
-            <a href="/item">Back</a>
-        </div>
+    <div class=form-group>
+        <button class="btn btn-primary" ng-click=add() ng-disabled=!addForm.$valid>Save</button>
     </div>
 </form>

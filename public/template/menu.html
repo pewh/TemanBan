@@ -1,32 +1,44 @@
-<ul class="nav navbar-nav" ng-controller=MenuController>
-    <li class="home title"><a href="/">PD Teman Ban</a></li>
+<div class=navbar-header>
+    <button type=button class=navbar-toggle data-toggle=collapse data-target=.navbar-menu-collapse>
+        <span class=sr-only>Toggle Navigation</span>
+        <span class=icon-bar />
+        <span class=icon-bar />
+        <span class=icon-bar />
+    </button>
+    <a class="navbar-brand home title" href=/ >PD Teman Ban</a>
+</div>
 
-    <li active-link><a href=/item>
-        <span class="badge badge-menu pull-right" ng-bind=count.item ng-show=count.item />
-        Barang
-    </a></li>
-    <li active-link><a href=/supplier>
-        <span class="badge badge-menu pull-right" ng-bind=count.supplier ng-show=count.supplier />
-        Pemasok
-    </a></li>
-    <li active-link><a href=/customer>
-        <span class="badge badge-menu pull-right" ng-bind=count.customer ng-show=count.customer />
-        Pelanggan
-    </a></li>
+<div class="collapse navbar-collapse navbar-menu-collapse" ng-controller=MenuController>
+    <ul class="nav navbar-nav">
+        <li active-link><a href=/item>
+            <span class="badge badge-menu pull-right" ng-bind=count.item ng-show=count.item />
+            Barang
+        </a></li>
+        <li active-link><a href=/supplier>
+            <span class="badge badge-menu pull-right" ng-bind=count.supplier ng-show=count.supplier />
+            Pemasok
+        </a></li>
+        <li active-link><a href=/customer>
+            <span class="badge badge-menu pull-right" ng-bind=count.customer ng-show=count.customer />
+            Pelanggan
+        </a></li>
 
-    <li active-link><a href=/purchase_invoice>Faktur Pembelian</a></li>
-    <li active-link><a href=/sale_invoice>Faktur Penjualan</a></li>
+        <!--
+        <li active-link><a href=/purchase_invoice>Faktur Pembelian</a></li>
+        <li active-link><a href=/sale_invoice>Faktur Penjualan</a></li>
 
-    <li active-link><a href=/purchase_transaction>Transaksi Pembelian</a></li>
-    <li active-link><a href=/sale_transaction>Transaksi Penjualan</a></li>
+        <li active-link><a href=/purchase_transaction>Transaksi Pembelian</a></li>
+        <li active-link><a href=/sale_transaction>Transaksi Penjualan</a></li>
+        -->
 
-    <li class="dropdown">
-        <a href=# class=dropdown-toggle data-toggle=dropdown>
-            {{ currentUser }}
-            <b class=caret></b>
-        </a>
-        <ul class="dropdown-menu pull-right">
-            <li active-link><a href=/login.html ng-click=logout()>Logout</a></li>
-        </ul>
-    </li>
-</ul>
+        <li class=dropdown>
+            <a href=# class=dropdown-toggle data-toggle=dropdown>
+                {{ currentUser }}
+                <b class=caret></b>
+            </a>
+            <ul class="dropdown-menu pull-right">
+                <li active-link><a href=/login.html ng-click=logout()>Logout</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>

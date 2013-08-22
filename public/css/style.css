@@ -7,8 +7,8 @@ body { background-color: #f6f6f6 }
     margin-top: 65px
 }
 
-.form-head {
-    margin-bottom: 20px;
+.content {
+    margin-top: 25px;
 }
 
 table {
@@ -28,22 +28,19 @@ table {
     font: 2.5em 'SansationRegular', sans-serif;
 }
 
-.red-alert {
-    margin-top: 5px;
-    color: #b94a48;
-}
-
 .home { font: 2.0em 'SansationRegular', sans-serif }
 
 .dark-table-background {
     background: #f6f6f6;
-    //display: none;
     border-bottom: 3px solid #ddd;
 }
 
 .dark-footer-table { background: #eee }
+
+/*
 .red-link, .red-link:hover { color: #b94a48 }
 .underline { text-decoration: underline}
+*/
 
 .disabled-text {
     color: #999;
@@ -53,14 +50,6 @@ table {
 .ui-match {
     background: yellow;
     border: 1px solid orange;
-}
-
-.login-box {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 35px 30px 0;
-    width: 420px;
-    margin: auto;
 }
 
 .active .badge-info {
@@ -73,3 +62,10 @@ table {
 .select2-container { width: 260px }
 
 .table tbody+tbody { border-top: none }
+
+.centered {
+    float: none;
+    margin: 0 auto;
+    background-color: #fff;
+    border: 1px solid #ccc;
+}

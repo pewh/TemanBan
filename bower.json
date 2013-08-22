@@ -17,6 +17,8 @@
     "noty": "~2.1.0",
     "angular-ui-select2": "~0.0.2",
     "angular-ui-utils": "angular-ui/ui-utils#~0.0.4",
-    "bootstrap-glyphicons": "gh-pages"
+    "angularjs-popover-confirm": "clouddueling/angularjs-popover-confirm",
+    "jquery-inline-confirmation": "fredwu/jquery-inline-confirmation#~1.4.2",
+    "restangular": "~1.1.3"
   }
 }
