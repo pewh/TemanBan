@@ -2,7 +2,7 @@
 (function() {
   var app;
 
-  app = angular.module('app', ['ngResource', 'ui.highlight', 'ui.select2']);
+  app = angular.module('app', ['ngResource', 'ui.highlight']);
 
   app.config(function($locationProvider, $routeProvider) {
     $locationProvider.html5Mode(true);
@@ -194,73 +194,7 @@
   });
 
   app.factory('FlashService', function($rootScope) {
-    $.noty.defaults = {
-      timeout: 2500,
-      theme: 'defaultTheme',
-      dismissQueue: true,
-      template: '<div class="noty_message"><span class="noty_text"></span><div class="noty_close"></div></div>',
-      animation: {
-        open: {
-          height: 'toggle'
-        },
-        close: {
-          height: 'toggle'
-        },
-        easing: 'swing',
-        speed: 500
-      },
-      callback: function() {
-        return {
-          onShow: function() {},
-          afterShow: function() {},
-          onClose: function() {},
-          afterClose: function() {}
-        };
-      }
-    };
-    return {
-      info: function(message) {
-        return noty({
-          text: message,
-          type: 'information',
-          layout: 'bottom',
-          closeWith: ['click', 'hover']
-        });
-      },
-      error: function(message) {
-        return noty({
-          text: message,
-          type: 'error',
-          layout: 'bottom',
-          closeWith: ['click', 'hover']
-        });
-      },
-      confirm: function(message, callback) {
-        return noty({
-          text: message,
-          type: 'confirm',
-          layout: 'top',
-          buttons: [
-            {
-              addClass: 'btn btn-primary',
-              text: 'Yes',
-              onClick: function($noty) {
-                return $rootScope.$apply(function() {
-                  callback();
-                  return $noty.close();
-                });
-              }
-            }, {
-              addClass: 'btn btn-danger',
-              text: 'No',
-              onClick: function($noty) {
-                return $noty.close();
-              }
-            }
-          ]
-        });
-      }
-    };
+    return toastr;
   });
 
   app.factory('ItemResource', function($resource) {
@@ -271,6 +205,14 @@
         method: 'PUT'
       }
     });
+  });
+
+  app.factory('MomentService', function($rootScope) {
+    return {
+      currentTime: function() {
+        return moment().format('HH:mm:ss');
+      }
+    };
   });
 
   app.factory('SocketService', function($rootScope, $timeout) {
@@ -398,26 +340,26 @@
 
   app.controller('HomeController', function($scope, $routeParams, $location, SocketService) {});
 
-  app.controller('ItemController', function($scope, $routeParams, $location, FlashService, ItemResource, SupplierResource, SocketService, filterFilter) {
+  app.controller('ItemController', function($scope, $routeParams, $location, FlashService, MomentService, ItemResource, SupplierResource, SocketService, filterFilter) {
     var resource;
     resource = ItemResource;
     resource.query(function(res) {
       return $scope.data = res;
     });
     SocketService.on('create:item', function(data) {
-      FlashService.info("Barang " + data.name + " telah ditambah");
+      FlashService.info("Barang " + data.name + " telah ditambah", MomentService.currentTime());
       return resource.query(function(res) {
         return $scope.data = res;
       });
     });
     SocketService.on('update:item', function(data) {
-      FlashService.info("Barang " + data.name + " telah diedit");
+      FlashService.info("Barang " + data.name + " telah diedit", MomentService.currentTime());
       return resource.query(function(res) {
         return $scope.data = res;
       });
     });
     SocketService.on('delete:item', function(data) {
-      FlashService.info("Barang " + data.name + " telah dihapus");
+      FlashService.info("Barang " + data.name + " telah dihapus", MomentService.currentTime());
       return resource.query(function(res) {
         return $scope.data = res;
       });
@@ -473,7 +415,7 @@
         return $location.path('/item');
       }, function(err) {
         if (err.status === 500) {
-          return FlashService.error(err.data);
+          return FlashService.error(err.data, MomentService.currentTime());
         }
       });
     };

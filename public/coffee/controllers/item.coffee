@@ -1,18 +1,18 @@
-app.controller 'ItemController', ($scope, $routeParams, $location, FlashService, ItemResource, SupplierResource, SocketService, filterFilter) ->
+app.controller 'ItemController', ($scope, $routeParams, $location, FlashService, MomentService, ItemResource, SupplierResource, SocketService, filterFilter) ->
     resource = ItemResource
 
     resource.query (res) -> $scope.data = res
 
     SocketService.on 'create:item', (data) ->
-        FlashService.info "Barang #{data.name} telah ditambah"
+        FlashService.info "Barang #{data.name} telah ditambah", MomentService.currentTime()
         resource.query (res) -> $scope.data = res
 
     SocketService.on 'update:item', (data) ->
-        FlashService.info "Barang #{data.name} telah diedit"
+        FlashService.info "Barang #{data.name} telah diedit", MomentService.currentTime()
         resource.query (res) -> $scope.data = res
 
     SocketService.on 'delete:item', (data) ->
-        FlashService.info "Barang #{data.name} telah dihapus"
+        FlashService.info "Barang #{data.name} telah dihapus", MomentService.currentTime()
         resource.query (res) -> $scope.data = res
 
     SupplierResource.query (res) -> $scope.suppliers = res
@@ -47,7 +47,7 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
         $scope.item.$update ->
             SocketService.emit 'update:item', $scope.item
             $location.path '/item'
-        , (err) -> FlashService.error err.data if err.status == 500
+        , (err) -> FlashService.error(err.data, MomentService.currentTime()) if err.status == 500
 
     $scope.remove = (id) ->
         item = _.where($scope.data, _id: id)[0]
