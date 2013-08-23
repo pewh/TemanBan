@@ -42,6 +42,7 @@
                     data-url="/api/items"
                     data-pk="{{ d._id }}"
                     data-name="name"
+                    data-field="nama"
                     ng-model="d.name"
                     ng-bind-html-unsafe="d.name | highlight:search" />
                 <td content-editable="d.stock"

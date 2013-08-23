@@ -40,16 +40,11 @@ app.directive 'confirmDelete', ->
                </span>
                """
 
-app.directive 'xeditable', ($timeout) ->
+app.directive 'xeditable', (SocketService, $timeout) ->
     restrict: 'A'
     require: 'ngModel'
     link: (scope, element, attr, ctrl) ->
         loadXeditable = ->
-            ###
-            angular.element(element).on 'init', (event, el) ->
-                el.options.url = "#{el.options.url}/#{el.options.pk}"
-            ###
-
             element.editable
                 showbuttons: false
                 emptytext: '-'
@@ -60,7 +55,11 @@ app.directive 'xeditable', ($timeout) ->
                     element.html(value)
                     scope.$apply()
                 success: (response, newValue) ->
-                    console.log response, newValue
+                    # TODO get old value to compare
+                    SocketService.emit 'update:item',
+                        field: attr.field
+                        name: response.name
+                        newValue: newValue
 
         $timeout ->
             loadXeditable()

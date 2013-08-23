@@ -2,6 +2,10 @@
 (function() {
   var app;
 
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
   app = angular.module('app', ['ngResource', 'ui.highlight']);
 
   app.config(function($locationProvider, $routeProvider) {
@@ -105,18 +109,13 @@
     };
   });
 
-  app.directive('xeditable', function($timeout) {
+  app.directive('xeditable', function(SocketService, $timeout) {
     return {
       restrict: 'A',
       require: 'ngModel',
       link: function(scope, element, attr, ctrl) {
         var loadXeditable;
         loadXeditable = function() {
-          /*
-          angular.element(element).on 'init', (event, el) ->
-              el.options.url = "#{el.options.url}/#{el.options.pk}"
-          */
-
           return element.editable({
             showbuttons: false,
             emptytext: '-',
@@ -129,7 +128,11 @@
               return scope.$apply();
             },
             success: function(response, newValue) {
-              return console.log(response, newValue);
+              return SocketService.emit('update:item', {
+                field: attr.field,
+                name: response.name,
+                newValue: newValue
+              });
             }
           });
         };
@@ -353,28 +356,28 @@
   app.controller('HomeController', function($scope, $routeParams, $location, SocketService) {});
 
   app.controller('ItemController', function($scope, $routeParams, $location, FlashService, MomentService, ItemResource, SupplierResource, SocketService, filterFilter) {
-    var resource;
+    var reload, resource;
     resource = ItemResource;
-    resource.query(function(res) {
-      return $scope.data = res;
-    });
-    SocketService.on('create:item', function(data) {
-      FlashService.info("Barang " + data.name + " telah ditambah", MomentService.currentTime());
+    (reload = function() {
       return resource.query(function(res) {
         return $scope.data = res;
       });
+    })();
+    SocketService.on('create:item', function(data) {
+      var message;
+      reload();
+      message = "Barang " + data.name + " telah ditambah\nlagi";
+      return FlashService.info(message, MomentService.currentTime());
     });
     SocketService.on('update:item', function(data) {
-      FlashService.info("Barang " + data.name + " telah diedit", MomentService.currentTime());
-      return resource.query(function(res) {
-        return $scope.data = res;
-      });
+      var message;
+      reload();
+      message = ("" + data.field + " dari barang " + data.name + " telah di-update menjadi " + data.newValue).capitalize();
+      return FlashService.info(message, MomentService.currentTime());
     });
     SocketService.on('delete:item', function(data) {
-      FlashService.info("Barang " + data.name + " telah dihapus", MomentService.currentTime());
-      return resource.query(function(res) {
-        return $scope.data = res;
-      });
+      reload();
+      return FlashService.info("Barang " + data.name + " telah dihapus", MomentService.currentTime());
     });
     SupplierResource.query(function(res) {
       return $scope.suppliers = res;
@@ -421,16 +424,6 @@
       $scope.selectedId = id;
       return $routeParams.id = id;
     };
-    $scope.update = function() {
-      return $scope.item.$update(function() {
-        SocketService.emit('update:item', $scope.item);
-        return $location.path('/item');
-      }, function(err) {
-        if (err.status === 500) {
-          return FlashService.error(err.data, MomentService.currentTime());
-        }
-      });
-    };
     $scope.remove = function(id) {
       var item;
       item = _.where($scope.data, {
@@ -451,12 +444,9 @@
     $scope.$on('$routeChangeStart', function(scope, next, current) {
       return SocketService.emit('search:item', $scope.data.length);
     });
-    $scope.$on('$destroy', function(event) {
+    return $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();
     });
-    return $scope.tes = function() {
-      return console.log('as');
-    };
   });
 
   app.controller('LoginController', function($scope, AuthenticationService) {

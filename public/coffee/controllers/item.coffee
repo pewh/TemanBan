@@ -1,21 +1,25 @@
 app.controller 'ItemController', ($scope, $routeParams, $location, FlashService, MomentService, ItemResource, SupplierResource, SocketService, filterFilter) ->
     resource = ItemResource
 
-    resource.query (res) -> $scope.data = res
+    do reload = ->
+        resource.query (res) -> $scope.data = res
 
     SocketService.on 'create:item', (data) ->
-        FlashService.info "Barang #{data.name} telah ditambah", MomentService.currentTime()
-        resource.query (res) -> $scope.data = res
+        reload()
+        message = "Barang #{data.name} telah ditambah\nlagi"
+        FlashService.info message, MomentService.currentTime()
 
     SocketService.on 'update:item', (data) ->
-        FlashService.info "Barang #{data.name} telah diedit", MomentService.currentTime()
-        resource.query (res) -> $scope.data = res
+        reload()
+        message = "#{data.field} dari barang #{data.name} telah di-update menjadi #{data.newValue}".capitalize()
+        FlashService.info message, MomentService.currentTime()
 
     SocketService.on 'delete:item', (data) ->
+        reload()
         FlashService.info "Barang #{data.name} telah dihapus", MomentService.currentTime()
-        resource.query (res) -> $scope.data = res
 
-    SupplierResource.query (res) -> $scope.suppliers = res
+    SupplierResource.query (res) ->
+        $scope.suppliers = res
 
     $scope.stockStatus =
         isEmpty: (index) -> !$scope.data[index].stock
@@ -43,12 +47,6 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
         $scope.selectedId = id
         $routeParams.id = id
 
-    $scope.update = ->
-        $scope.item.$update ->
-            SocketService.emit 'update:item', $scope.item
-            $location.path '/item'
-        , (err) -> FlashService.error(err.data, MomentService.currentTime()) if err.status == 500
-
     $scope.remove = (id) ->
         item = _.where($scope.data, _id: id)[0]
         resource.remove id: id, ->
@@ -65,6 +63,3 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
 
     $scope.$on '$destroy', (event) ->
         SocketService.removeAllListeners()
-
-    $scope.tes = ->
-        console.log 'as'
