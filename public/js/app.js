@@ -112,10 +112,11 @@
       link: function(scope, element, attr, ctrl) {
         var loadXeditable;
         loadXeditable = function() {
-          angular.element(element).on('init', function(event, el) {
-            el.options.url = "" + el.options.url + "/" + el.options.pk;
-            return console.log(el.options.url);
-          });
+          /*
+          angular.element(element).on 'init', (event, el) ->
+              el.options.url = "#{el.options.url}/#{el.options.pk}"
+          */
+
           return element.editable({
             showbuttons: false,
             emptytext: '-',

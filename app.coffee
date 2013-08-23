@@ -32,29 +32,12 @@ app.patch   '/api/customers',     resources.customers.patch
 app.delete  '/api/customers/:id', resources.customers.delete
 
 app.post    '/auth/login',        resources.credentials
-###
-
-app.resource 'api/users', require './resource/users'
-app.resource 'api/items', require './resource/items'
-app.resource 'api/suppliers', require './resource/suppliers'
-app.resource 'api/customers', require './resource/customers'
-###
 
 server.listen app.get('port'), -> console.log 'Running on http://localhost:8000'
 
 io.sockets.on 'connection', (socket) ->
-    # ITEM
-    socket.on 'create:item', (data) -> io.sockets.emit('create:item', data)
-    socket.on 'update:item', (data) -> io.sockets.emit('update:item', data)
-    socket.on 'delete:item', (data) -> io.sockets.emit('delete:item', data)
-    socket.on 'search:item', (data) -> socket.emit('search:item', data)
-    # SUPPLIER
-    socket.on 'create:supplier', (data) -> io.sockets.emit('create:supplier', data)
-    socket.on 'update:supplier', (data) -> io.sockets.emit('update:supplier', data)
-    socket.on 'delete:supplier', (data) -> io.sockets.emit('delete:supplier', data)
-    socket.on 'search:supplier', (data) -> socket.emit('search:supplier', data)
-    # CUSTOMER
-    socket.on 'create:customer', (data) -> io.sockets.emit('create:customer', data)
-    socket.on 'update:customer', (data) -> io.sockets.emit('update:customer', data)
-    socket.on 'delete:customer', (data) -> io.sockets.emit('delete:customer', data)
-    socket.on 'search:customer', (data) -> socket.emit('search:customer', data)
+    ['item', 'supplier', 'customer'].map (resource) ->
+        socket.on "create:#{resource}", (data) -> io.sockets.emit("create:#{resource}", data)
+        socket.on "update:#{resource}", (data) -> io.sockets.emit("update:#{resource}", data)
+        socket.on "delete:#{resource}", (data) -> io.sockets.emit("delete:#{resource}", data)
+        socket.on "search:#{resource}", (data) -> socket.emit("search:#{resource}", data)

@@ -45,9 +45,10 @@ app.directive 'xeditable', ($timeout) ->
     require: 'ngModel'
     link: (scope, element, attr, ctrl) ->
         loadXeditable = ->
+            ###
             angular.element(element).on 'init', (event, el) ->
                 el.options.url = "#{el.options.url}/#{el.options.pk}"
-                console.log el.options.url
+            ###
 
             element.editable
                 showbuttons: false
