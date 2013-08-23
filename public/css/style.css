@@ -69,3 +69,7 @@ table {
     background-color: #fff;
     border: 1px solid #ccc;
 }
+
+.table.table-editable td:hover { cursor: pointer; background: #f0f7fd }
+.table.table-editable tr.warning td:hover { background: #edede4 }
+.table.table-editable tr.danger td:hover { background: #ede3e3 }

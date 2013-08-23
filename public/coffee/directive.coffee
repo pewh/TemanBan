@@ -31,7 +31,6 @@ app.directive 'confirmDelete', ->
     scope:
         deleteAction: '&ngClick'
     template: """
-                {{ yep }}
                <span ng-hide=confirm>
                    <a href=# ng-click="confirm = true">Delete</a>
                </span>
@@ -41,24 +40,27 @@ app.directive 'confirmDelete', ->
                </span>
                """
 
-###
-app.directive 'contenteditable', ->
+app.directive 'xeditable', ($timeout) ->
+    restrict: 'A'
+    require: 'ngModel'
     link: (scope, element, attr, ctrl) ->
-        element.bind 'blur', ->
-            scope.$apply ->
-                ctrl.$setViewValue(element.html())
+        loadXeditable = ->
+            angular.element(element).on 'init', (event, el) ->
+                el.options.url = "#{el.options.url}/#{el.options.pk}"
+                console.log el.options.url
 
-        ctrl.render = (value) ->
-            element.html(value)
+            element.editable
+                showbuttons: false
+                emptytext: '-'
+                ajaxOptions:
+                    type: 'PATCH'
+                display: (value, srcData) ->
+                    ctrl.$setViewValue(value)
+                    element.html(value)
+                    scope.$apply()
+                success: (response, newValue) ->
+                    console.log response, newValue
 
-        ctrl.$setViewValue(element.html())
-
-        element.bind 'keydown', (event) ->
-            esc = event.which is 27
-            el = event.target
-
-            if esc
-                ctrl.$setViewValue(element.html())
-                element.blur()
-                event.preventDefault()
-###
+        $timeout ->
+            loadXeditable()
+        , 10

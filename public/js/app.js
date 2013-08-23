@@ -101,32 +101,43 @@
       scope: {
         deleteAction: '&ngClick'
       },
-      template: " {{ yep }}\n<span ng-hide=confirm>\n    <a href=# ng-click=\"confirm = true\">Delete</a>\n</span>\n<span ng-show=confirm>\n    <a href=# class=\"label label-danger\" ng-click=\"deleteAction()\">Yes</a>\n    <a href=# class=\"label label-default\" ng-click=\"confirm = false\">No</a>\n</span>"
+      template: "<span ng-hide=confirm>\n    <a href=# ng-click=\"confirm = true\">Delete</a>\n</span>\n<span ng-show=confirm>\n    <a href=# class=\"label label-danger\" ng-click=\"deleteAction()\">Yes</a>\n    <a href=# class=\"label label-default\" ng-click=\"confirm = false\">No</a>\n</span>"
     };
   });
 
-  /*
-  app.directive 'contenteditable', ->
-      link: (scope, element, attr, ctrl) ->
-          element.bind 'blur', ->
-              scope.$apply ->
-                  ctrl.$setViewValue(element.html())
-  
-          ctrl.render = (value) ->
-              element.html(value)
-  
-          ctrl.$setViewValue(element.html())
-  
-          element.bind 'keydown', (event) ->
-              esc = event.which is 27
-              el = event.target
-  
-              if esc
-                  ctrl.$setViewValue(element.html())
-                  element.blur()
-                  event.preventDefault()
-  */
-
+  app.directive('xeditable', function($timeout) {
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function(scope, element, attr, ctrl) {
+        var loadXeditable;
+        loadXeditable = function() {
+          angular.element(element).on('init', function(event, el) {
+            el.options.url = "" + el.options.url + "/" + el.options.pk;
+            return console.log(el.options.url);
+          });
+          return element.editable({
+            showbuttons: false,
+            emptytext: '-',
+            ajaxOptions: {
+              type: 'PATCH'
+            },
+            display: function(value, srcData) {
+              ctrl.$setViewValue(value);
+              element.html(value);
+              return scope.$apply();
+            },
+            success: function(response, newValue) {
+              return console.log(response, newValue);
+            }
+          });
+        };
+        return $timeout(function() {
+          return loadXeditable();
+        }, 10);
+      }
+    };
+  });
 
   app.filter('rupiah', function() {
     return function(string) {

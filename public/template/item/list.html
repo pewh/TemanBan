@@ -24,7 +24,7 @@
          src="'/template/item/new.html'" />
 
     <div ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]">
-        <table class="table" ng-show="data || data | filter:search">
+        <table class="table table-editable" ng-show="data || data | filter:search">
             <tr>
                 <th>Nama</th>
                 <th>Stok</th>
@@ -35,11 +35,23 @@
             </tr>
 
             <tr ng-repeat="d in data | filter:search" ng-class="{'danger': stockStatus.isEmpty($index), 'warning': stockStatus.isWarning($index) }">
-                <td ng-bind-html-unsafe="d.name | highlight:search" contenteditable />
-                <td ng-bind-html-unsafe="d.stock || '-' | highlight:search" contenteditable />
-                <td ng-bind-html-unsafe="d.purchase_price | rupiah | highlight:search" contenteditable />
-                <td ng-bind-html-unsafe="d.sales_price | rupiah | highlight:search" contenteditable />
-                <td ng-bind-html-unsafe="d.supplier_id.name || '-' | highlight:search" contenteditable />
+                <td xeditable
+                    data-original-title="Edit nama"
+                    data-type="text"
+                    data-placeholder="Required"
+                    data-url="/api/items"
+                    data-pk="{{ d._id }}"
+                    data-name="name"
+                    ng-model="d.name"
+                    ng-bind-html-unsafe="d.name | highlight:search" />
+                <td content-editable="d.stock"
+                    ng-bind-html-unsafe="d.stock || '-' | highlight:search" />
+                <td content-editable="d.purchase_price"
+                    ng-bind-html-unsafe="d.purchase_price | rupiah | highlight:search" />
+                <td content-editable="d.sales_price"
+                    ng-bind-html-unsafe="d.sales_price | rupiah | highlight:search" />
+                <td content-editable="d.supplier_id.name"
+                    ng-bind-html-unsafe="d.supplier_id.name || '-' | highlight:search" />
                 <td><confirm-delete ng-click="remove(d._id)" /></td>
             </tr>
         </table>
