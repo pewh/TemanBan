@@ -41,12 +41,10 @@ Supplier = new Schema
     name:
         type: String
         required: true
-        unique: true
     address:
         type: String
     contact:
         type: String
-    items: [Item]
 
 Customer = new Schema
     name:

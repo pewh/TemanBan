@@ -6,12 +6,18 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
 
     SocketService.on 'create:item', (data) ->
         reload()
-        message = "Barang #{data.name} telah ditambah\nlagi"
+        message = "Barang #{data.name} telah ditambah"
         FlashService.info message, MomentService.currentTime()
 
     SocketService.on 'update:item', (data) ->
         reload()
-        message = "#{data.field} dari barang #{data.name} telah di-update menjadi #{data.newValue}".capitalize()
+        message = """
+                  Barang telah di-update <br />
+                  Nama:    <strong>#{data.name}</strong> <br />
+                  Kolom:   <strong>#{data.field}</strong> <br />
+                  Sebelum: <strong>#{data.oldValue}</strong> <br />
+                  Sesudah: <strong>#{data.newValue}</strong>
+                  """
         FlashService.info message, MomentService.currentTime()
 
     SocketService.on 'delete:item', (data) ->

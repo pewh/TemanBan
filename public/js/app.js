@@ -109,7 +109,7 @@
     };
   });
 
-  app.directive('xeditable', function(SocketService, $timeout) {
+  app.directive('xeditable', function(FlashService, MomentService, SocketService, rupiahFilter, $timeout) {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -122,17 +122,27 @@
             ajaxOptions: {
               type: 'PATCH'
             },
-            display: function(value, srcData) {
-              ctrl.$setViewValue(value);
-              element.html(value);
-              return scope.$apply();
-            },
             success: function(response, newValue) {
+              if (attr.format === 'currency') {
+                newValue = rupiahFilter(newValue);
+              }
               return SocketService.emit('update:item', {
                 field: attr.field,
                 name: response.name,
+                oldValue: element.text(),
                 newValue: newValue
               });
+            },
+            error: function(response, newValue) {
+              var _ref, _ref1;
+              if (response.status === 500) {
+                if (((_ref = response.responseJSON) != null ? _ref.code : void 0) === 11001) {
+                  return FlashService.error("" + newValue + " sudah ada", MomentService.currentTime());
+                } else if (((_ref1 = response.responseJSON) != null ? _ref1.name : void 0) === 'ValidationError') {
+                  FlashService.error("" + attr.field + " tidak boleh kosong", MomentService.currentTime());
+                  return element.editable('toggle');
+                }
+              }
             }
           });
         };
@@ -143,10 +153,28 @@
     };
   });
 
+  app.directive('formGroup', function() {
+    return {
+      template: "<div class=\"form-group\">\n    <label class=\"control-label\" for=\"\" />\n    <div class=\"controls\" ng-transclude />\n</div",
+      replace: true,
+      transclude: true,
+      require: '^form',
+      scope: {
+        label: '@',
+        size: '@'
+      },
+      link: function(scope, element) {
+        var id;
+        id = element.find(':input').attr('id');
+        return scope["for"] = id;
+      }
+    };
+  });
+
   app.filter('rupiah', function() {
     return function(string) {
       if (string) {
-        return accounting.formatMoney(parseInt(string), 'Rp ', '.', '.') + ',-';
+        return accounting.formatMoney(parseInt(string, 10), 'Rp ', '.', '.') + ',-';
       } else {
         return '-';
       }
@@ -366,13 +394,13 @@
     SocketService.on('create:item', function(data) {
       var message;
       reload();
-      message = "Barang " + data.name + " telah ditambah\nlagi";
+      message = "Barang " + data.name + " telah ditambah";
       return FlashService.info(message, MomentService.currentTime());
     });
     SocketService.on('update:item', function(data) {
       var message;
       reload();
-      message = ("" + data.field + " dari barang " + data.name + " telah di-update menjadi " + data.newValue).capitalize();
+      message = "Barang telah di-update <br />\nNama:    <strong>" + data.name + "</strong> <br />\nKolom:   <strong>" + data.field + "</strong> <br />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong>";
       return FlashService.info(message, MomentService.currentTime());
     });
     SocketService.on('delete:item', function(data) {

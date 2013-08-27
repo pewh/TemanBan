@@ -62,10 +62,50 @@ _.forEach resources, (resource) ->
                     model: model
                     id: req.params.id
 
-exports.credentials = (req, res) ->
-    db.search
-        res: res
-        model: db.UserModel
-        criteria:
-            username: req.body.username
-            password: req.body.password
+exports.helper =
+    credentials: (req, res) ->
+        db.search
+            res: res
+            model: db.UserModel
+            criteria:
+                username: req.body.username
+                password: req.body.password
+
+    populateSuppliers: (req, res) ->
+        db.SupplierModel.find (err, data) ->
+            if err
+                res.json(err, 500)
+            else
+                # get selected key
+                pluckedId = _.pluck data, '_id'
+                ids = pluckedId.map (id) -> id: id
+
+                pluckedName = _.pluck data, 'name'
+                names = pluckedName.map (name) -> name: name
+
+                # group keys & push to arrays
+                suppliers = []
+
+                [0...ids.length].forEach (i) ->
+                    createdObj = _.assign ids[i], names[i]
+                    suppliers.push createdObj
+
+                # renaming key of collections
+
+                map =
+                    id: 'value'
+                    name: 'text'
+
+                compiledData = []
+
+                _.each suppliers, (obj) ->
+                    renamedObj = {}
+
+                    _.each obj, (val, key) ->
+                        key = map[key] || key
+                        renamedObj[key] = val
+
+                    compiledData.push renamedObj
+
+                # throw output
+                res.json compiledData

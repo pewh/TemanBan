@@ -40,7 +40,7 @@ app.directive 'confirmDelete', ->
                </span>
                """
 
-app.directive 'xeditable', (SocketService, $timeout) ->
+app.directive 'xeditable', (FlashService, MomentService, SocketService, rupiahFilter, $timeout) ->
     restrict: 'A'
     require: 'ngModel'
     link: (scope, element, attr, ctrl) ->
@@ -50,17 +50,42 @@ app.directive 'xeditable', (SocketService, $timeout) ->
                 emptytext: '-'
                 ajaxOptions:
                     type: 'PATCH'
-                display: (value, srcData) ->
-                    ctrl.$setViewValue(value)
-                    element.html(value)
-                    scope.$apply()
+
                 success: (response, newValue) ->
-                    # TODO get old value to compare
+                    if attr.format == 'currency'
+                        newValue = rupiahFilter(newValue)
+
                     SocketService.emit 'update:item',
                         field: attr.field
                         name: response.name
+                        oldValue: element.text()
                         newValue: newValue
+
+                error: (response, newValue) ->
+                    if response.status == 500
+                        if response.responseJSON?.code == 11001
+                            FlashService.error "#{newValue} sudah ada", MomentService.currentTime()
+                        else if response.responseJSON?.name == 'ValidationError'
+                            FlashService.error "#{attr.field} tidak boleh kosong", MomentService.currentTime()
+                            element.editable 'toggle'
 
         $timeout ->
             loadXeditable()
         , 10
+
+app.directive 'formGroup', ->
+    template: """
+              <div class="form-group">
+                  <label class="control-label" for="" />
+                  <div class="controls" ng-transclude />
+              </div
+              """
+    replace: true
+    transclude: true
+    require: '^form' # must be within a form
+    scope:
+        label: '@'
+        size: '@' # use =
+    link: (scope, element) ->
+        id = element.find(':input').attr('id')
+        scope.for = id

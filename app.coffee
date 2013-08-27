@@ -21,7 +21,8 @@ models.map (model) ->
     app.patch  "/api/#{model}s",     resources["#{model}s"].patch
     app.delete "/api/#{model}s/:id", resources["#{model}s"].delete
 
-app.post    '/auth/login',        resources.credentials
+app.get  '/api/group/suppliers', resources.helper.populateSuppliers
+app.post '/auth/login',          resources.helper.credentials
 
 # SOCKETS
 io.sockets.on 'connection', (socket) ->
