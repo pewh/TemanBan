@@ -109,7 +109,7 @@
     };
   });
 
-  app.directive('xeditable', function(FlashService, MomentService, SocketService, rupiahFilter, $timeout) {
+  app.directive('xeditable', function(FlashService, MomentService, SocketService, currencyFilter, $timeout) {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -124,7 +124,7 @@
             },
             success: function(response, newValue) {
               if (attr.format === 'currency') {
-                newValue = rupiahFilter(newValue);
+                newValue = currencyFilter(newValue);
               }
               return SocketService.emit('update:item', {
                 field: attr.field,
@@ -171,13 +171,29 @@
     };
   });
 
-  app.filter('rupiah', function() {
-    return function(string) {
-      if (string) {
-        return accounting.formatMoney(parseInt(string, 10), 'Rp ', '.', '.') + ',-';
+  app.filter('currency', function() {
+    return function(number, currencyCode) {
+      var chosenCurrency, currency;
+      currency = {
+        IDR: {
+          sign: 'Rp',
+          thousand: '.',
+          decimal: ',',
+          suffix: ',-'
+        }
+      };
+      if (number) {
+        chosenCurrency = currency[currencyCode];
+        return accounting.formatMoney(number, chosenCurrency.sign, chosenCurrency.decimal, chosenCurrency.thousand) + chosenCurrency.suffix;
       } else {
         return '-';
       }
+    };
+  });
+
+  app.filter('stripzero', function() {
+    return function(string) {
+      return string || '-';
     };
   });
 

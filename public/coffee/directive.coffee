@@ -40,7 +40,7 @@ app.directive 'confirmDelete', ->
                </span>
                """
 
-app.directive 'xeditable', (FlashService, MomentService, SocketService, rupiahFilter, $timeout) ->
+app.directive 'xeditable', (FlashService, MomentService, SocketService, currencyFilter, $timeout) ->
     restrict: 'A'
     require: 'ngModel'
     link: (scope, element, attr, ctrl) ->
@@ -53,7 +53,7 @@ app.directive 'xeditable', (FlashService, MomentService, SocketService, rupiahFi
 
                 success: (response, newValue) ->
                     if attr.format == 'currency'
-                        newValue = rupiahFilter(newValue)
+                        newValue = currencyFilter(newValue)
 
                     SocketService.emit 'update:item',
                         field: attr.field
