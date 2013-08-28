@@ -1,4 +1,5 @@
-app.controller 'MenuController', ($scope, AuthenticationService, ItemResource, SupplierResource, CustomerResource, SocketService) ->
+app.controller 'MenuController', ($scope, AuthenticationService, ItemResource, SupplierResource, SocketService) ->
+    ###
     $scope.isLoggedIn = AuthenticationService.isLoggedIn()
     $scope.currentUser = AuthenticationService.currentUser()
     $scope.currentRole = AuthenticationService.currentRole()
@@ -29,6 +30,7 @@ app.controller 'MenuController', ($scope, AuthenticationService, ItemResource, S
                     category.resource.query (res) ->
                         $scope.count[category.scopeName] = res.length
             
+    ###
     ###
 
     SocketService.on 'connect', (data) ->

@@ -1,45 +1,46 @@
-app.controller 'CustomerController', ($scope, $routeParams, $location, FlashService, CustomerResource, SocketService, filterFilter) ->
-    resource = CustomerResource
+app.controller 'CustomerController', ($scope, $routeParams, $location, Restangular, FlashService, SocketService, filterFilter) ->
+    customers = Restangular.all 'customers'
 
-    resource.query (res) -> $scope.data = res
+    do reload = ->
+        $scope.data = customers.getList()
 
     SocketService.on 'create:customer', (data) ->
+        reload()
         FlashService.info "Pelanggan #{data.name} telah ditambah"
-        resource.query (res) -> $scope.data = res
 
     SocketService.on 'update:customer', (data) ->
+        reload()
         FlashService.info "Pelanggan #{data.name} telah diedit"
-        resource.query (res) -> $scope.data = res
 
     SocketService.on 'delete:customer', (data) ->
+        reload()
         FlashService.info "Pelanggan #{data.name} telah dihapus"
-        resource.query (res) -> $scope.data = res
 
     $scope.load = ->
-        resource.get id: $routeParams.id, (res) -> $scope.customer = res
+        $scope.customer = Restangular.one('customers', $routeParams.id).get()
 
     $scope.add = ->
-        resource.save $scope.customer, ->
-            SocketService.emit 'create:customer', $scope.customer
+        customers.post($scope.customer).then (customer) ->
+            SocketService.emit 'create:customer', customer
             $scope.customer =
                 name: ''
                 address: ''
                 contact: ''
-            ($ '#name').focus()
+                
+            angular.element('#name').focus()
         , (err) ->
             FlashService.error err.data.err if err.status == 500
 
     $scope.update = ->
-        $scope.customer.$update ->
-            SocketService.emit 'update:customer', $scope.customer
+        $scope.customer.put().then (customer) ->
+            SocketService.emit 'update:customer', customer
             $location.path '/customer'
-        , (err) -> FlashService.error err.data if err.status == 500
+        , (err) ->
+            FlashService.error err.data if err.status == 500
 
     $scope.remove = (id) ->
-        customer = _.where($scope.data, _id: id)[0]
-        FlashService.confirm "Apakah Anda yakin untuk menghapus #{customer.name}?", ->
-            resource.remove id: id, ->
-                SocketService.emit 'delete:customer', customer
+        Restangular.one('customers', id).remove().then (customer) ->
+            SocketService.emit 'delete:customer', customer
 
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)

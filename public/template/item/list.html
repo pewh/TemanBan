@@ -10,7 +10,6 @@
 
         <button class="btn btn-default"
            button-toggle=active
-           btn-checkbox
            ng-class="{'pull-right': data}"
            ng-model=showNewForm>
             <i class="glyphicon glyphicon-plus"></i>
@@ -35,7 +34,7 @@
                 <th>Action</th>
             </tr>
 
-            <tr ng-repeat="d in data | filter:search" ng-class="{'danger': stockStatus.isEmpty($index), 'warning': stockStatus.isWarning($index) }">
+            <tr ng-repeat="d in data | filter:search" ng-class="watchStock($index)">
                 <td xeditable
                     data-original-title="Edit nama"
                     data-type="text"

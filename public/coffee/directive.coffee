@@ -12,15 +12,16 @@ app.directive 'activeLink', ($location) ->
 app.directive 'buttonToggle', ->
     restrict: 'A'
     require: 'ngModel'
-    link: ($scope, element, attr, ctrl) ->
+    link: ($scope, element, attr, ngModel) ->
         classToToggle = attr.buttonToggle
 
         element.bind 'click', ->
-            checked = ctrl.$viewValue
+            checked = ngModel.$viewValue
             $scope.$apply (scope) ->
-                ctrl.$setViewValue(!checked)
+                ngModel.$setViewValue(!checked)
 
         $scope.$watch attr.ngModel, (newValue, oldValue) ->
+            console.log 'tes'
             if newValue
                 element.addClass(classToToggle)
             else
@@ -53,7 +54,7 @@ app.directive 'xeditable', (FlashService, MomentService, SocketService, currency
 
                 success: (response, newValue) ->
                     if attr.format == 'currency'
-                        newValue = currencyFilter(newValue)
+                        newValue = currencyFilter(newValue, 'IDR')
 
                     SocketService.emit 'update:item',
                         field: attr.field

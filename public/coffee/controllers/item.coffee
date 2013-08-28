@@ -1,16 +1,16 @@
-app.controller 'ItemController', ($scope, $routeParams, $location, FlashService, MomentService, ItemResource, SupplierResource, SocketService, filterFilter) ->
-    resource = ItemResource
+app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, FlashService, MomentService, SocketService, filterFilter) ->
+    items = Restangular.all 'items'
 
     do reload = ->
-        resource.query (res) -> $scope.data = res
+        $scope.data = items.getList()
+        $scope.suppliers = Restangular.all('customers').getList()
 
     SocketService.on 'create:item', (data) ->
-        reload()
         message = "Barang #{data.name} telah ditambah"
         FlashService.info message, MomentService.currentTime()
+        reload()
 
     SocketService.on 'update:item', (data) ->
-        reload()
         message = """
                   Barang telah di-update <br />
                   Nama:    <strong>#{data.name}</strong> <br />
@@ -19,43 +19,44 @@ app.controller 'ItemController', ($scope, $routeParams, $location, FlashService,
                   Sesudah: <strong>#{data.newValue}</strong>
                   """
         FlashService.info message, MomentService.currentTime()
+        reload()
 
     SocketService.on 'delete:item', (data) ->
-        reload()
         FlashService.info "Barang #{data.name} telah dihapus", MomentService.currentTime()
+        reload()
 
-    SupplierResource.query (res) ->
-        $scope.suppliers = res
+    $scope.watchStock = (index) ->
+        'danger': !$scope.data.$$v[index].stock
+        'warning': 0 < $scope.data.$$v[index].stock < 5
 
-    $scope.stockStatus =
-        isEmpty: (index) -> !$scope.data[index].stock
-        isWarning: (index) -> 0 < $scope.data[index].stock < 5
-
-    $scope.load = ->
-        if $routeParams.id
-            resource.get id: $routeParams.id, (res) -> $scope.item = res
+        #$scope.load = ->
+        #    if $routeParams.id
+        #        $scope.item = Restangular.one('items', $routeParams.id).get()
 
     $scope.add = ->
-        resource.save @item, =>
-            SocketService.emit 'create:item', @item
-            @item =
+        console.log $scope.item
+        items.post($scope.item).then (item) ->
+            SocketService.emit 'create:item', item
+            $scope.item =
                 stock: 1
                 purchase_price: 1
                 sales_price: 1
-            ($ '#name').focus()
+
+            angular.element('#name').focus()
         , (err) ->
             if err.status == 500
                 FlashService.error 'Nama barang sudah ada' if err.data.code == 11000
 
+    ###
     $scope.edit = (id) ->
         $scope.showEditForm = true
         $scope.showNewForm = false
         $scope.selectedId = id
         $routeParams.id = id
+    ###
 
     $scope.remove = (id) ->
-        item = _.where($scope.data, _id: id)[0]
-        resource.remove id: id, ->
+        Restangular.one('items', id).remove().then (item) ->
             SocketService.emit 'delete:item', item
 
     $scope.$watch 'search', (val) ->

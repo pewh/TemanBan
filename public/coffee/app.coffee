@@ -1,4 +1,4 @@
-app = angular.module 'app', ['ngResource', 'ui.highlight']
+app = angular.module 'app', ['restangular', 'ngResource', 'ui.highlight']
 
 app.config ($locationProvider, $routeProvider) ->
     # hashbang mode
@@ -54,7 +54,9 @@ app.config ($locationProvider, $routeProvider) ->
         .otherwise redirectTo: '/'
 
 
-app.run ($rootScope, $location, AuthenticationService, SocketService) ->
+app.run ($rootScope, $location, Restangular, AuthenticationService, SocketService) ->
+    Restangular.setBaseUrl '/api'
+
     location.replace '/' if location.pathname == '/login.html' and AuthenticationService.isLoggedIn()
 
     $rootScope.$on '$routeChangeStart', (event, next, current) ->
