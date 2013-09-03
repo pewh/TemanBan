@@ -3,7 +3,7 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
 
     do reload = ->
         $scope.data = items.getList()
-        $scope.suppliers = Restangular.all('customers').getList()
+        $scope.suppliers = Restangular.all('suppliers').getList()
 
     SocketService.on 'create:item', (data) ->
         message = "Barang #{data.name} telah ditambah"
@@ -29,12 +29,7 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
         'danger': !$scope.data.$$v[index].stock
         'warning': 0 < $scope.data.$$v[index].stock < 5
 
-        #$scope.load = ->
-        #    if $routeParams.id
-        #        $scope.item = Restangular.one('items', $routeParams.id).get()
-
     $scope.add = ->
-        console.log $scope.item
         items.post($scope.item).then (item) ->
             SocketService.emit 'create:item', item
             $scope.item =
@@ -45,20 +40,20 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
             angular.element('#name').focus()
         , (err) ->
             if err.status == 500
-                FlashService.error 'Nama barang sudah ada' if err.data.code == 11000
-
-    ###
-    $scope.edit = (id) ->
-        $scope.showEditForm = true
-        $scope.showNewForm = false
-        $scope.selectedId = id
-        $routeParams.id = id
-    ###
+                if err.data.code == 11000
+                    FlashService.error 'Nama barang sudah ada', MomentService.currentTime()
 
     $scope.remove = (id) ->
         Restangular.one('items', id).remove().then (item) ->
             SocketService.emit 'delete:item', item
 
+    $scope.$watch 'showNewForm', (val) ->
+        if $scope.showNewForm
+            $location.path('/item/new')
+        else
+            $location.path('/item')
+
+    ###
     $scope.$watch 'search', (val) ->
         $scope.filteredData = filterFilter($scope.data, val)
 
@@ -67,6 +62,7 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
 
     $scope.$on '$routeChangeStart', (scope, next, current) ->
         SocketService.emit 'search:item', $scope.data.length
+    ###
 
     $scope.$on '$destroy', (event) ->
         SocketService.removeAllListeners()

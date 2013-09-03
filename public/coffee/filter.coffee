@@ -16,7 +16,3 @@ app.filter 'currency', ->
             ) + chosenCurrency.suffix
         else
             return '-'
-
-app.filter 'stripzero', ->
-    return (string) ->
-        return string or '-'

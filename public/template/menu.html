@@ -23,17 +23,57 @@
             Pelanggan
         </a></li>
 
-        <!--
-        <li active-link><a href=/purchase_invoice>Faktur Pembelian</a></li>
-        <li active-link><a href=/sale_invoice>Faktur Penjualan</a></li>
+        <li class="dropdown">
+            <a href="javascript:" class=dropdown-toggle data-toggle=dropdown>
+                Faktur
+                <b class=caret></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li active-link><a href=/invoice/purchase>
+                    <span class="badge badge-menu pull-right" ng-bind=count.supplier ng-show=count.invoice_purchase />
+                    Faktur Pembelian
+                </a></li>
+                <li active-link><a href=/invoice/sales>
+                    <span class="badge badge-menu pull-right" ng-bind=count.customer ng-show=count.invoice_sales />
+                    Faktur Penjualan
+                </a></li>
+            </ul>
+        </li>
 
-        <li active-link><a href=/purchase_transaction>Transaksi Pembelian</a></li>
-        <li active-link><a href=/sale_transaction>Transaksi Penjualan</a></li>
-        -->
 
-        <li class=dropdown>
-            <a href=# class=dropdown-toggle data-toggle=dropdown>
-                {{ currentUser }}
+        <li class="dropdown">
+            <a href="javascript:" class=dropdown-toggle data-toggle=dropdown>
+                Transaksi
+                <b class=caret></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li active-link><a href=/transaction/purchase>
+                    Transaksi Pembelian
+                </a></li>
+                <li active-link><a href=/transaction/sales>
+                    Transaksi Penjualan
+                </a></li>
+            </ul>
+        </li>
+
+        <li class="dropdown">
+            <a href="javascript:" class=dropdown-toggle data-toggle=dropdown>
+                Statistik
+                <b class=caret></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li active-link><a href=/statistic/transaction>
+                    Statistik Transaksi
+                </a></li>
+                <li active-link><a href=/statistic/stock>
+                    Statistik Stok Barang
+                </a></li>
+            </ul>
+        </li>
+
+        <li class="dropdown" style="position: absolute; right: 0">
+            <a href="javascript:" class=dropdown-toggle data-toggle=dropdown>
+                Welcome, {{ currentUser }}!
                 <b class=caret></b>
             </a>
             <ul class="dropdown-menu pull-right">

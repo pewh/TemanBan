@@ -26,7 +26,7 @@ _.forEach resources, (resource) ->
                     db.index
                         res: res
                         model: model
-                        populateField: 'supplier_id'
+                        populateField: 'suppliers'
 
             create: (req, res) ->
                 fields = _.keys(req.body)
@@ -109,3 +109,5 @@ exports.helper =
 
                 # throw output
                 res.json compiledData
+    populateSupplierItems: (req, res) ->
+        db.ItemModel.find({ suppliers: req.params.id }).exec (err, data) -> res.json data

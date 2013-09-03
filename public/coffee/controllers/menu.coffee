@@ -1,10 +1,11 @@
-app.controller 'MenuController', ($scope, AuthenticationService, ItemResource, SupplierResource, SocketService) ->
-    ###
+app.controller 'MenuController', ($scope, AuthenticationService) ->
+    $scope.activeLink = 'item'
     $scope.isLoggedIn = AuthenticationService.isLoggedIn()
     $scope.currentUser = AuthenticationService.currentUser()
     $scope.currentRole = AuthenticationService.currentRole()
     $scope.logout = -> AuthenticationService.logout()
 
+    ###
     $scope.count = {}
 
     categories = [

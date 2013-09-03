@@ -70,6 +70,8 @@ table {
     border: 1px solid #ccc;
 }
 
-.table.table-editable td:hover { cursor: pointer; background: #f0f7fd }
-.table.table-editable tr.warning td:hover { background: #edede4 }
-.table.table-editable tr.danger td:hover { background: #ede3e3 }
+.table.table-editable td:hover[xeditable] { cursor: pointer; background: #f0f7fd }
+.table.table-editable tr.warning td:hover[xeditable] { background: #edede4 }
+.table.table-editable tr.danger td:hover[xeditable] { background: #ede3e3 }
+
+.editable-click { border-bottom: none }

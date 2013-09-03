@@ -9,7 +9,7 @@
         </div>
 
         <button class="btn btn-default"
-           button-toggle=active
+           btn-checkbox
            ng-class="{'pull-right': data}"
            ng-model=showNewForm>
             <i class="glyphicon glyphicon-plus"></i>
@@ -20,8 +20,7 @@
 <div class=row role=main>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pull-right well well-lg"
          ng-show=showNewForm
-         ng-include
-         src="'/template/item/new.html'" />
+         ui-view />
 
     <div ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]">
         <table class="table table-editable" ng-show="data || data | filter:search">
@@ -43,6 +42,7 @@
                     data-pk="{{ d._id }}"
                     data-name="name"
                     data-field="Nama"
+                    data-category="item"
                     ng-model="d.name"
                     ng-bind-html-unsafe="d.name | highlight:search" />
 
@@ -54,9 +54,10 @@
                     data-pk="{{ d._id }}"
                     data-name="stock"
                     data-field="Stok"
+                    data-category="item"
                     data-min=0
                     ng-model="d.stock"
-                    ng-bind-html-unsafe="d.stock | stripzero | highlight:search" />
+                    ng-bind-html-unsafe="d.stock | highlight:search" />
 
                 <td xeditable
                     data-original-title="Edit harga beli"
@@ -67,6 +68,7 @@
                     data-pk="{{ d._id }}"
                     data-name="purchase_price"
                     data-field="Harga Beli"
+                    data-category="item"
                     data-min=0
                     data-value="{{ d.purchase_price }}"
                     ng-model="d.purchase_price"
@@ -80,6 +82,7 @@
                     data-pk="{{ d._id }}"
                     data-name="sales_price"
                     data-field="Harga Beli"
+                    data-category="item"
                     data-min=0
                     data-value="{{ d.sales_price }}"
                     ng-model="d.sales_price"
@@ -92,11 +95,12 @@
                     data-source="/api/group/suppliers"
                     data-url="/api/items"
                     data-pk="{{ d._id }}"
-                    data-name="supplier_id"
+                    data-name="suppliers"
                     data-field="Nama Pemasok"
-                    data-value="{{ d.supplier_id._id }}"
-                    ng-model="d.supplier_id"
-                    ng-bind-html-unsafe="d.supplier_id.name | stripzero | highlight:search" />
+                    data-category="item"
+                    data-value="{{ d.suppliers._id }}"
+                    ng-model="d.suppliers"
+                    ng-bind-html-unsafe="d.suppliers.name | highlight:search" />
                 <td><confirm-delete ng-click="remove(d._id)" /></td>
             </tr>
         </table>

@@ -1,75 +1,129 @@
-<div>
-    <div class=pull-left>
+<div class=row>
+    <div class="col-lg-9">
         <h2 class="pull-left title">Pemasok</h2>
-        <a class="btn btn-primary btn-preposition-header" href="/supplier/new">
+    </div>
+
+    <div class="col-lg-3 form-inline">
+        <div class=form-group>
+            <input type=search ng-model="search" ng-show=data class=form-control placeholder=Pencarian />
+        </div>
+
+        <button class="btn btn-default"
+           btn-checkbox
+           ng-class="{'pull-right': data}"
+           ng-model=showNewForm>
             <i class="glyphicon glyphicon-plus"></i>
-        </a>
-    </div>
-
-    <div style="width: 200px" class="pull-right">
-        <input type=search ng-model=search ng-show=data class="form-control" placeholder="Pencarian" />
-    </div>
-
-    <div class=clearfix>
-</div>
-
-<table class="table" ng-show="data || data | filter:search">
-    <tr>
-        <th>Nama</th>
-        <th>Alamat</th>
-        <th>Kontak</th>
-        <th>Action</th>
-    </tr>
-
-    <tbody ng-repeat="d in data | filter:search">
-        <tr>
-            <td ng-bind-html-unsafe="d.name | highlight:search"/>
-            <td ng-bind-html-unsafe="d.address || '-' | highlight:search"/>
-            <td ng-bind-html-unsafe="d.contact || '-' | highlight:search"/>
-            <td>
-                <a href=#
-                   ng-click="itemlist(d._id)"
-                   ng-show=d.items.length
-                   ng-class="{true: 'label label-info', false: ''}[collapseSupplier[d._id]]">Detail</a>
-                <span class=disabled-text ng-hide=d.items.length>Detail</span>
-                |
-                <a ng-href="/supplier/{{ d._id }}">Edit</a>
-                |
-                <a href=# ng-click="remove(d._id)">Delete</a>
-            </td>
-        </tr>
-
-        <tr class=dark-table-background ng-show="collapseSupplier[d._id]">
-            <td colspan=5 class=row>
-                <div class=col-lg-6>
-                    <table class="table table-bordered">
-                        <tr class=dark-footer-table>
-                            <th>No</th>
-                            <th>Nama Barang</th>
-                            <th>Stok</th>
-                            <th>Harga Beli</th>
-                        </tr>
-                        <tr ng-repeat="item in d.items" ng-class="{'danger': stockStatus.isEmpty($parent.$index, $index), 'warning': stockStatus.isWarning($parent.$index, $index) }">
-                            <td ng-bind-html-unsafe="$index + 1" />
-                            <td ng-bind-html-unsafe="item.name | highlight:search" />
-                            <td ng-bind-html-unsafe="item.stock || '0' | highlight:search" />
-                            <td ng-bind-html-unsafe="item.purchase_price || '0' | highlight:search" />
-                        </tr>
-                    </table>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-<div class="panel panel-default" ng-hide=data>
-    <div class=panel-body>
-        Klik tombol + utk menambah data
+        </button>
     </div>
 </div>
 
-<div class="panel panel-default" ng-hide="!(data && search) || (data | filter:search)">
-    <div class=panel-body>
-        Data tidak ditemukan
+<div class=row role=main>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pull-right well well-lg"
+         ng-show=showNewForm
+         ui-view />
+
+    <div ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]">
+        <table class="table table-editable" ng-show="data || data | filter:search">
+            <tr>
+                <th></th>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Kontak</th>
+                <th>Jumlah Barang</th>
+                <th>Action</th>
+            </tr>
+
+            <tbody ng-repeat="d in data | filter:search">
+                <tr>
+                    <td ng-click="itemsBySupplier(d._id).length && itemlist(d._id)" style="width: 10px; color: #428bca">
+                        <p
+                           ng-show=itemsBySupplier(d._id).length
+                           ng-init="collapseSupplier[d._id] = false"
+                           class="glyphicon"
+                           ng-class="{true: 'glyphicon-chevron-up', false: 'glyphicon-chevron-down'}[collapseSupplier[d._id]]">
+                        </a>
+                    </td>
+                    <td xeditable
+                        data-original-title="Edit nama"
+                        data-type="text"
+                        data-placeholder="Required"
+                        data-url="/api/suppliers"
+                        data-pk="{{ d._id }}"
+                        data-name="name"
+                        data-field="Nama"
+                        data-category="supplier"
+                        ng-model="d.name"
+                        ng-bind-html-unsafe="d.name | highlight:search" />
+
+                    <td xeditable
+                        data-original-title="Edit alamat"
+                        data-type="text"
+                        data-placeholder="Required"
+                        data-url="/api/suppliers"
+                        data-pk="{{ d._id }}"
+                        data-name="address"
+                        data-category="supplier"
+                        data-field="Alamat"
+                        ng-model="d.address"
+                        ng-bind-html-unsafe="d.address | highlight:search" />
+
+                    <td xeditable
+                        data-original-title="Edit kontak"
+                        data-type="text"
+                        data-placeholder="Required"
+                        data-url="/api/suppliers"
+                        data-pk="{{ d._id }}"
+                        data-name="contact"
+                        data-category="supplier"
+                        data-field="Kontak"
+                        ng-model="d.contact"
+                        ng-bind-html-unsafe="d.contact | highlight:search" />
+
+                    <td ng-bind="itemsBySupplier(d._id).length || '-'"></td>
+
+                    <td>
+                        <confirm-delete ng-click="remove(d._id)" />
+                    </td>
+                </tr>
+
+                <tr class=dark-table-background ng-show="collapseSupplier[d._id]">
+                    <td colspan=5 class=row>
+                        <div class=col-lg-6>
+                            <table class="table table-bordered">
+                                <tr class=dark-footer-table>
+                                    <th>No</th>
+                                    <th>Nama Barang</th>
+                                    <th>Stok</th>
+                                    <th>Harga Beli</th>
+                                </tr>
+                                <tr ng-repeat="item in itemsBySupplier(d._id)" ng-class=watchStock(item)>
+                                    <td ng-bind-html-unsafe="$index + 1" />
+                                    <td ng-bind-html-unsafe="item.name" />
+                                    <td ng-bind-html-unsafe="item.stock || '0'" />
+                                    <td ng-bind-html-unsafe="item.purchase_price | currency:'IDR'" />
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+
+    <div class="panel panel-default"
+         ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]"
+         ng-hide=data>
+        <div class=panel-body>
+            Klik tombol + utk menambah data
+        </div>
+    </div>
+
+    <div class="panel panel-default"
+         ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]"
+         ng-hide="!(data && search) || (data | filter:search)">
+        <div class=panel-body>
+            Data tidak ditemukan
+        </div>
+    </div>
+
 </div>

@@ -2,7 +2,7 @@ app.directive 'activeLink', ($location) ->
     restrict: 'A'
     scope: true
     link: (scope, element, attribute) ->
-        scope.$on '$routeChangeSuccess', ->
+        scope.$on '$stateChangeSuccess', ->
             path = '/' + $location.path().split('/')[1]
             if path == element.children('a').attr('href')
                 element.addClass 'active'
@@ -33,15 +33,15 @@ app.directive 'confirmDelete', ->
         deleteAction: '&ngClick'
     template: """
                <span ng-hide=confirm>
-                   <a href=# ng-click="confirm = true">Delete</a>
+                   <a href="javascript:void(0)" ng-click="confirm = true">Delete</a>
                </span>
                <span ng-show=confirm>
-                   <a href=# class="label label-danger" ng-click="deleteAction()">Yes</a>
-                   <a href=# class="label label-default" ng-click="confirm = false">No</a>
+                   <a href="javascript:void(0)" class="label label-danger" ng-click="deleteAction()">Yes</a>
+                   <a href="javascript:void(0)" class="label label-default" ng-click="confirm = false">No</a>
                </span>
                """
 
-app.directive 'xeditable', (FlashService, MomentService, SocketService, currencyFilter, $timeout) ->
+app.directive 'xeditable', (FlashService, MomentService, SocketService, Restangular, currencyFilter, $timeout) ->
     restrict: 'A'
     require: 'ngModel'
     link: (scope, element, attr, ctrl) ->
@@ -56,11 +56,12 @@ app.directive 'xeditable', (FlashService, MomentService, SocketService, currency
                     if attr.format == 'currency'
                         newValue = currencyFilter(newValue, 'IDR')
 
-                    SocketService.emit 'update:item',
-                        field: attr.field
-                        name: response.name
-                        oldValue: element.text()
-                        newValue: newValue
+                    unless attr.nocommit?
+                        SocketService.emit "update:#{attr.category}",
+                            field: attr.field
+                            name: response.name
+                            oldValue: element.text()
+                            newValue: newValue
 
                 error: (response, newValue) ->
                     if response.status == 500

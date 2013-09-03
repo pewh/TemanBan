@@ -6,42 +6,71 @@
     return this.charAt(0).toUpperCase() + this.slice(1);
   };
 
-  app = angular.module('app', ['restangular', 'ngResource', 'ui.highlight']);
+  app = angular.module('app', ['restangular', 'ngResource', 'ui.state', 'ui.highlight', 'ui.bootstrap.buttons', 'ui.select2']);
 
-  app.config(function($locationProvider, $routeProvider) {
+  app.config(function($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locationProvider) {
     $locationProvider.html5Mode(true);
-    return $routeProvider.when('/', {
+    $routeProvider.otherwise('/');
+    return $stateProvider.state('home', {
+      url: '/',
       templateUrl: '/template/home.html',
       controller: 'HomeController'
-    }).when('/item', {
+    }).state('item', {
+      url: '/item',
       templateUrl: '/template/item/list.html',
       controller: 'ItemController'
-    }).when('/item/new', {
+    }).state('item.new', {
+      url: '/new',
       templateUrl: '/template/item/new.html',
       controller: 'ItemController'
-    }).when('/item/:id', {
-      templateUrl: '/template/item/edit.html',
-      controller: 'ItemController'
-    }).when('/supplier', {
+    }).state('supplier', {
+      url: '/supplier',
       templateUrl: '/template/supplier/list.html',
       controller: 'SupplierController'
-    }).when('/supplier/new', {
+    }).state('supplier.new', {
+      url: '/new',
       templateUrl: '/template/supplier/new.html',
       controller: 'SupplierController'
-    }).when('/supplier/:id', {
-      templateUrl: '/template/supplier/edit.html',
-      controller: 'SupplierController'
-    }).when('/customer', {
+    }).state('customer', {
+      url: '/customer',
       templateUrl: '/template/customer/list.html',
       controller: 'CustomerController'
-    }).when('/customer/new', {
+    }).state('customer.new', {
+      url: '/new',
       templateUrl: '/template/customer/new.html',
       controller: 'CustomerController'
-    }).when('/customer/:id', {
-      templateUrl: '/template/customer/edit.html',
-      controller: 'CustomerController'
-    }).otherwise({
-      redirectTo: '/'
+    }).state('purchase_invoice', {
+      url: '/invoice/purchase',
+      templateUrl: '/template/invoice/purchase/list.html',
+      controller: 'PurchaseInvoiceController'
+    }).state('purchase_invoice.edit', {
+      url: '/new',
+      templateUrl: '/template/invoice/purchase/edit.html',
+      controller: 'PurchaseInvoiceController'
+    }).state('sales_invoice', {
+      url: '/invoice/sales',
+      templateUrl: '/template/invoice/sales/list.html',
+      controller: 'SalesInvoiceController'
+    }).state('sales_invoice.edit', {
+      url: '/new',
+      templateUrl: '/template/invoice/sales/edit.html',
+      controller: 'SalesInvoiceController'
+    }).state('purchase_transaction', {
+      url: '/transaction/purchase',
+      templateUrl: '/template/transaction/purchase/new.html',
+      controller: 'PurchaseTransactionController'
+    }).state('sales_transaction', {
+      url: '/transaction/sales',
+      templateUrl: '/template/transaction/sales/new.html',
+      controller: 'SalesTransactionController'
+    }).state('statistic_transaction', {
+      url: '/statistic/transaction',
+      templateUrl: '/template/statistic/transaction.html',
+      controller: 'TransactionStatisticController'
+    }).state('statistic_stock', {
+      url: '/statistic/stock',
+      templateUrl: '/template/statistic/stock.html',
+      controller: 'StockStatisticController'
     });
   });
 
@@ -50,7 +79,7 @@
     if (location.pathname === '/login.html' && AuthenticationService.isLoggedIn()) {
       location.replace('/');
     }
-    return $rootScope.$on('$routeChangeStart', function(event, next, current) {
+    return $rootScope.$on('$stateChangeStart', function(event, next, current) {
       if ($location.path() === '/' && !AuthenticationService.isLoggedIn()) {
         return location.replace('/login.html');
       }
@@ -62,7 +91,7 @@
       restrict: 'A',
       scope: true,
       link: function(scope, element, attribute) {
-        return scope.$on('$routeChangeSuccess', function() {
+        return scope.$on('$stateChangeSuccess', function() {
           var path;
           path = '/' + $location.path().split('/')[1];
           if (path === element.children('a').attr('href')) {
@@ -107,11 +136,11 @@
       scope: {
         deleteAction: '&ngClick'
       },
-      template: "<span ng-hide=confirm>\n    <a href=# ng-click=\"confirm = true\">Delete</a>\n</span>\n<span ng-show=confirm>\n    <a href=# class=\"label label-danger\" ng-click=\"deleteAction()\">Yes</a>\n    <a href=# class=\"label label-default\" ng-click=\"confirm = false\">No</a>\n</span>"
+      template: "<span ng-hide=confirm>\n    <a href=\"javascript:void(0)\" ng-click=\"confirm = true\">Delete</a>\n</span>\n<span ng-show=confirm>\n    <a href=\"javascript:void(0)\" class=\"label label-danger\" ng-click=\"deleteAction()\">Yes</a>\n    <a href=\"javascript:void(0)\" class=\"label label-default\" ng-click=\"confirm = false\">No</a>\n</span>"
     };
   });
 
-  app.directive('xeditable', function(FlashService, MomentService, SocketService, currencyFilter, $timeout) {
+  app.directive('xeditable', function(FlashService, MomentService, SocketService, Restangular, currencyFilter, $timeout) {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -128,12 +157,14 @@
               if (attr.format === 'currency') {
                 newValue = currencyFilter(newValue, 'IDR');
               }
-              return SocketService.emit('update:item', {
-                field: attr.field,
-                name: response.name,
-                oldValue: element.text(),
-                newValue: newValue
-              });
+              if (attr.nocommit == null) {
+                return SocketService.emit("update:" + attr.category, {
+                  field: attr.field,
+                  name: response.name,
+                  oldValue: element.text(),
+                  newValue: newValue
+                });
+              }
             },
             error: function(response, newValue) {
               var _ref, _ref1;
@@ -193,12 +224,6 @@
     };
   });
 
-  app.filter('stripzero', function() {
-    return function(string) {
-      return string || '-';
-    };
-  });
-
   app.factory('SessionService', function() {
     return {
       get: function(key) {
@@ -244,25 +269,8 @@
     };
   });
 
-  /*
-  app.factory 'CustomerResource', (Restangular) ->
-      $resource '/api/customers/:id', id: '@_id',
-          update: method: 'PUT'
-  */
-
-
   app.factory('FlashService', function($rootScope) {
     return toastr;
-  });
-
-  app.factory('ItemResource', function($resource) {
-    return $resource('/api/items/:id', {
-      id: '@_id'
-    }, {
-      update: {
-        method: 'PUT'
-      }
-    });
   });
 
   app.factory('MomentService', function($rootScope) {
@@ -301,37 +309,26 @@
     };
   });
 
-  app.factory('SupplierResource', function($resource) {
-    return $resource('/api/suppliers/:id', {
-      id: '@_id'
-    }, {
-      update: {
-        method: 'PUT'
-      }
-    });
-  });
-
-  app.controller('CustomerController', function($scope, $routeParams, $location, Restangular, FlashService, SocketService, filterFilter) {
+  app.controller('CustomerController', function($scope, $routeParams, $location, Restangular, FlashService, MomentService, SocketService, filterFilter) {
     var customers, reload;
     customers = Restangular.all('customers');
     (reload = function() {
       return $scope.data = customers.getList();
     })();
     SocketService.on('create:customer', function(data) {
-      reload();
-      return FlashService.info("Pelanggan " + data.name + " telah ditambah");
+      FlashService.info("Pelanggan " + data.name + " telah ditambah", MomentService.currentTime());
+      return reload();
     });
     SocketService.on('update:customer', function(data) {
-      reload();
-      return FlashService.info("Pelanggan " + data.name + " telah diedit");
+      var message;
+      message = "Pelanggan telah di-update <br />\nNama:    <strong>" + data.name + "</strong> <br />\nKolom:   <strong>" + data.field + "</strong> <br />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong>";
+      FlashService.info(message, MomentService.currentTime());
+      return reload();
     });
     SocketService.on('delete:customer', function(data) {
-      reload();
-      return FlashService.info("Pelanggan " + data.name + " telah dihapus");
+      FlashService.info("Pelanggan " + data.name + " telah dihapus", MomentService.currentTime());
+      return reload();
     });
-    $scope.load = function() {
-      return $scope.customer = Restangular.one('customers', $routeParams.id).get();
-    };
     $scope.add = function() {
       return customers.post($scope.customer).then(function(customer) {
         SocketService.emit('create:customer', customer);
@@ -343,17 +340,9 @@
         return angular.element('#name').focus();
       }, function(err) {
         if (err.status === 500) {
-          return FlashService.error(err.data.err);
-        }
-      });
-    };
-    $scope.update = function() {
-      return $scope.customer.put().then(function(customer) {
-        SocketService.emit('update:customer', customer);
-        return $location.path('/customer');
-      }, function(err) {
-        if (err.status === 500) {
-          return FlashService.error(err.data);
+          if (err.data.code === 11000) {
+            return FlashService.error('Nama pelanggan sudah ada', MomentService.currentTime());
+          }
         }
       });
     };
@@ -362,16 +351,12 @@
         return SocketService.emit('delete:customer', customer);
       });
     };
-    $scope.$watch('search', function(val) {
-      $scope.filteredData = filterFilter($scope.data, val);
-      console.log($scope.data, $scope.search, $scope.filteredData);
-      if (val !== void 0) {
-        SocketService.emit('search:customer', $scope.filteredData.length);
-        return console.log($scope.filteredData.length);
+    $scope.$watch('showNewForm', function(val) {
+      if ($scope.showNewForm) {
+        return $location.path('/customer/new');
+      } else {
+        return $location.path('/customer');
       }
-    });
-    $scope.$on('$routeChangeStart', function(scope, next, current) {
-      return SocketService.emit('search:customer', $scope.data.length);
     });
     return $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();
@@ -385,7 +370,7 @@
     items = Restangular.all('items');
     (reload = function() {
       $scope.data = items.getList();
-      return $scope.suppliers = Restangular.all('customers').getList();
+      return $scope.suppliers = Restangular.all('suppliers').getList();
     })();
     SocketService.on('create:item', function(data) {
       var message;
@@ -411,7 +396,6 @@
       };
     };
     $scope.add = function() {
-      console.log($scope.item);
       return items.post($scope.item).then(function(item) {
         SocketService.emit('create:item', item);
         $scope.item = {
@@ -423,33 +407,34 @@
       }, function(err) {
         if (err.status === 500) {
           if (err.data.code === 11000) {
-            return FlashService.error('Nama barang sudah ada');
+            return FlashService.error('Nama barang sudah ada', MomentService.currentTime());
           }
         }
       });
     };
-    /*
-    $scope.edit = (id) ->
-        $scope.showEditForm = true
-        $scope.showNewForm = false
-        $scope.selectedId = id
-        $routeParams.id = id
-    */
-
     $scope.remove = function(id) {
       return Restangular.one('items', id).remove().then(function(item) {
         return SocketService.emit('delete:item', item);
       });
     };
-    $scope.$watch('search', function(val) {
-      $scope.filteredData = filterFilter($scope.data, val);
-      if (val !== void 0) {
-        return SocketService.emit('search:item', $scope.filteredData.length);
+    $scope.$watch('showNewForm', function(val) {
+      if ($scope.showNewForm) {
+        return $location.path('/item/new');
+      } else {
+        return $location.path('/item');
       }
     });
-    $scope.$on('$routeChangeStart', function(scope, next, current) {
-      return SocketService.emit('search:item', $scope.data.length);
-    });
+    /*
+    $scope.$watch 'search', (val) ->
+        $scope.filteredData = filterFilter($scope.data, val)
+    
+        if val isnt undefined
+            SocketService.emit 'search:item', $scope.filteredData.length
+    
+    $scope.$on '$routeChangeStart', (scope, next, current) ->
+        SocketService.emit 'search:item', $scope.data.length
+    */
+
     return $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();
     });
@@ -465,13 +450,15 @@
     };
   });
 
-  app.controller('MenuController', function($scope, AuthenticationService, ItemResource, SupplierResource, SocketService) {
+  app.controller('MenuController', function($scope, AuthenticationService) {
+    $scope.activeLink = 'item';
+    $scope.isLoggedIn = AuthenticationService.isLoggedIn();
+    $scope.currentUser = AuthenticationService.currentUser();
+    $scope.currentRole = AuthenticationService.currentRole();
+    return $scope.logout = function() {
+      return AuthenticationService.logout();
+    };
     /*
-    $scope.isLoggedIn = AuthenticationService.isLoggedIn()
-    $scope.currentUser = AuthenticationService.currentUser()
-    $scope.currentRole = AuthenticationService.currentRole()
-    $scope.logout = -> AuthenticationService.logout()
-    
     $scope.count = {}
     
     categories = [
@@ -537,97 +524,132 @@
 
   });
 
-  app.controller('SupplierController', function($scope, $routeParams, $location, FlashService, SupplierResource, SocketService, filterFilter) {
-    var resource;
-    resource = SupplierResource;
-    resource.query(function(res) {
-      return $scope.data = res;
-    });
-    SocketService.on('create:supplier', function(data) {
-      FlashService.info("Pemasok " + data.name + " telah ditambah");
-      return resource.query(function(res) {
-        return $scope.data = res;
-      });
-    });
-    SocketService.on('update:supplier', function(data) {
-      FlashService.info("Pemasok " + data.name + " telah diedit");
-      return resource.query(function(res) {
-        return $scope.data = res;
-      });
-    });
-    SocketService.on('delete:supplier', function(data) {
-      FlashService.info("Pemasok " + data.name + " telah dihapus");
-      return resource.query(function(res) {
-        return $scope.data = res;
-      });
-    });
-    $scope.load = function() {
-      return resource.get({
-        id: $routeParams.id
-      }, function(res) {
-        return $scope.supplier = res;
+  app.controller('PurchaseInvoiceController', function($scope, Restangular) {});
+
+  app.controller('PurchaseTransactionController', function($scope, Restangular, FlashService) {
+    $scope.cart = [];
+    $scope.suppliers = Restangular.all('suppliers').getList();
+    $scope.items = Restangular.all('items').getList();
+    $scope.addToCart = function() {
+      var selectedItem;
+      selectedItem = (_.where($scope.items.$$v, {
+        _id: $scope.item
+      }))[0];
+      if (_.contains($scope.cart, selectedItem)) {
+        return angular.element("[data-id='" + selectedItem._id + "']").editable('toggle');
+      } else {
+        if (selectedItem.stock === 0) {
+          return FlashService.error("Stok " + selectedItem.name + " tidak tersedia");
+        } else {
+          return $scope.cart.push(selectedItem);
+        }
+      }
+    };
+    $scope.updateTotal = function(index) {
+      console.log(index);
+      return $scope.cart[index].total = $scope.cart[index].qty * $scope.cart[index].purchase_price;
+    };
+    $scope.clear = function(index) {
+      return $scope.cart.splice(index, 1);
+    };
+    $scope.clearAll = function() {
+      return $scope.cart.splice(0);
+    };
+    return $scope.filteredItems = function() {
+      return _.where($scope.items.$$v, {
+        suppliers: {
+          _id: $scope.supplier
+        }
       });
     };
-    $scope.stockStatus = {
-      isEmpty: function(dataIndex, itemIndex) {
-        return !$scope.data[dataIndex].items[itemIndex].stock;
-      },
-      isWarning: function(dataIndex, itemIndex) {
-        var _ref;
-        return (0 < (_ref = $scope.data[dataIndex].items[itemIndex].stock) && _ref < 5);
-      }
+  });
+
+  app.controller('SalesInvoiceController', function($scope) {});
+
+  app.controller('SalesTransactionController', function($scope) {});
+
+  app.controller('StockStatisticController', function($scope) {});
+
+  app.controller('SupplierController', function($scope, $routeParams, $location, Restangular, FlashService, MomentService, SocketService, filterFilter) {
+    var items, reload, suppliers;
+    suppliers = Restangular.all('suppliers');
+    items = Restangular.all('items');
+    items.getList().then(function(x) {
+      return $scope.itemsBySupplier = function(supplierId) {
+        return _.where(x, {
+          suppliers: {
+            _id: supplierId
+          }
+        });
+      };
+    });
+    (reload = function() {
+      return $scope.data = suppliers.getList();
+    })();
+    SocketService.on('create:supplier', function(data) {
+      var message;
+      message = "Pemasok " + data.name + " telah ditambah";
+      FlashService.info(message, MomentService.currentTime());
+      return reload();
+    });
+    SocketService.on('update:supplier', function(data) {
+      var message;
+      message = "Pemasok telah di-update <br />\nNama:    <strong>" + data.name + "</strong> <br />\nKolom:   <strong>" + data.field + "</strong> <br />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong>";
+      FlashService.info(message, MomentService.currentTime());
+      return reload();
+    });
+    SocketService.on('delete:supplier', function(data) {
+      FlashService.info("Pemasok " + data.name + " telah dihapus", MomentService.currentTime());
+      return reload();
+    });
+    $scope.watchStock = function(item) {
+      var _ref;
+      return {
+        'danger': !item.stock,
+        'warning': (0 < (_ref = item.stock) && _ref < 5)
+      };
     };
     $scope.collapseSupplier = {};
     $scope.itemlist = function(supplierId) {
       return $scope.collapseSupplier[supplierId] = !$scope.collapseSupplier[supplierId];
     };
     $scope.add = function() {
-      return resource.save($scope.supplier, function() {
-        SocketService.emit('create:supplier', $scope.supplier);
+      return suppliers.post($scope.supplier).then(function(supplier) {
+        SocketService.emit('create:supplier', supplier);
         $scope.supplier = {
           name: '',
           address: '',
           contact: ''
         };
-        return ($('#name')).focus();
+        return angular.element('#name').focus();
       }, function(err) {
         if (err.status === 500) {
           if (err.data.code === 11000) {
-            return FlashService.error('Nama pemasok sudah ada');
+            return FlashService.error('Nama pemasok sudah ada', MomentService.currentTime());
           }
         }
       });
     };
-    $scope.update = function() {
-      return $scope.supplier.$update(function() {
-        SocketService.emit('update:supplier', $scope.supplier);
-        return $location.path('/supplier');
-      }, function(err) {
-        if (err.status === 500) {
-          return FlashService.error(err.data);
-        }
-      });
-    };
     $scope.remove = function(id) {
-      var supplier;
-      supplier = _.where($scope.data, {
-        _id: id
-      })[0];
-      return FlashService.confirm("Apakah Anda yakin untuk menghapus " + supplier.name + "?", function() {
-        return resource.remove({
-          id: id
-        }, function() {
-          return SocketService.emit('delete:supplier', supplier);
-        });
+      return Restangular.one('suppliers', id).remove().then(function(supplier) {
+        return SocketService.emit('delete:supplier', supplier);
       });
     };
-    $scope.$watch('search', function(val) {
-      var _ref;
-      $scope.filteredData = filterFilter($scope.data, val);
-      if (val !== void 0) {
-        return SocketService.emit('search:supplier', (_ref = $scope.filteredData) != null ? _ref.length : void 0);
+    $scope.$watch('showNewForm', function(val) {
+      if ($scope.showNewForm) {
+        return $location.path('/supplier/new');
+      } else {
+        return $location.path('/supplier');
       }
     });
+    /*
+    $scope.$watch 'search', (val) ->
+        $scope.filteredData = filterFilter($scope.data, val)
+    
+        if val isnt undefined
+            SocketService.emit 'search:supplier', $scope.filteredData?.length
+    */
+
     $scope.$on('$routeChangeStart', function(scope, next, current) {
       return SocketService.emit('search:supplier', $scope.data.length);
     });
@@ -635,5 +657,7 @@
       return SocketService.removeAllListeners();
     });
   });
+
+  app.controller('TransactionStatisticController', function($scope) {});
 
 }).call(this);

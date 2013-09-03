@@ -11,9 +11,18 @@ User = new Schema
     password:
         type: String
         required: true
-    authority:
+    role:
         type: String
         enum: ['manager', 'staff', 'commissioner']
+
+Supplier = new Schema
+    name:
+        type: String
+        required: true
+    address:
+        type: String
+    contact:
+        type: String
 
 Item = new Schema
     name:
@@ -32,19 +41,10 @@ Item = new Schema
         type: Number
         required: true
         min: 0
-    supplier_id:
+    suppliers:
         type: Schema.Types.ObjectId
         ref: 'Supplier'
         required: true
-
-Supplier = new Schema
-    name:
-        type: String
-        required: true
-    address:
-        type: String
-    contact:
-        type: String
 
 Customer = new Schema
     name:
@@ -54,6 +54,51 @@ Customer = new Schema
         type: String
     contact:
         type: String
+
+PurchaseInvoiceDetail = new Schema
+    item:
+        type: Schema.Types.ObjectId
+        ref: 'Item'
+        required: true
+    quantity:
+        type: Number
+        required: true
+        min: 1
+
+PurchaseInvoice = new Schema
+    created_at: Date
+    code:
+        type: String
+        required: true
+    details: [PurchaseInvoiceDetail]
+
+SalesInvoiceDetail = new Schema
+    item:
+        type: Schema.Types.ObjectId
+        ref: Item
+        required: true
+    quantity:
+        type: Number
+        required: true
+        min: 1
+
+SalesInvoice = new Schema
+    created_at:
+        type: Date
+        required: true
+    code:
+        type: String
+        required: true
+    customer:
+        type: Schema.Types.ObjectId
+        ref: Customer
+        required: true
+    discount:
+        type: Number
+        min: 0
+        max: 100
+    details: [SalesInvoiceDetail]
+
 
 module.exports =
     index: (options) ->

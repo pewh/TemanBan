@@ -10,7 +10,7 @@ app.use express.bodyParser()
 app.use express.static('public')
 app.use express.errorHandler()
 
-models = ['item', 'supplier', 'customer']
+models = ['user', 'item', 'supplier', 'customer']
 
 # ROUTER
 models.map (model) ->
@@ -21,8 +21,9 @@ models.map (model) ->
     app.patch  "/api/#{model}s",     resources["#{model}s"].patch
     app.delete "/api/#{model}s/:id", resources["#{model}s"].delete
 
-app.get  '/api/group/suppliers', resources.helper.populateSuppliers
-app.post '/auth/login',          resources.helper.credentials
+app.get  '/api/group/suppliers',     resources.helper.populateSuppliers
+app.get  '/api/suppliers/:id/items', resources.helper.populateSupplierItems
+app.post '/auth/login',              resources.helper.credentials
 
 # SOCKETS
 io.sockets.on 'connection', (socket) ->
