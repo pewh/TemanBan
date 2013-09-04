@@ -1,8 +1,6 @@
 app = angular.module 'app', ['restangular', 'ngResource', 'ui.state', 'ui.highlight', 'ui.bootstrap.buttons', 'ui.select2']
 
 app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locationProvider) ->
-    $locationProvider.html5Mode(true)
-
     $routeProvider.otherwise('/')
 
     $stateProvider
@@ -79,7 +77,8 @@ app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locat
 app.run ($rootScope, $location, Restangular, AuthenticationService, SocketService) ->
     Restangular.setBaseUrl '/api'
 
-    location.replace '/' if location.pathname == '/login.html' and AuthenticationService.isLoggedIn()
+    if location.pathname == '/login.html' and AuthenticationService.isLoggedIn()
+        $location.path('/').replace()
 
     $rootScope.$on '$stateChangeStart', (event, next, current) ->
-        location.replace '/login.html' if $location.path() is '/' and not AuthenticationService.isLoggedIn()
+        location.replace '/login.html' if not AuthenticationService.isLoggedIn()

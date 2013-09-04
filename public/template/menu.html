@@ -5,20 +5,20 @@
         <span class=icon-bar />
         <span class=icon-bar />
     </button>
-    <a class="navbar-brand home title" href=/ >PD Teman Ban</a>
+    <a class="navbar-brand home title" href=/#/ >PD Teman Ban</a>
 </div>
 
 <div class="collapse navbar-collapse navbar-menu-collapse" ng-controller=MenuController>
     <ul class="nav navbar-nav">
-        <li active-link><a href=/item>
+        <li active-link><a href=/#/item>
             <span class="badge badge-menu pull-right" ng-bind=count.item ng-show=count.item />
             Barang
         </a></li>
-        <li active-link><a href=/supplier>
+        <li active-link><a href=/#/supplier>
             <span class="badge badge-menu pull-right" ng-bind=count.supplier ng-show=count.supplier />
             Pemasok
         </a></li>
-        <li active-link><a href=/customer>
+        <li active-link><a href=/#/customer>
             <span class="badge badge-menu pull-right" ng-bind=count.customer ng-show=count.customer />
             Pelanggan
         </a></li>
@@ -29,11 +29,11 @@
                 <b class=caret></b>
             </a>
             <ul class="dropdown-menu">
-                <li active-link><a href=/invoice/purchase>
+                <li active-link><a href=/#/invoice/purchase>
                     <span class="badge badge-menu pull-right" ng-bind=count.supplier ng-show=count.invoice_purchase />
                     Faktur Pembelian
                 </a></li>
-                <li active-link><a href=/invoice/sales>
+                <li active-link><a href=/#/invoice/sales>
                     <span class="badge badge-menu pull-right" ng-bind=count.customer ng-show=count.invoice_sales />
                     Faktur Penjualan
                 </a></li>
@@ -41,16 +41,16 @@
         </li>
 
 
-        <li class="dropdown">
+        <li active-link class="dropdown">
             <a href="javascript:" class=dropdown-toggle data-toggle=dropdown>
                 Transaksi
                 <b class=caret></b>
             </a>
             <ul class="dropdown-menu">
-                <li active-link><a href=/transaction/purchase>
+                <li active-link><a href=/#/transaction/purchase>
                     Transaksi Pembelian
                 </a></li>
-                <li active-link><a href=/transaction/sales>
+                <li active-link><a href=/#/transaction/sales>
                     Transaksi Penjualan
                 </a></li>
             </ul>
@@ -62,10 +62,10 @@
                 <b class=caret></b>
             </a>
             <ul class="dropdown-menu">
-                <li active-link><a href=/statistic/transaction>
+                <li active-link><a href=/#/statistic/transaction>
                     Statistik Transaksi
                 </a></li>
-                <li active-link><a href=/statistic/stock>
+                <li active-link><a href=/#/statistic/stock>
                     Statistik Stok Barang
                 </a></li>
             </ul>

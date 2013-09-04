@@ -27,7 +27,7 @@ app.post '/auth/login',              resources.helper.credentials
 
 # SOCKETS
 io.sockets.on 'connection', (socket) ->
-    ['item', 'supplier', 'customer'].map (resource) ->
+    models.map (resource) ->
         socket.on "create:#{resource}", (data) -> io.sockets.emit("create:#{resource}", data)
         socket.on "update:#{resource}", (data) -> io.sockets.emit("update:#{resource}", data)
         socket.on "delete:#{resource}", (data) -> io.sockets.emit("delete:#{resource}", data)

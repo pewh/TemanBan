@@ -3,8 +3,10 @@ app.directive 'activeLink', ($location) ->
     scope: true
     link: (scope, element, attribute) ->
         scope.$on '$stateChangeSuccess', ->
+            window.z = $location.path()
             path = '/' + $location.path().split('/')[1]
-            if path == element.children('a').attr('href')
+            linkPath = element.children('a').attr('href')
+            if path == linkPath.substr(2)
                 element.addClass 'active'
             else
                 element.removeClass 'active'

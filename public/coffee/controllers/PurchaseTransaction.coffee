@@ -1,4 +1,4 @@
-app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashService) ->
+app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashService, SocketService, MomentService) ->
     $scope.cart = []
     $scope.suppliers = Restangular.all('suppliers').getList()
     $scope.items = Restangular.all('items').getList()
@@ -7,6 +7,16 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
         $scope.$apply ->
             $scope.datetime = (new Date()).toISOString()
     , 1000
+
+    clearCart = ->
+        $scope.code = ''
+        $scope.supplier = ''
+        $scope.cart = []
+
+    SocketService.on 'create:purchase_invoice', (data) ->
+        message = "Faktur pembelian #{data.code} telah ditambah"
+        FlashService.info message, MomentService.currentTime()
+        clearCart()
 
     $scope.addToCart = ->
         selectedItem = (_.where $scope.items.$$v, _id: $scope.item)[0]
@@ -50,11 +60,10 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
             details: items
 
         Restangular.all('purchase_invoices').post(invoice).then (result) ->
-            console.log result
+            SocketService.emit 'create:purchase_invoice', result
         , (err) ->
-            console.err err
-            ###
             if err.status == 500
                 if err.data.code == 11000
-                    FlashService.error 'Nama barang sudah ada', MomentService.currentTime()
-            ###
+                    FlashService.error 'Kode faktur sudah ada', MomentService.currentTime()
+
+        angular.element('#invoice_code').focus()

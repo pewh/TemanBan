@@ -9,7 +9,6 @@
   app = angular.module('app', ['restangular', 'ngResource', 'ui.state', 'ui.highlight', 'ui.bootstrap.buttons', 'ui.select2']);
 
   app.config(function($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locationProvider) {
-    $locationProvider.html5Mode(true);
     $routeProvider.otherwise('/');
     return $stateProvider.state('home', {
       url: '/',
@@ -77,10 +76,10 @@
   app.run(function($rootScope, $location, Restangular, AuthenticationService, SocketService) {
     Restangular.setBaseUrl('/api');
     if (location.pathname === '/login.html' && AuthenticationService.isLoggedIn()) {
-      location.replace('/');
+      $location.path('/').replace();
     }
     return $rootScope.$on('$stateChangeStart', function(event, next, current) {
-      if ($location.path() === '/' && !AuthenticationService.isLoggedIn()) {
+      if (!AuthenticationService.isLoggedIn()) {
         return location.replace('/login.html');
       }
     });
@@ -92,9 +91,11 @@
       scope: true,
       link: function(scope, element, attribute) {
         return scope.$on('$stateChangeSuccess', function() {
-          var path;
+          var linkPath, path;
+          window.z = $location.path();
           path = '/' + $location.path().split('/')[1];
-          if (path === element.children('a').attr('href')) {
+          linkPath = element.children('a').attr('href');
+          if (path === linkPath.substr(2)) {
             return element.addClass('active');
           } else {
             return element.removeClass('active');
@@ -526,7 +527,8 @@
 
   app.controller('PurchaseInvoiceController', function($scope, Restangular) {});
 
-  app.controller('PurchaseTransactionController', function($scope, Restangular, FlashService) {
+  app.controller('PurchaseTransactionController', function($scope, Restangular, FlashService, SocketService, MomentService) {
+    var clearCart;
     $scope.cart = [];
     $scope.suppliers = Restangular.all('suppliers').getList();
     $scope.items = Restangular.all('items').getList();
@@ -535,6 +537,17 @@
         return $scope.datetime = (new Date()).toISOString();
       });
     }, 1000);
+    clearCart = function() {
+      $scope.code = '';
+      $scope.supplier = '';
+      return $scope.cart = [];
+    };
+    SocketService.on('create:purchase_invoice', function(data) {
+      var message;
+      message = "Faktur pembelian " + data.code + " telah ditambah";
+      FlashService.info(message, MomentService.currentTime());
+      return clearCart();
+    });
     $scope.addToCart = function() {
       var selectedItem;
       selectedItem = (_.where($scope.items.$$v, {
@@ -588,17 +601,16 @@
         code: $scope.code,
         details: items
       };
-      return Restangular.all('purchase_invoices').post(invoice).then(function(result) {
-        return console.log(result);
+      Restangular.all('purchase_invoices').post(invoice).then(function(result) {
+        return SocketService.emit('create:purchase_invoice', result);
       }, function(err) {
-        return console.err(err);
-        /*
-        if err.status == 500
-            if err.data.code == 11000
-                FlashService.error 'Nama barang sudah ada', MomentService.currentTime()
-        */
-
+        if (err.status === 500) {
+          if (err.data.code === 11000) {
+            return FlashService.error('Kode faktur sudah ada', MomentService.currentTime());
+          }
+        }
       });
+      return angular.element('#invoice_code').focus();
     };
   });
 
