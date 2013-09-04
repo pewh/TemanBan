@@ -10,7 +10,7 @@ app.use express.bodyParser()
 app.use express.static('public')
 app.use express.errorHandler()
 
-models = ['user', 'item', 'supplier', 'customer']
+models = ['user', 'item', 'supplier', 'customer', 'purchase_invoice', 'sales_invoice']
 
 # ROUTER
 models.map (model) ->

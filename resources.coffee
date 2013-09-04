@@ -10,7 +10,9 @@ resources = [
 ,
     customers: db.CustomerModel
 ,
-    users: db.UserModel
+    purchase_invoices: db.PurchaseInvoiceModel
+,
+    sales_invoices: db.SalesInvoiceModel
 ]
 
 _.forEach resources, (resource) ->

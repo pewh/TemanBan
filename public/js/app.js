@@ -530,13 +530,18 @@
     $scope.cart = [];
     $scope.suppliers = Restangular.all('suppliers').getList();
     $scope.items = Restangular.all('items').getList();
+    setInterval(function() {
+      return $scope.$apply(function() {
+        return $scope.datetime = (new Date()).toISOString();
+      });
+    }, 1000);
     $scope.addToCart = function() {
       var selectedItem;
       selectedItem = (_.where($scope.items.$$v, {
         _id: $scope.item
       }))[0];
       if (_.contains($scope.cart, selectedItem)) {
-        return angular.element("[data-id='" + selectedItem._id + "']").editable('toggle');
+        return angular.element("[data-id='" + selectedItem._id + "']").focus();
       } else {
         if (selectedItem.stock === 0) {
           return FlashService.error("Stok " + selectedItem.name + " tidak tersedia");
@@ -549,19 +554,28 @@
       console.log(index);
       return $scope.cart[index].total = $scope.cart[index].qty * $scope.cart[index].purchase_price;
     };
+    $scope.grandTotal = function() {
+      var a, total;
+      total = _.pluck($scope.cart, 'total');
+      a = _.reduce(total, function(c, x) {
+        return c + x;
+      });
+      return a;
+    };
     $scope.clear = function(index) {
       return $scope.cart.splice(index, 1);
     };
     $scope.clearAll = function() {
       return $scope.cart.splice(0);
     };
-    return $scope.filteredItems = function() {
+    $scope.filteredItems = function() {
       return _.where($scope.items.$$v, {
         suppliers: {
           _id: $scope.supplier
         }
       });
     };
+    return $scope.submit = function() {};
   });
 
   app.controller('SalesInvoiceController', function($scope) {});

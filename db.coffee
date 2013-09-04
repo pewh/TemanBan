@@ -135,3 +135,5 @@ module.exports =
     ItemModel: mongoose.model('Item', Item)
     SupplierModel: mongoose.model('Supplier', Supplier)
     CustomerModel: mongoose.model('Customer', Customer)
+    PurchaseInvoiceModel: mongoose.model('PurchaseInvoice', PurchaseInvoice)
+    SalesInvoiceModel: mongoose.model('SalesInvoice', SalesInvoice)

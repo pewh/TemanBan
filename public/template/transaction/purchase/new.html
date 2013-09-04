@@ -5,27 +5,44 @@
 
     <div class="col-lg-3">
         <div class=form-group>
-            <input type=text
-                   class=form-control
-                   ng-model=code
-                   style="margin-bottom: 5px">
-            <input type=date
-                   class=form-control
-                   ng-model=datetime>
+            <div class="input-group" style="margin-bottom: 5px">
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                </span>
+                <input type=text
+                       class=form-control
+                       placeholder="Tanggal"
+                       readonly
+                       value="{{ datetime | date:'dd MMM y hh:mm:ss' }}" />
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-tag"></i>
+                </span>
+                <input type=text
+                       class=form-control
+                       placeholder="Kode faktur"
+                       ng-model=code />
+            </div>
         </div>
     </div>
 </div>
 
 <div class=row role=main>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pull-right">
-        <select id=suppliers
-                class=form-control
-                style="margin-bottom: 5px"
-                ng-model=supplier
-                ng-disabled=cart.length
-                ng-options="supplier._id as supplier.name for supplier in suppliers">
-            <option value="" disabled>-- Pilih Pemasok --</option>
-        </select>
+        <div class="input-group" style="margin-bottom: 5px">
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-shopping-cart"></i>
+            </span>
+            <select id=suppliers
+                    class=form-control
+                    ng-model=supplier
+                    ng-disabled=cart.length
+                    ng-options="supplier._id as supplier.name for supplier in suppliers">
+                <option value="" disabled>-- Pilih Pemasok --</option>
+            </select>
+        </div>
 
         <select id=items
                 class=form-control
@@ -44,36 +61,48 @@
     <div class="col-lg-9 col-md-9 col-sm-9">
         <table class="table table-editable" ng-show="cart.length">
             <tr>
+                <th>No</th>
                 <th>Nama</th>
                 <th>Stok</th>
                 <th>Harga</th>
                 <th>Total</th>
-                <th>
-                    <a href=# ng-show=cart.length ng-click=clearAll()>Clear All</a>
-                </th>
+                <th style="width: 200px" />
             </tr>
 
             <tr ng-repeat="c in cart">
+                <td ng-bind="$index + 1" />
                 <td ng-bind-html-unsafe="c.name" />
 
-                <td xeditable
-                    data-original-title="Edit stok (max {{ c.stock}})"
-                    data-type="number"
-                    data-placeholder="Required"
-                    data-min=1
-                    data-max="{{ c.stock}}"
-                    data-nocommit
-                    data-id="{{ c._id }}"
-                    ng-init="c.qty = 1"
-                    ng-model="c.qty"
-                    ng-bind-html-unsafe="c.qty" />
+                <td style="width:100px">
+                    <form>
+                        <input type=number
+                               class=form-control
+                               min=1
+                               max="{{ c.stock }}"
+                               ng-change=grandTotal()
+                               data-id="{{ c._id }}"
+                               autofocus
+                               ng-model=c.qty
+                               ng-init="c.qty=1" />
+                    </form>
+                </td>
 
                 <td ng-bind-html-unsafe="c.purchase_price | currency:'IDR'" />
 
-                <td ng-model=c.total
+                <td style="width: 200px"
+                    ng-model=c.total
                     ng-bind-html-unsafe="c.qty * c.purchase_price | currency:'IDR'" />
 
                 <td><a href="javascript:void(0)" ng-click="clear($index)">Clear</a></td>
+            </tr>
+
+            <tr>
+                <th colspan=4 />
+                <th ng-bind="grandTotal()"></th>
+                <th>
+                    <a href=# class="btn btn-primary" ng-show=cart.length ng-click=submit() ng-disabled="!code">Submit</a>
+                    <a href=# class="btn btn-default" ng-show=cart.length ng-click=clearAll()>Clear All</a>
+                </th>
             </tr>
         </table>
     </div>
