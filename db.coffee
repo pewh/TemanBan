@@ -70,6 +70,7 @@ PurchaseInvoice = new Schema
     code:
         type: String
         required: true
+        unique: true
     details: [PurchaseInvoiceDetail]
 
 SalesInvoiceDetail = new Schema
@@ -86,6 +87,7 @@ SalesInvoice = new Schema
     created_at:
         type: Date
         required: true
+        unique: true
     code:
         type: String
         required: true

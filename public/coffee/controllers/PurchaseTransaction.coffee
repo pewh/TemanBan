@@ -38,4 +38,23 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
         _.where($scope.items.$$v, { suppliers: {_id: $scope.supplier } })
 
     $scope.submit = ->
+        items = _.map $scope.cart, (cart) ->
+            return {
+                item: _.values(_.pick cart, '_id')[0]
+                quantity: _.values(_.pick cart, 'qty')[0]
+            }
 
+        invoice =
+            created_at: $scope.datetime
+            code: $scope.code
+            details: items
+
+        Restangular.all('purchase_invoices').post(invoice).then (result) ->
+            console.log result
+        , (err) ->
+            console.err err
+            ###
+            if err.status == 500
+                if err.data.code == 11000
+                    FlashService.error 'Nama barang sudah ada', MomentService.currentTime()
+            ###

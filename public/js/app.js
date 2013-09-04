@@ -575,7 +575,31 @@
         }
       });
     };
-    return $scope.submit = function() {};
+    return $scope.submit = function() {
+      var invoice, items;
+      items = _.map($scope.cart, function(cart) {
+        return {
+          item: _.values(_.pick(cart, '_id'))[0],
+          quantity: _.values(_.pick(cart, 'qty'))[0]
+        };
+      });
+      invoice = {
+        created_at: $scope.datetime,
+        code: $scope.code,
+        details: items
+      };
+      return Restangular.all('purchase_invoices').post(invoice).then(function(result) {
+        return console.log(result);
+      }, function(err) {
+        return console.err(err);
+        /*
+        if err.status == 500
+            if err.data.code == 11000
+                FlashService.error 'Nama barang sudah ada', MomentService.currentTime()
+        */
+
+      });
+    };
   });
 
   app.controller('SalesInvoiceController', function($scope) {});
