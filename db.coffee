@@ -107,7 +107,10 @@ module.exports =
         model = options.model.find (err, data) ->
             if err then options.res.json(err, 500) else options.res.json(data)
 
-        model.populate(options.populateField) if options.populateField?
+        #model.populate(options.populateField) if options.populateField?
+        if options.populateField?
+            options.populateField.forEach (field) ->
+                model.populate(field)
 
     show: (options) ->
         options.model.findById options.id, (err, data) ->

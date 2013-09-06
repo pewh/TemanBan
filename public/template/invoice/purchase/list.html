@@ -1,0 +1,54 @@
+<div class=row>
+    <div class="col-lg-9">
+        <h2 class="pull-left title">Faktur Pembelian</h2>
+    </div>
+
+    <div class="col-lg-3 form-inline">
+        <div class=form-group>
+            <input type=search ng-model=search ng-show=data class=form-control placeholder=Pencarian />
+        </div>
+
+        <a href="/#/transaction/purchase" class="btn btn-default pull-right">
+            <i class="glyphicon glyphicon-plus"></i>
+        </a>
+    </div>
+</div>
+
+<div class=row role=main>
+    <div ng-class="col-lg-12">
+        <table class="table table-editable" ng-show="data || data | filter:search">
+            <tr>
+                <th>Tanggal</th>
+                <th>Faktur</th>
+                <th>Nama Pemasok</th>
+                <th>Total Harga</th>
+                <th>Action</th>
+            </tr>
+
+            <tr ng-repeat="d in data | filter:search">
+                <td ng-bind-html-unsafe="d.created_at | date:'dd MMM y hh:mm:ss' | highlight:search" />
+                <td ng-bind-html-unsafe="d.code | highlight:search" />
+                <td ng-bind-html-unsafe="d.details[0].item | highlight:search" />
+                <td ng-bind-html-unsafe="calculateTotalPrice(d.details) | currency:'IDR' | highlight:search" />
+                <td><confirm-delete ng-click="remove(d._id)" /></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="panel panel-default"
+         ng-class="col-lg-12"
+         ng-hide=data>
+        <div class=panel-body>
+            Klik tombol + utk menambah data
+        </div>
+    </div>
+
+    <div class="panel panel-default"
+         ng-class="col-lg-12"
+         ng-hide="!(data && search) || (data | filter:search)">
+        <div class=panel-body>
+            Data tidak ditemukan
+        </div>
+    </div>
+
+</div>

@@ -525,7 +525,37 @@
 
   });
 
-  app.controller('PurchaseInvoiceController', function($scope, Restangular) {});
+  app.controller('PurchaseInvoiceController', function($scope, Restangular, SocketService, FlashService, MomentService) {
+    var invoices, reload;
+    invoices = Restangular.all('purchase_invoices');
+    (reload = function() {
+      return $scope.data = invoices.getList();
+    })();
+    SocketService.on('delete:purchase_invoice', function(data) {
+      FlashService.info("Faktur beli " + data.code + " telah dihapus", MomentService.currentTime());
+      return reload();
+    });
+    $scope.calculateTotalPrice = function(details) {
+      var purchase_price, stock, sumZipped, zipped;
+      stock = _.pluck(details, 'quantity');
+      purchase_price = _.pluck(_.pluck(details, 'item'), 'purchase_price');
+      zipped = _.zip(stock, purchase_price);
+      sumZipped = _.map(zipped, function(z) {
+        return z[0] * z[1];
+      });
+      return _.reduce(sumZipped, function(c, v) {
+        return c + v;
+      });
+    };
+    $scope.remove = function(id) {
+      return Restangular.one('purchase_invoices', id).remove().then(function(invoice) {
+        return SocketService.emit('delete:purchase_invoice', invoice);
+      });
+    };
+    return $scope.$on('$destroy', function(event) {
+      return SocketService.removeAllListeners();
+    });
+  });
 
   app.controller('PurchaseTransactionController', function($scope, Restangular, FlashService, SocketService, MomentService) {
     var clearCart;

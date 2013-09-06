@@ -28,7 +28,7 @@ _.forEach resources, (resource) ->
                     db.index
                         res: res
                         model: model
-                        populateField: 'suppliers'
+                        populateField: ['suppliers', 'details.item']
 
             create: (req, res) ->
                 fields = _.keys(req.body)
