@@ -556,11 +556,7 @@
       if (_.contains($scope.cart, selectedItem)) {
         return angular.element("[data-id='" + selectedItem._id + "']").focus();
       } else {
-        if (selectedItem.stock === 0) {
-          return FlashService.error("Stok " + selectedItem.name + " tidak tersedia");
-        } else {
-          return $scope.cart.push(selectedItem);
-        }
+        return $scope.cart.push(selectedItem);
       }
     };
     $scope.updateTotal = function(index) {
@@ -616,7 +612,86 @@
 
   app.controller('SalesInvoiceController', function($scope) {});
 
-  app.controller('SalesTransactionController', function($scope) {});
+  app.controller('SalesTransactionController', function($scope, Restangular, FlashService, SocketService, MomentService) {
+    var clearCart;
+    $scope.cart = [];
+    $scope.customers = Restangular.all('customers').getList();
+    $scope.items = Restangular.all('items').getList();
+    setInterval(function() {
+      return $scope.$apply(function() {
+        return $scope.datetime = (new Date()).toISOString();
+      });
+    }, 1000);
+    clearCart = function() {
+      $scope.code = '';
+      $scope.customer = '';
+      return $scope.cart = [];
+    };
+    SocketService.on('create:sales_invoice', function(data) {
+      var message;
+      message = "Faktur penjualan " + data.code + " telah ditambah";
+      FlashService.info(message, MomentService.currentTime());
+      return clearCart();
+    });
+    $scope.addToCart = function() {
+      var selectedItem;
+      selectedItem = (_.where($scope.items.$$v, {
+        _id: $scope.item
+      }))[0];
+      if (_.contains($scope.cart, selectedItem)) {
+        return angular.element("[data-id='" + selectedItem._id + "']").focus();
+      } else {
+        if (selectedItem.stock === 0) {
+          return FlashService.error("Stok " + selectedItem.name + " tidak tersedia");
+        } else {
+          return $scope.cart.push(selectedItem);
+        }
+      }
+    };
+    $scope.updateTotal = function(index) {
+      console.log(index);
+      return $scope.cart[index].total = $scope.cart[index].qty * $scope.cart[index].sales_price;
+    };
+    $scope.grandTotal = function() {
+      var a, total;
+      total = _.pluck($scope.cart, 'total');
+      a = _.reduce(total, function(c, x) {
+        return c + x;
+      });
+      return a;
+    };
+    $scope.clear = function(index) {
+      return $scope.cart.splice(index, 1);
+    };
+    $scope.clearAll = function() {
+      return $scope.cart.splice(0);
+    };
+    return $scope.submit = function() {
+      var invoice, items;
+      items = _.map($scope.cart, function(cart) {
+        return {
+          item: _.values(_.pick(cart, '_id'))[0],
+          quantity: _.values(_.pick(cart, 'qty'))[0]
+        };
+      });
+      invoice = {
+        created_at: $scope.datetime,
+        code: $scope.code,
+        customer: $scope.customer,
+        details: items
+      };
+      Restangular.all('sales_invoices').post(invoice).then(function(result) {
+        return SocketService.emit('create:sales_invoice', result);
+      }, function(err) {
+        if (err.status === 500) {
+          if (err.data.code === 11000) {
+            return FlashService.error('Kode faktur sudah ada', MomentService.currentTime());
+          }
+        }
+      });
+      return angular.element('#invoice_code').focus();
+    };
+  });
 
   app.controller('StockStatisticController', function($scope) {});
 

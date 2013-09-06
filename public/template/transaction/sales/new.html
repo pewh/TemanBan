@@ -1,0 +1,129 @@
+<div class=row>
+    <div class="col-lg-9">
+        <h2 class="pull-left title">Transaksi Penjualan</h2>
+    </div>
+
+    <div class="col-lg-3">
+        <div class=form-group>
+            <div class="input-group" style="margin-bottom: 5px">
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-calendar"></i>
+                </span>
+                <input type=text
+                       class=form-control
+                       placeholder="Tanggal"
+                       readonly
+                       value="{{ datetime | date:'dd MMM y hh:mm:ss' }}" />
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-tag"></i>
+                </span>
+                <input type=text
+                       id=invoice_code
+                       class=form-control
+                       placeholder="Kode faktur"
+                       ng-model=code />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class=row role=main>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pull-right">
+        <div class="input-group" style="margin-bottom: 5px">
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-user"></i>
+            </span>
+            <select id=customer
+                    class=form-control
+                    ng-model=customer
+                    ng-options="customer._id as customer.name for customer in customers">
+                <option value="" disabled>-- Pilih Pelanggan --</option>
+            </select>
+        </div>
+
+        <select id=items
+                class=form-control
+                size=15
+                required
+                ng-model=item
+                ng-dblclick="addToCart()"
+                ng-options="item._id as item.name for item in items">
+        </select>
+    </div>
+
+    <div class="col-lg-9 col-md-9 col-sm-9">
+        <table class="table table-editable" ng-show="cart.length">
+            <tr class=active>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Stok</th>
+                <th>Harga</th>
+                <th>Total</th>
+                <th style="width: 200px" />
+            </tr>
+
+            <tr ng-repeat="c in cart">
+                <td ng-bind="$index + 1" />
+                <td ng-bind-html-unsafe="c.name" />
+
+                <td style="width:100px">
+                    <form>
+                        <input type=number
+                               class=form-control
+                               min=1
+                               max="{{ c.stock }}"
+                               ng-change=grandTotal()
+                               data-id="{{ c._id }}"
+                               autofocus
+                               ng-model=c.qty
+                               ng-init="c.qty=1" />
+                    </form>
+                </td>
+
+                <td ng-bind-html-unsafe="c.sales_price | currency:'IDR'" />
+
+                <td style="width: 200px"
+                    ng-model=c.total
+                    ng-bind-html-unsafe="c.qty * c.sales_price | currency:'IDR'" />
+
+                <td><a href="javascript:void(0)" ng-click="clear($index)">Clear</a></td>
+            </tr>
+
+            <tr class=active>
+                <th colspan=4 />
+                <th ng-bind="grandTotal()"></th>
+                <th></th>
+            </tr>
+
+            <tr class=active>
+                <th />
+                <th>Discount</th>
+                <th>
+                    <form name=tes>
+                        <input type=number
+                               class=form-control
+                               min=0
+                               max=100
+                               required
+                               ng-model=discount
+                               ng-init="discount=0" />
+                    </form>
+                </th>
+                <th colspan=2 />
+                <th>
+                    <a href="javascript:void(0)" class="btn btn-primary" ng-show=cart.length ng-click=submit() ng-disabled="!(code && customer)">Submit</a>
+                    <a href="javascript:void(0)" class="btn btn-default" ng-show=cart.length ng-click=clearAll()>Clear All</a>
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <div class="panel panel-default col-lg-9" ng-hide="cart.length">
+        <div class=panel-body>
+            Silahkan isi kode faktur, nama pelanggan dan pilih barang
+        </div>
+    </div>
+</div>

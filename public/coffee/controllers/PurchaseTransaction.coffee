@@ -24,10 +24,7 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
         if _.contains($scope.cart, selectedItem)
             angular.element("[data-id='#{selectedItem._id}']").focus()
         else
-            if selectedItem.stock == 0
-                FlashService.error "Stok #{selectedItem.name} tidak tersedia"
-            else
-                $scope.cart.push selectedItem
+            $scope.cart.push selectedItem
 
     $scope.updateTotal = (index) ->
         console.log index
