@@ -1,69 +1,6 @@
 _ = require 'lodash'
 db = require './db'
 
-resources = [
-    users: db.UserModel
-,
-    items: db.ItemModel
-,
-    suppliers: db.SupplierModel
-,
-    customers: db.CustomerModel
-,
-    purchase_invoices: db.PurchaseInvoiceModel
-,
-    sales_invoices: db.SalesInvoiceModel
-]
-
-_.forEach resources, (resource) ->
-    _.forIn resource, (model, controller) ->
-        exports[controller] =
-            retrieve: (req, res) ->
-                if req.params.id?
-                    db.show
-                        res: res
-                        model: model
-                        id: req.params.id
-                else
-                    db.index
-                        res: res
-                        model: model
-                        populateField: ['suppliers', 'details.item']
-
-            create: (req, res) ->
-                fields = _.keys(req.body)
-                values = _.map fields, (field) -> req.body[field]
-                content = _.zipObject(fields, values)
-
-                db.create
-                    res: res
-                    model: model
-                    body: content
-
-            update: (req, res) ->
-                fields = _.keys(req.body)
-                values = _.map fields, (field) -> req.body[field]
-                content = _.zipObject(fields, values)
-
-                db.update
-                    res: res
-                    model: model
-                    id: req.params.id
-                    replace: (data) -> data = content
-
-            patch: (req, res) ->
-                db.update
-                    res: res
-                    model: model
-                    id: req.body.pk
-                    replace: (data) -> data[req.body.name] = req.body.value
-
-            delete: (req, res) ->
-                db.destroy
-                    res: res
-                    model: model
-                    id: req.params.id
-
 exports.helper =
     credentials: (req, res) ->
         db.search
@@ -113,3 +50,282 @@ exports.helper =
                 res.json compiledData
     populateSupplierItems: (req, res) ->
         db.ItemModel.find({ suppliers: req.params.id }).exec (err, data) -> res.json data
+
+exports.users =
+    retrieve: (req, res) ->
+        if req.params.id?
+            db.show
+                res: res
+                model: db.UserModel
+                id: req.params.id
+        else
+            db.index
+                res: res
+                model: db.UserModel
+
+    create: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.create
+            res: res
+            model: db.UserModel
+            body: content
+
+    update: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.update
+            res: res
+            model: db.UserModel
+            id: req.params.id
+            replace: (data) -> data = content
+
+    patch: (req, res) ->
+        db.update
+            res: res
+            model: db.UserModel
+            id: req.body.pk
+            replace: (data) -> data[req.body.name] = req.body.value
+
+    delete: (req, res) ->
+        db.destroy
+            res: res
+            model: db.UserModel
+            id: req.params.id
+
+exports.items =
+    retrieve: (req, res) ->
+        if req.params.id?
+            db.show
+                res: res
+                model: db.ItemModel
+                id: req.params.id
+        else
+            db.index
+                res: res
+                model: db.ItemModel
+                populateField: ['suppliers']
+
+    create: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.create
+            res: res
+            model: db.ItemModel
+            body: content
+
+    update: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.update
+            res: res
+            model: db.ItemModel
+            id: req.params.id
+            replace: (data) -> data = content
+
+    patch: (req, res) ->
+        db.update
+            res: res
+            model: db.ItemModel
+            id: req.body.pk
+            replace: (data) -> data[req.body.name] = req.body.value
+
+    delete: (req, res) ->
+        db.destroy
+            res: res
+            model: db.ItemModel
+            id: req.params.id
+
+exports.suppliers =
+    retrieve: (req, res) ->
+        if req.params.id?
+            db.show
+                res: res
+                model: db.SupplierModel
+                id: req.params.id
+        else
+            db.index
+                res: res
+                model: db.SupplierModel
+
+    create: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.create
+            res: res
+            model: db.SupplierModel
+            body: content
+
+    update: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.update
+            res: res
+            model: db.SupplierModel
+            id: req.params.id
+            replace: (data) -> data = content
+
+    patch: (req, res) ->
+        db.update
+            res: res
+            model: db.SupplierModel
+            id: req.body.pk
+            replace: (data) -> data[req.body.name] = req.body.value
+
+    delete: (req, res) ->
+        db.destroy
+            res: res
+            model: db.SupplierModel
+            id: req.params.id
+
+exports.customers =
+    retrieve: (req, res) ->
+        if req.params.id?
+            db.show
+                res: res
+                model: db.CustomerModel
+                id: req.params.id
+        else
+            db.index
+                res: res
+                model: db.CustomerModel
+
+    create: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.create
+            res: res
+            model: db.CustomerModel
+            body: content
+
+    update: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.update
+            res: res
+            model: db.CustomerModel
+            id: req.params.id
+            replace: (data) -> data = content
+
+    patch: (req, res) ->
+        db.update
+            res: res
+            model: db.CustomerModel
+            id: req.body.pk
+            replace: (data) -> data[req.body.name] = req.body.value
+
+    delete: (req, res) ->
+        db.destroy
+            res: res
+            model: db.CustomerModel
+            id: req.params.id
+
+exports.purchase_invoices =
+    retrieve: (req, res) ->
+        if req.params.id?
+            db.show
+                res: res
+                model: db.PurchaseInvoiceModel
+                id: req.params.id
+        else
+            db.index
+                res: res
+                model: db.PurchaseInvoiceModel
+                populateField: ['details.item', 'supplier']
+
+    create: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.create
+            res: res
+            model: db.PurchaseInvoiceModel
+            body: content
+
+    update: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.update
+            res: res
+            model: db.PurchaseInvoiceModel
+            id: req.params.id
+            replace: (data) -> data = content
+
+    patch: (req, res) ->
+        db.update
+            res: res
+            model: db.PurchaseInvoiceModel
+            id: req.body.pk
+            replace: (data) -> data[req.body.name] = req.body.value
+
+    delete: (req, res) ->
+        db.destroy
+            res: res
+            model: db.PurchaseInvoiceModel
+            id: req.params.id
+
+exports.sales_invoices =
+    retrieve: (req, res) ->
+        if req.params.id?
+            db.show
+                res: res
+                model: db.SalesInvoiceModel
+                id: req.params.id
+        else
+            db.index
+                res: res
+                model: db.SalesInvoiceModel
+                populateField: ['details.item', 'customer']
+
+    create: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.create
+            res: res
+            model: db.SalesInvoiceModel
+            body: content
+
+    update: (req, res) ->
+        fields = _.keys(req.body)
+        values = _.map fields, (field) -> req.body[field]
+        content = _.zipObject(fields, values)
+
+        db.update
+            res: res
+            model: db.SalesInvoiceModel
+            id: req.params.id
+            replace: (data) -> data = content
+
+    patch: (req, res) ->
+        db.update
+            res: res
+            model: db.SalesInvoiceModel
+            id: req.body.pk
+            replace: (data) -> data[req.body.name] = req.body.value
+
+    delete: (req, res) ->
+        db.destroy
+            res: res
+            model: db.SalesInvoiceModel
+            id: req.params.id

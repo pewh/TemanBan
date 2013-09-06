@@ -54,6 +54,7 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
         invoice =
             created_at: $scope.datetime
             code: $scope.code
+            supplier: $scope.supplier.name
             details: items
 
         Restangular.all('purchase_invoices').post(invoice).then (result) ->

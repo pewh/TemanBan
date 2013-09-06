@@ -86,3 +86,12 @@ input[type=datetime-local]::-webkit-outer-spin-button {
     margin: 0;
 }
 */
+
+.arrow-collapse {
+    width: 10px;
+    color: #428bca;
+    cursor: pointer;
+}
+.arrow-collapse:hover {
+    color: #1f6377;
+}

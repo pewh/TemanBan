@@ -18,6 +18,7 @@
     <div ng-class="col-lg-12">
         <table class="table table-editable" ng-show="data || data | filter:search">
             <tr>
+                <th></th>
                 <th>Tanggal</th>
                 <th>Faktur</th>
                 <th>Nama Pemasok</th>
@@ -25,13 +26,55 @@
                 <th>Action</th>
             </tr>
 
-            <tr ng-repeat="d in data | filter:search">
-                <td ng-bind-html-unsafe="d.created_at | date:'dd MMM y hh:mm:ss' | highlight:search" />
-                <td ng-bind-html-unsafe="d.code | highlight:search" />
-                <td ng-bind-html-unsafe="d.details[0].item | highlight:search" />
-                <td ng-bind-html-unsafe="calculateTotalPrice(d.details) | currency:'IDR' | highlight:search" />
-                <td><confirm-delete ng-click="remove(d._id)" /></td>
-            </tr>
+            <tbody ng-repeat="d in data | filter:search">
+                <tr>
+                    <td class=arrow-collapse>
+                        <p class="glyphicon"
+                           ng-init="collapseInvoice[d._id] = false"
+                           ng-click="itemlist(d._id)"
+                           ng-class="{true: 'glyphicon-chevron-up', false: 'glyphicon-chevron-down'}[collapseInvoice[d._id]]">
+                        </a>
+                    </td>
+                    <td ng-bind-html-unsafe="d.created_at | date:'dd MMM y hh:mm:ss' | highlight:search" />
+                    <td ng-bind-html-unsafe="d.code | highlight:search" />
+                    <td ng-bind-html-unsafe="d.supplier.name | highlight:search" />
+                    <td ng-bind-html-unsafe="calculateTotalPrice(d.details) | currency:'IDR' | highlight:search" />
+                    <td>
+                        <a href="/#/invoice/purchase/{{ d._id }}/edit">Edit</a>
+                        |
+                        <confirm-delete ng-click="remove(d._id)" />
+                    </td>
+                </tr>
+
+                <tr class=dark-table-background ng-show="collapseInvoice[d._id]">
+                    <td colspan=6 class=row>
+                        <div class=col-lg-6>
+                            <table class="table table-bordered">
+                                <tr class=active>
+                                    <th>No</th>
+                                    <th>Nama Barang</th>
+                                    <th>Harga Beli</th>
+                                    <th>Qty.</th>
+                                    <th>Total Harga</th>
+                                </tr>
+                                <tr ng-repeat="detail in d.details">
+                                    <td ng-bind="$index + 1" />
+                                    <td ng-bind="detail.item.name" />
+                                    <td ng-bind="detail.item.purchase_price | currency:'IDR'" />
+                                    <td ng-bind="detail.quantity || '0'" />
+                                    <td ng-bind="(detail.item.purchase_price * detail.quantity) | currency:'IDR'" />
+                                </tr>
+                                <tr class="active">
+                                    <th />
+                                    <th colspan=2>TOTAL</th>
+                                    <th ng-bind="calculateTotalQty(d.details)"></th>
+                                    <th ng-bind="calculateTotalPrice(d.details) | currency:'IDR'"></th>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 

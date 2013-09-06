@@ -43,7 +43,7 @@
       templateUrl: '/template/invoice/purchase/list.html',
       controller: 'PurchaseInvoiceController'
     }).state('purchase_invoice.edit', {
-      url: '/new',
+      url: '/{id}/edit',
       templateUrl: '/template/invoice/purchase/edit.html',
       controller: 'PurchaseInvoiceController'
     }).state('sales_invoice', {
@@ -547,10 +547,26 @@
         return c + v;
       });
     };
+    $scope.calculateTotalQty = function(details) {
+      var stock;
+      stock = _.pluck(details, 'quantity');
+      return _.reduce(stock, function(c, v) {
+        return c + v;
+      });
+    };
+    $scope.edit = function(id) {
+      return Restangular.one('purchase_invoices', id).put().then(function(invoice) {
+        return console.log(invoice);
+      });
+    };
     $scope.remove = function(id) {
       return Restangular.one('purchase_invoices', id).remove().then(function(invoice) {
         return SocketService.emit('delete:purchase_invoice', invoice);
       });
+    };
+    $scope.collapseInvoice = {};
+    $scope.itemlist = function(invoiceId) {
+      return $scope.collapseInvoice[invoiceId] = !$scope.collapseInvoice[invoiceId];
     };
     return $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();
@@ -625,6 +641,7 @@
       invoice = {
         created_at: $scope.datetime,
         code: $scope.code,
+        supplier: $scope.supplier.name,
         details: items
       };
       Restangular.all('purchase_invoices').post(invoice).then(function(result) {

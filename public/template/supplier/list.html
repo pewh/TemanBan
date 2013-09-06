@@ -35,11 +35,10 @@
 
             <tbody ng-repeat="d in data | filter:search">
                 <tr>
-                    <td ng-click="itemsBySupplier(d._id).length && itemlist(d._id)" style="width: 10px; color: #428bca">
-                        <p
+                    <td ng-click="itemsBySupplier(d._id).length && itemlist(d._id)" class=arrow-collapse>
+                        <p class="glyphicon"
                            ng-show=itemsBySupplier(d._id).length
                            ng-init="collapseSupplier[d._id] = false"
-                           class="glyphicon"
                            ng-class="{true: 'glyphicon-chevron-up', false: 'glyphicon-chevron-down'}[collapseSupplier[d._id]]">
                         </a>
                     </td>
@@ -87,10 +86,10 @@
                 </tr>
 
                 <tr class=dark-table-background ng-show="collapseSupplier[d._id]">
-                    <td colspan=5 class=row>
+                    <td colspan=6 class=row>
                         <div class=col-lg-6>
                             <table class="table table-bordered">
-                                <tr class=dark-footer-table>
+                                <tr class=active>
                                     <th>No</th>
                                     <th>Nama Barang</th>
                                     <th>Stok</th>

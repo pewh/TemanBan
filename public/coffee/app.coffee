@@ -41,7 +41,7 @@ app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locat
             templateUrl: '/template/invoice/purchase/list.html'
             controller: 'PurchaseInvoiceController'
         .state 'purchase_invoice.edit',
-            url: '/new'
+            url: '/{id}/edit'
             templateUrl: '/template/invoice/purchase/edit.html'
             controller: 'PurchaseInvoiceController'
 

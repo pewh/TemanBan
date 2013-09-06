@@ -71,12 +71,16 @@ PurchaseInvoice = new Schema
         type: String
         required: true
         unique: true
+    supplier:
+        type: Schema.Types.ObjectId
+        ref: 'Supplier'
+        required: true
     details: [PurchaseInvoiceDetail]
 
 SalesInvoiceDetail = new Schema
     item:
         type: Schema.Types.ObjectId
-        ref: Item
+        ref: 'Item'
         required: true
     quantity:
         type: Number
@@ -93,7 +97,7 @@ SalesInvoice = new Schema
         required: true
     customer:
         type: Schema.Types.ObjectId
-        ref: Customer
+        ref: 'Customer'
         required: true
     discount:
         type: Number
@@ -107,7 +111,6 @@ module.exports =
         model = options.model.find (err, data) ->
             if err then options.res.json(err, 500) else options.res.json(data)
 
-        #model.populate(options.populateField) if options.populateField?
         if options.populateField?
             options.populateField.forEach (field) ->
                 model.populate(field)

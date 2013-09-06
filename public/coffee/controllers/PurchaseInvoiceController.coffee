@@ -16,9 +16,23 @@ app.controller 'PurchaseInvoiceController', ($scope, Restangular, SocketService,
 
         _.reduce sumZipped, (c, v) -> c + v
 
+    $scope.calculateTotalQty = (details) ->
+        stock = _.pluck details, 'quantity'
+
+        _.reduce stock, (c, v) -> c + v
+
+    $scope.edit = (id) ->
+        Restangular.one('purchase_invoices', id).put().then (invoice) ->
+            console.log invoice
+
     $scope.remove = (id) ->
         Restangular.one('purchase_invoices', id).remove().then (invoice) ->
             SocketService.emit 'delete:purchase_invoice', invoice
+
+    $scope.collapseInvoice = {}
+
+    $scope.itemlist = (invoiceId) ->
+        $scope.collapseInvoice[invoiceId] = not $scope.collapseInvoice[invoiceId]
 
     $scope.$on '$destroy', (event) ->
         SocketService.removeAllListeners()
