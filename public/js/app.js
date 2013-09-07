@@ -42,10 +42,10 @@
       url: '/invoice/purchase',
       templateUrl: '/template/invoice/purchase/list.html',
       controller: 'PurchaseInvoiceController'
-    }).state('purchase_invoice.edit', {
-      url: '/{id}/edit',
+    }).state('purchase_invoice_edit', {
+      url: '/invoice/purchase/:id/edit',
       templateUrl: '/template/invoice/purchase/edit.html',
-      controller: 'PurchaseInvoiceController'
+      controller: 'EditPurchaseInvoiceController'
     }).state('sales_invoice', {
       url: '/invoice/sales',
       templateUrl: '/template/invoice/sales/list.html',
@@ -53,7 +53,7 @@
     }).state('sales_invoice.edit', {
       url: '/new',
       templateUrl: '/template/invoice/sales/edit.html',
-      controller: 'SalesInvoiceController'
+      controller: 'EditSalesInvoiceController'
     }).state('purchase_transaction', {
       url: '/transaction/purchase',
       templateUrl: '/template/transaction/purchase/new.html',
@@ -364,6 +364,65 @@
     });
   });
 
+  app.controller('EditPurchaseInvoiceController', function($scope, $state, $stateParams, $location, Restangular, SocketService, FlashService, MomentService) {
+    var init, watchThreshold;
+    (init = function() {
+      return Restangular.one('purchase_invoices', $stateParams.id).get().then(function(cart) {
+        $scope.cart = cart;
+        $scope.supplier = cart.supplier._id;
+        return $scope.isCartChanged = false;
+      });
+    })();
+    watchThreshold = 0;
+    $scope.suppliers = Restangular.all('suppliers').getList();
+    $scope.items = Restangular.all('items').getList();
+    $scope.calculateTotalPrice = function(details) {
+      var purchase_price, stock, sumZipped, zipped;
+      stock = _.pluck(details, 'quantity');
+      purchase_price = _.pluck(_.pluck(details, 'item'), 'purchase_price');
+      zipped = _.zip(stock, purchase_price);
+      sumZipped = _.map(zipped, function(z) {
+        return z[0] * z[1];
+      });
+      return _.reduce(sumZipped, function(c, v) {
+        return c + v;
+      });
+    };
+    $scope.calculateTotalQty = function(details) {
+      var stock;
+      stock = _.pluck(details, 'quantity');
+      return _.reduce(stock, function(c, v) {
+        return c + v;
+      });
+    };
+    $scope.filteredItems = function() {
+      return _.where($scope.items.$$v, {
+        suppliers: {
+          _id: $scope.supplier
+        }
+      });
+    };
+    $scope.clear = function(index) {
+      return $scope.cart.details.splice(index, 1);
+    };
+    $scope.clearAll = function(index) {
+      return $scope.cart.details.splice(0);
+    };
+    $scope.reset = function() {
+      init();
+      return watchThreshold = 1;
+    };
+    $scope.$watch('cart', function(oldVal, newVal) {
+      watchThreshold++;
+      if (watchThreshold >= 4) {
+        return $scope.isCartChanged = true;
+      }
+    }, true);
+    return $scope.$on('$destroy', function(event) {
+      return SocketService.removeAllListeners();
+    });
+  });
+
   app.controller('HomeController', function($scope, $routeParams, $location, SocketService) {});
 
   app.controller('ItemController', function($scope, $routeParams, $location, Restangular, FlashService, MomentService, SocketService, filterFilter) {
@@ -525,12 +584,19 @@
 
   });
 
-  app.controller('PurchaseInvoiceController', function($scope, Restangular, SocketService, FlashService, MomentService) {
-    var invoices, reload;
+  app.controller('PurchaseInvoiceController', function($scope, $stateParams, Restangular, SocketService, FlashService, MomentService) {
+    var clearCart, invoices, reload;
+    $scope.suppliers = Restangular.all('suppliers').getList();
+    $scope.items = Restangular.all('items').getList();
     invoices = Restangular.all('purchase_invoices');
     (reload = function() {
       return $scope.data = invoices.getList();
     })();
+    clearCart = function() {
+      $scope.code = '';
+      $scope.supplier = '';
+      return $scope.cart = [];
+    };
     SocketService.on('delete:purchase_invoice', function(data) {
       FlashService.info("Faktur beli " + data.code + " telah dihapus", MomentService.currentTime());
       return reload();
@@ -567,6 +633,17 @@
     $scope.collapseInvoice = {};
     $scope.itemlist = function(invoiceId) {
       return $scope.collapseInvoice[invoiceId] = !$scope.collapseInvoice[invoiceId];
+    };
+    $scope.invoiceDetail = Restangular.one('purchase_invoices', $stateParams.id).get();
+    $scope.filteredItems = function() {
+      return _.where($scope.items.$$v, {
+        suppliers: {
+          _id: $scope.invoiceDetail.supplier
+        }
+      });
+    };
+    $scope.clear = function(index) {
+      return $scope.invoiceDetail.details.splice(index, 1);
     };
     return $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();
@@ -641,7 +718,7 @@
       invoice = {
         created_at: $scope.datetime,
         code: $scope.code,
-        supplier: $scope.supplier.name,
+        supplier: $scope.supplier,
         details: items
       };
       Restangular.all('purchase_invoices').post(invoice).then(function(result) {

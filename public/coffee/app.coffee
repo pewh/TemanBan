@@ -40,10 +40,10 @@ app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locat
             url: '/invoice/purchase'
             templateUrl: '/template/invoice/purchase/list.html'
             controller: 'PurchaseInvoiceController'
-        .state 'purchase_invoice.edit',
-            url: '/{id}/edit'
+        .state 'purchase_invoice_edit',
+            url: '/invoice/purchase/:id/edit'
             templateUrl: '/template/invoice/purchase/edit.html'
-            controller: 'PurchaseInvoiceController'
+            controller: 'EditPurchaseInvoiceController'
 
         .state 'sales_invoice',
             url: '/invoice/sales'
@@ -52,7 +52,7 @@ app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locat
         .state 'sales_invoice.edit',
             url: '/new'
             templateUrl: '/template/invoice/sales/edit.html'
-            controller: 'SalesInvoiceController'
+            controller: 'EditSalesInvoiceController'
 
         .state 'purchase_transaction',
             url: '/transaction/purchase'

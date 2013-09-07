@@ -116,8 +116,12 @@ module.exports =
                 model.populate(field)
 
     show: (options) ->
-        options.model.findById options.id, (err, data) ->
+        model = options.model.findById options.id, (err, data) ->
             if err then options.res.json(err, 500) else options.res.json(data)
+
+        if options.populateField?
+            options.populateField.forEach (field) ->
+                model.populate(field)
 
     search: (options) ->
         options.model.find options.criteria, (err, data) ->

@@ -48,8 +48,11 @@ exports.helper =
 
                 # throw output
                 res.json compiledData
-    populateSupplierItems: (req, res) ->
-        db.ItemModel.find({ suppliers: req.params.id }).exec (err, data) -> res.json data
+
+    findSuppliersByItems: (req, res) ->
+        db.ItemModel.find({ suppliers: req.params.id }).exec (err, data) ->
+            if err then res.json(err, 500) else res.json(data)
+
 
 exports.users =
     retrieve: (req, res) ->
@@ -243,6 +246,7 @@ exports.purchase_invoices =
                 res: res
                 model: db.PurchaseInvoiceModel
                 id: req.params.id
+                populateField: ['details.item', 'supplier']
         else
             db.index
                 res: res

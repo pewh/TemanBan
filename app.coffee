@@ -8,7 +8,10 @@ resources   = require('./resources')
 app.set 'port', process.env.PORT || 8000
 app.use express.bodyParser()
 app.use express.static('public')
-app.use express.errorHandler()
+app.use express.errorHandler(
+    dumpExceptions: true
+    showStack: true
+)
 
 models = ['user', 'item', 'supplier', 'customer', 'purchase_invoice', 'sales_invoice']
 
@@ -21,9 +24,10 @@ models.map (model) ->
     app.patch  "/api/#{model}s",     resources["#{model}s"].patch
     app.delete "/api/#{model}s/:id", resources["#{model}s"].delete
 
-app.get  '/api/group/suppliers',     resources.helper.populateSuppliers
-app.get  '/api/suppliers/:id/items', resources.helper.populateSupplierItems
-app.post '/auth/login',              resources.helper.credentials
+app.get  '/api/group/suppliers',         resources.helper.populateSuppliers
+app.get  '/api/suppliers/:id/items',     resources.helper.findSuppliersByItems
+app.get  '/api/suppliers-for-items/:id', resources.helper.findSuppliersByItems
+app.post '/auth/login',                  resources.helper.credentials
 
 # SOCKETS
 io.sockets.on 'connection', (socket) ->

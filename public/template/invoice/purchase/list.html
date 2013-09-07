@@ -37,7 +37,7 @@
                     </td>
                     <td ng-bind-html-unsafe="d.created_at | date:'dd MMM y hh:mm:ss' | highlight:search" />
                     <td ng-bind-html-unsafe="d.code | highlight:search" />
-                    <td ng-bind-html-unsafe="d.supplier.name | highlight:search" />
+                    <td ng-bind-html-unsafe="d.supplier.name || '-' | highlight:search" />
                     <td ng-bind-html-unsafe="calculateTotalPrice(d.details) | currency:'IDR' | highlight:search" />
                     <td>
                         <a href="/#/invoice/purchase/{{ d._id }}/edit">Edit</a>
