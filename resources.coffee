@@ -124,19 +124,8 @@ exports.items =
             model: db.ItemModel
             body: content
 
-    update: (req, res) ->
-        fields = _.keys(req.body)
-        values = _.map fields, (field) -> req.body[field]
-        content = _.zipObject(fields, values)
-
-        db.update
-            res: res
-            model: db.ItemModel
-            id: req.params.id
-            replace: (data) -> data = content
-
     patch: (req, res) ->
-        db.update
+        db.patch
             res: res
             model: db.ItemModel
             id: req.body.pk
@@ -277,13 +266,6 @@ exports.purchase_invoices =
                 fields.forEach (field) ->
                     data[field] = req.body[field]
                 return data
-
-    patch: (req, res) ->
-        db.patch
-            res: res
-            model: db.PurchaseInvoiceModel
-            id: req.body.pk
-            replace: (data) -> data[req.body.name] = req.body.value
 
     delete: (req, res) ->
         db.destroy

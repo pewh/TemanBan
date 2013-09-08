@@ -144,7 +144,8 @@ module.exports =
             options.replace(data)
 
             data.save (err) ->
-                if err then options.res.json(err, 500) else options.res.json(updateddata)
+                console.log data
+                if err then options.res.json(err, 500) else options.res.json(data)
 
     destroy: (options) ->
         options.model.findById options.id, (err, data) ->
