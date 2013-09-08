@@ -83,7 +83,7 @@
                                class=form-control
                                min=1
                                ng-change=grandTotal()
-                               data-id="{{ c._id }}"
+                               data-id="{{ c.item._id }}"
                                autofocus
                                ng-model=c.qty
                                ng-init="c.qty=1" />
@@ -103,10 +103,17 @@
                 <th colspan=4 />
                 <th ng-bind="grandTotal()"></th>
                 <th>
-                    <a href="javascript:void(0)" class="btn btn-primary" ng-show=cart.details.length ng-click=update() ng-disabled="!cart.code">Update</a>
+                    <a href="javascript:void(0)" class="btn btn-primary" ng-show=cart.details.length ng-click=update() ng-disabled="!isCartChanged">Update</a>
                     <a href="javascript:void(0)" class="btn btn-default" ng-show=cart.details.length ng-click=clearAll()>Clear All</a>
                 </th>
             </tr>
         </table>
+        <div class="panel panel-default"
+             ng-class="col-lg-12"
+             ng-hide=cart.details.length>
+            <div class=panel-body>
+                Silahkan pilih nama barang
+            </div>
+        </div>
     </div>
 </div>

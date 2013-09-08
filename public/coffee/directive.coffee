@@ -77,6 +77,86 @@ app.directive 'xeditable', (FlashService, MomentService, SocketService, Restangu
             loadXeditable()
         , 10
 
+app.directive 'chartPie', ->
+    restrict: 'E'
+    replace: true
+    scope:
+        items: '='
+    template: '<div style="height: 200px"></div>'
+
+    link: (scope, element, attrs) ->
+        idContainer = attrs.id
+        element.find('div').attr('id', idContainer)
+
+        options =
+            credits:
+                enabled: false
+            chart:
+                renderTo: idContainer
+                plotBackgroundColor: null
+                plotBorderWidth: null
+                plotShadow: null
+            title:
+                text: attrs.title
+            tooltip:
+                formatter: -> false
+            plotOptions:
+                pie:
+                    cursor: 'pointer'
+                    dataLabels:
+                        enabled: true
+                        color: '#000'
+                        connectorColor: '#000'
+                        formatter: ->
+                            """
+                            <b>#{this.point.name}</b>
+                            <br />
+                            #{this.percentage.toFixed()}%
+                            """
+            series: [
+                type: 'pie'
+                name: attrs.pieSubtitle
+                data: scope.items
+            ]
+
+        chart = new Highcharts.Chart(options)
+
+        scope.$watch 'items', (newVal) ->
+            chart.series[0].setData(newVal, true)
+        , true
+
+app.directive 'dateRangePicker', ->
+    restrict: 'A'
+    replace: true
+    scope:
+        dateStart: '='
+        dateEnd: '='
+    template: """
+              <div class=input-group>
+                  <span class=input-group-addon>
+                      <i class="glyphicon glyphicon-calendar"></i>
+                  </span>
+                  <input class=form-control />
+              </div>
+              """
+    link: (scope, element, attrs) ->
+        dateFormat = 'D MMM YYYY'
+        currentVal = "#{moment().startOf('week').format(dateFormat)} - #{moment().format(dateFormat)}"
+        element.find('input').val(currentVal)
+
+        element.daterangepicker
+            ranges:
+                'Minggu ini': [moment().startOf('week'), moment()]
+                'Bulan ini': [moment().startOf('month'), moment()]
+                'Tahun ini': [moment().startOf('year'), moment()]
+            startDate: moment().startOf('week')
+            endDate: moment()
+        ,
+            (start, end) ->
+                startRange = start.format(dateFormat)
+                endRange = end.format(dateFormat)
+                element.find('input').val(startRange + ' - ' + endRange)
+
 app.directive 'formGroup', ->
     template: """
               <div class="form-group">

@@ -6,6 +6,209 @@
     return this.charAt(0).toUpperCase() + this.slice(1);
   };
 
+  /*
+  $(document).ready ->
+      chartingOptions =
+          chart:
+              plotBackgroundColor: null
+              plotBorderWidth: null
+              plotShadow: false
+              renderTo: 'surplus-chart'
+          title:
+              text: 'Surplus'
+          tooltip:
+              pointFormat: '{series.name} <b>{point.percentage:.1f}%</b>'
+          plotOptions:
+              pie:
+                  allowPointSelect: false
+                  cursor: 'pointer'
+                  dataLabels:
+                      enabled: true
+                      color: '#000000'
+                      connectorColor: '#000000'
+                      format: '<b>{point.name}</b>: {point.percentange:.1f}%'
+          series: [
+              type: 'pie'
+              name: 'Browser share'
+              data: [
+                  ['Firefox',   45.0],
+                  ['IE',       26.8],
+                  {
+                      name: 'Chrome',
+                      y: 12.8,
+                      sliced: true,
+                      selected: true
+                  },
+                  ['Safari',    8.5],
+                  ['Opera',     6.2],
+                  ['Others',   0.7]
+              ]
+          ]
+          chart = new Highcharts.Chart({
+                   credits: {
+                       enabled: true,
+                       text: '',
+                       href: ''
+                   },
+                   chart: {
+                       renderTo: 'bm-container',
+                       events: {
+                           click: function () {
+                               window.open('http://www.betmetrix.com', '_blank')
+                           },
+                       },
+                       backgroundColor: '#FFFFFF',
+                       zoomType: 'xy',
+                       type: 'line',
+                       marginLeft: 40,
+                       marginRight: 40,
+                       marginBottom: 40,
+                   },
+                   title: {
+                       text: 'Election Worm',
+                       x: -5,
+                       style: {
+                           color: '#000000',
+                           fontWeight: 'bold',
+                           fontSize: '17pt'
+                       }
+                   },
+                   subtitle: {
+                       text: 'Estimated Probability of Victory',
+                       x: -5,
+                       style: {
+                           color: '#000000',
+                           //fontWeight: 'bold',
+                           fontSize: '13pt'
+                       }
+                   },
+                   xAxis: {
+                       type: 'datetime',
+                       minRange: 7 * 24 * 3600000, // 1 week
+                       dateTimeLabelFormats: {
+                           second: '%H:%M:%S',
+                           minute: '%H:%M',
+                           hour: '%H:%M',
+                           day: '%e %b',
+                           week: '%e %b',
+                           month: '%b \'%y',
+                           year: '%Y'
+                       },
+                       //max: lnp[lnp.length-1][0]+604800000,
+                       //tickInterval: 24*3600*1000*120,
+                       //showFirstLabel: false,
+                       minTickInterval: 1 * 24 * 3600000, //1 day
+                       //maxTickInterval: 1 * 24 * 3600000*365, //30 day
+                       startOnTick: false,
+                       labels: {
+                           style: {
+                               color: '#969696',
+                               //fontWeight: 'bold',
+                               fontSize: '11pt'
+                           }
+                       }
+                   },
+                   yAxis: [{
+                       //LHS axis
+                       title: {
+                           text: '%',
+                           align: 'high',
+                           rotation: 0,
+                           offset: 10,
+                           style: {
+                               color: '#969696',
+                               //fontWeight: 'bold',
+                               fontSize: '11pt'
+                           }
+                       },
+                       labels: {
+                           style: {
+                               color: '#969696',
+                               //fontWeight: 'bold',
+                               fontSize: '11pt'
+                           }
+                       },
+                       showLastLabel: false,
+                       showFirstLabel: false,
+                       minRange: 3,
+                       minTickInterval: 1,
+                       min: 0,
+                       max: 100,
+                       opposite: false,
+                       startOnTick: true,
+                       //tickInterval: 5,
+                       allowDecimals: false
+                   }, {
+                       //RHS axis
+                       title: {
+                           text: '%',
+                           align: 'high',
+                           rotation: 0,
+                           offset: 20,
+                           style: {
+                               color: '#969696',
+                               //fontWeight: 'bold',
+                               fontSize: '11pt'
+                           }
+                       },
+                       linkedTo: 0,
+                       labels: {
+                           style: {
+                               color: '#969696',
+                               //fontWeight: 'bold',
+                               fontSize: '11pt'
+                           }
+                       },
+                       showLastLabel: false,
+                       minTickInterval: 1,
+                       minRange: 3,
+                       showFirstLabel: false,
+                       startOnTick: true,
+                       min: 0,
+                       max: 100,
+                       opposite: true,
+                       //tickInterval: 10,
+                       allowDecimals: false
+                   }],
+                   tooltip: {
+                       xDateFormat: '%d-%b-%Y %l%P', //'%d-%b-%Y %l%P'
+                       valueSuffix: '%',
+                       valueDecimals: 1
+                       //formatter: function () {
+                       //  return this.x + '<br/><b>' + this.series.name + ':' + '</b>' + this.y + '%';
+                       //}
+                   },
+                   legend: {
+                       enabled: false
+                       //    layout: 'vertical',
+                       //    align: 'right',
+                       //    verticalAlign: 'left',
+                       //   x: -20,
+                       //   y: 10,
+                       //    borderWidth: 0
+                   },
+                   series: [{
+                       name: 'Coalition',
+                       data: lnp,
+                       marker: {
+                           enabled: false
+                       },
+                       yaxis: 0
+                   }, {
+                       name: 'ALP',
+                       data: alp,
+                       marker: {
+                           enabled: false
+                       },
+                       yaxis: 0
+                   }],
+                   exporting: {
+                       enabled: false
+                   }
+               });
+  */
+
+
   app = angular.module('app', ['restangular', 'ngResource', 'ui.state', 'ui.highlight', 'ui.bootstrap.buttons', 'ui.select2']);
 
   app.config(function($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locationProvider) {
@@ -62,19 +265,18 @@
       url: '/transaction/sales',
       templateUrl: '/template/transaction/sales/new.html',
       controller: 'SalesTransactionController'
-    }).state('statistic_transaction', {
-      url: '/statistic/transaction',
-      templateUrl: '/template/statistic/transaction.html',
-      controller: 'TransactionStatisticController'
-    }).state('statistic_stock', {
-      url: '/statistic/stock',
-      templateUrl: '/template/statistic/stock.html',
-      controller: 'StockStatisticController'
+    }).state('statistic', {
+      url: '/statistic',
+      templateUrl: '/template/statistic/index.html',
+      controller: 'StatisticController'
     });
   });
 
   app.run(function($rootScope, $location, Restangular, AuthenticationService, SocketService) {
     Restangular.setBaseUrl('/api');
+    Restangular.setRestangularFields({
+      id: '_id'
+    });
     if (location.pathname === '/login.html' && AuthenticationService.isLoggedIn()) {
       $location.path('/').replace();
     }
@@ -183,6 +385,97 @@
         return $timeout(function() {
           return loadXeditable();
         }, 10);
+      }
+    };
+  });
+
+  app.directive('chartPie', function() {
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: {
+        items: '='
+      },
+      template: '<div style="height: 200px"></div>',
+      link: function(scope, element, attrs) {
+        var chart, idContainer, options;
+        idContainer = attrs.id;
+        element.find('div').attr('id', idContainer);
+        options = {
+          credits: {
+            enabled: false
+          },
+          chart: {
+            renderTo: idContainer,
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: null
+          },
+          title: {
+            text: attrs.title
+          },
+          tooltip: {
+            formatter: function() {
+              return false;
+            }
+          },
+          plotOptions: {
+            pie: {
+              cursor: 'pointer',
+              dataLabels: {
+                enabled: true,
+                color: '#000',
+                connectorColor: '#000',
+                formatter: function() {
+                  return "<b>" + this.point.name + "</b>\n<br />\n" + (this.percentage.toFixed()) + "%";
+                }
+              }
+            }
+          },
+          series: [
+            {
+              type: 'pie',
+              name: attrs.pieSubtitle,
+              data: scope.items
+            }
+          ]
+        };
+        chart = new Highcharts.Chart(options);
+        return scope.$watch('items', function(newVal) {
+          return chart.series[0].setData(newVal, true);
+        }, true);
+      }
+    };
+  });
+
+  app.directive('dateRangePicker', function() {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+        dateStart: '=',
+        dateEnd: '='
+      },
+      template: "<div class=input-group>\n    <span class=input-group-addon>\n        <i class=\"glyphicon glyphicon-calendar\"></i>\n    </span>\n    <input class=form-control />\n</div>",
+      link: function(scope, element, attrs) {
+        var currentVal, dateFormat;
+        dateFormat = 'D MMM YYYY';
+        currentVal = "" + (moment().startOf('week').format(dateFormat)) + " - " + (moment().format(dateFormat));
+        element.find('input').val(currentVal);
+        return element.daterangepicker({
+          ranges: {
+            'Minggu ini': [moment().startOf('week'), moment()],
+            'Bulan ini': [moment().startOf('month'), moment()],
+            'Tahun ini': [moment().startOf('year'), moment()]
+          },
+          startDate: moment().startOf('week'),
+          endDate: moment()
+        }, function(start, end) {
+          var endRange, startRange;
+          startRange = start.format(dateFormat);
+          endRange = end.format(dateFormat);
+          return element.find('input').val(startRange + ' - ' + endRange);
+        });
       }
     };
   });
@@ -364,18 +657,33 @@
     });
   });
 
-  app.controller('EditPurchaseInvoiceController', function($scope, $state, $stateParams, $location, Restangular, SocketService, FlashService, MomentService) {
+  app.controller('EditPurchaseInvoiceController', function($scope, $stateParams, Restangular, SocketService, FlashService, MomentService) {
     var init, watchThreshold;
     (init = function() {
       return Restangular.one('purchase_invoices', $stateParams.id).get().then(function(cart) {
         $scope.cart = cart;
-        $scope.supplier = cart.supplier._id;
-        return $scope.isCartChanged = false;
+        return $scope.supplier = cart.supplier._id;
       });
     })();
     watchThreshold = 0;
     $scope.suppliers = Restangular.all('suppliers').getList();
     $scope.items = Restangular.all('items').getList();
+    $scope.addToCart = function() {
+      var getItemId, getItems, selectedItem;
+      selectedItem = (_.where($scope.items.$$v, {
+        _id: $scope.item
+      }))[0];
+      getItems = _.pluck($scope.cart.details, 'item');
+      getItemId = _.pluck(getItems, '_id');
+      if (_.contains(getItemId, selectedItem._id)) {
+        return angular.element("[data-id='" + selectedItem._id + "']").focus();
+      } else {
+        return $scope.cart.details.push({
+          qty: 1,
+          item: selectedItem
+        });
+      }
+    };
     $scope.calculateTotalPrice = function(details) {
       var purchase_price, stock, sumZipped, zipped;
       stock = _.pluck(details, 'quantity');
@@ -410,7 +718,36 @@
     };
     $scope.reset = function() {
       init();
+      $scope.isCartChanged = false;
       return watchThreshold = 1;
+    };
+    $scope.update = function() {
+      var items;
+      items = _.map($scope.cart.details, function(cart) {
+        return {
+          item: _.values(_.pick(cart, '_id'))[0],
+          quantity: _.values(_.pick(cart, 'qty'))[0]
+        };
+      });
+      Restangular.one('purchase_invoices', $stateParams.id).get().then(function(result) {
+        result.created_at = $scope.cart.created_at;
+        result.code = $scope.cart.code;
+        result.supplier = $scope.supplier;
+        result.details = items;
+        return result.put().then(function(updatedResult) {
+          console.log(updatedResult);
+          $scope.isCartChanged = false;
+          return watchThreshold = 3;
+        }, function(err) {
+          console.log(err);
+          if (err.status === 500) {
+            if (err.data.code === 11000) {
+              return FlashService.error('Kode faktur sudah ada', MomentService.currentTime());
+            }
+          }
+        });
+      });
+      return angular.element('#invoice_code').focus();
     };
     $scope.$watch('cart', function(oldVal, newVal) {
       watchThreshold++;
@@ -456,21 +793,25 @@
       };
     };
     $scope.add = function() {
-      return items.post($scope.item).then(function(item) {
-        SocketService.emit('create:item', item);
-        $scope.item = {
-          stock: 1,
-          purchase_price: 1,
-          sales_price: 1
-        };
-        return angular.element('#name').focus();
-      }, function(err) {
-        if (err.status === 500) {
-          if (err.data.code === 11000) {
-            return FlashService.error('Nama barang sudah ada', MomentService.currentTime());
+      if ($scope.item.purchase_price >= $scope.item.sales_price) {
+        return FlashService.error('Harga jual harus lebih besar dari harga beli', MomentService.currentTime());
+      } else {
+        return items.post($scope.item).then(function(item) {
+          SocketService.emit('create:item', item);
+          $scope.item = {
+            stock: 1,
+            purchase_price: 1,
+            sales_price: 1
+          };
+          return angular.element('#name').focus();
+        }, function(err) {
+          if (err.status === 500) {
+            if (err.data.code === 11000) {
+              return FlashService.error('Nama barang sudah ada', MomentService.currentTime());
+            }
           }
-        }
-      });
+        });
+      }
     };
     $scope.remove = function(id) {
       return Restangular.one('items', id).remove().then(function(item) {
@@ -620,11 +961,6 @@
         return c + v;
       });
     };
-    $scope.edit = function(id) {
-      return Restangular.one('purchase_invoices', id).put().then(function(invoice) {
-        return console.log(invoice);
-      });
-    };
     $scope.remove = function(id) {
       return Restangular.one('purchase_invoices', id).remove().then(function(invoice) {
         return SocketService.emit('delete:purchase_invoice', invoice);
@@ -633,17 +969,6 @@
     $scope.collapseInvoice = {};
     $scope.itemlist = function(invoiceId) {
       return $scope.collapseInvoice[invoiceId] = !$scope.collapseInvoice[invoiceId];
-    };
-    $scope.invoiceDetail = Restangular.one('purchase_invoices', $stateParams.id).get();
-    $scope.filteredItems = function() {
-      return _.where($scope.items.$$v, {
-        suppliers: {
-          _id: $scope.invoiceDetail.supplier
-        }
-      });
-    };
-    $scope.clear = function(index) {
-      return $scope.invoiceDetail.details.splice(index, 1);
     };
     return $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();
@@ -817,7 +1142,19 @@
     };
   });
 
-  app.controller('StockStatisticController', function($scope) {});
+  app.controller('StatisticController', function($scope) {
+    return $scope.asset = [
+      {
+        name: 'Beli',
+        y: 23,
+        color: '#d9534f'
+      }, {
+        name: 'Jual',
+        y: 53,
+        color: '#1f6377'
+      }
+    ];
+  });
 
   app.controller('SupplierController', function($scope, $routeParams, $location, Restangular, FlashService, MomentService, SocketService, filterFilter) {
     var items, reload, suppliers;
@@ -906,7 +1243,5 @@
       return SocketService.removeAllListeners();
     });
   });
-
-  app.controller('TransactionStatisticController', function($scope) {});
 
 }).call(this);

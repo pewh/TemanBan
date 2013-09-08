@@ -1,15 +1,25 @@
-app.controller 'EditPurchaseInvoiceController', ($scope, $state, $stateParams, $location, Restangular, SocketService, FlashService, MomentService) ->
+app.controller 'EditPurchaseInvoiceController', ($scope, $stateParams, Restangular, SocketService, FlashService, MomentService) ->
     do init = ->
         Restangular.one('purchase_invoices', $stateParams.id).get().then (cart) ->
             $scope.cart = cart
             $scope.supplier = cart.supplier._id
-            $scope.isCartChanged = false
 
     watchThreshold = 0
     $scope.suppliers = Restangular.all('suppliers').getList()
     $scope.items = Restangular.all('items').getList()
 
     #invoices = Restangular.all('purchase_invoices')
+    $scope.addToCart = ->
+        selectedItem = (_.where $scope.items.$$v, _id: $scope.item)[0]
+        getItems = _.pluck($scope.cart.details, 'item')
+        getItemId = _.pluck(getItems, '_id')
+
+        if _.contains(getItemId, selectedItem._id)
+            angular.element("[data-id='#{selectedItem._id}']").focus()
+        else
+            $scope.cart.details.push
+                qty: 1
+                item: selectedItem
 
     $scope.calculateTotalPrice = (details) ->
         stock = _.pluck details, 'quantity'
@@ -35,7 +45,34 @@ app.controller 'EditPurchaseInvoiceController', ($scope, $state, $stateParams, $
 
     $scope.reset = ->
         init()
+        $scope.isCartChanged = false
         watchThreshold = 1
+
+    $scope.update = ->
+        items = _.map $scope.cart.details, (cart) ->
+            return {
+                item: _.values(_.pick cart, '_id')[0]
+                quantity: _.values(_.pick cart, 'qty')[0]
+            }
+
+        Restangular.one('purchase_invoices', $stateParams.id).get().then (result) ->
+            result.created_at = $scope.cart.created_at
+            result.code = $scope.cart.code
+            result.supplier = $scope.supplier
+            result.details = items
+
+            result.put().then (updatedResult) ->
+                console.log updatedResult
+                $scope.isCartChanged = false
+                watchThreshold = 3
+                #SocketService.emit 'update:purchase_invoice', result
+            , (err) ->
+                console.log err
+                if err.status == 500
+                    if err.data.code == 11000
+                        FlashService.error 'Kode faktur sudah ada', MomentService.currentTime()
+
+        angular.element('#invoice_code').focus()
 
     $scope.$watch 'cart', (oldVal, newVal) ->
         watchThreshold++

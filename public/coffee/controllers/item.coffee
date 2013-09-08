@@ -30,18 +30,21 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
         'warning': 0 < $scope.data.$$v[index].stock < 5
 
     $scope.add = ->
-        items.post($scope.item).then (item) ->
-            SocketService.emit 'create:item', item
-            $scope.item =
-                stock: 1
-                purchase_price: 1
-                sales_price: 1
+        if $scope.item.purchase_price >= $scope.item.sales_price
+            FlashService.error 'Harga jual harus lebih besar dari harga beli', MomentService.currentTime()
+        else
+            items.post($scope.item).then (item) ->
+                SocketService.emit 'create:item', item
+                $scope.item =
+                    stock: 1
+                    purchase_price: 1
+                    sales_price: 1
 
-            angular.element('#name').focus()
-        , (err) ->
-            if err.status == 500
-                if err.data.code == 11000
-                    FlashService.error 'Nama barang sudah ada', MomentService.currentTime()
+                angular.element('#name').focus()
+            , (err) ->
+                if err.status == 500
+                    if err.data.code == 11000
+                        FlashService.error 'Nama barang sudah ada', MomentService.currentTime()
 
     $scope.remove = (id) ->
         Restangular.one('items', id).remove().then (item) ->

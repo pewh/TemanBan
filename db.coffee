@@ -134,9 +134,17 @@ module.exports =
 
     update: (options) ->
         options.model.findById options.id, (err, data) ->
+            updateddata = options.replace(data)
+
+            updateddata.save (err) ->
+                if err then options.res.json(err, 500) else options.res.json(updateddata)
+
+    patch: (options) ->
+        options.model.findById options.id, (err, data) ->
             options.replace(data)
+
             data.save (err) ->
-                if err then options.res.json(err, 500) else options.res.json(data)
+                if err then options.res.json(err, 500) else options.res.json(updateddata)
 
     destroy: (options) ->
         options.model.findById options.id, (err, data) ->

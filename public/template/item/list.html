@@ -1,19 +1,18 @@
 <div class=row>
-    <div class="col-lg-9">
-        <h2 class="pull-left title">Barang</h2>
+    <div class="col-lg-9 col-md-8 col-sm-7">
+        <h2 class="title">Barang</h2>
     </div>
 
-    <div class="col-lg-3 form-inline">
-        <div class=form-group>
-            <input type=search ng-model=search ng-show=data class=form-control placeholder=Pencarian />
-        </div>
-
-        <button class="btn btn-default"
-           btn-checkbox
-           ng-class="{'pull-right': data}"
-           ng-model=showNewForm>
+    <div class="col-lg-3 col-md-4 col-sm-5 form-inline">
+        <button class="btn btn-default pull-right"
+                btn-checkbox
+                ng-model=showNewForm>
             <i class="glyphicon glyphicon-plus"></i>
         </button>
+
+        <div class="form-group pull-right add-margin-right-10">
+            <input type=search ng-model=search ng-show=data class=form-control placeholder=Pencarian />
+        </div>
     </div>
 </div>
 
@@ -23,87 +22,89 @@
          ui-view />
 
     <div ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]">
-        <table class="table table-editable" ng-show="data || data | filter:search">
-            <tr>
-                <th>Nama</th>
-                <th>Stok</th>
-                <th>Harga Beli</th>
-                <th>Harga Jual</th>
-                <th>Pemasok</th>
-                <th>Action</th>
-            </tr>
+        <div class="table-responsive">
+            <table class="table table-editable" ng-show="data || data | filter:search">
+                <tr>
+                    <th>Nama</th>
+                    <th>Stok</th>
+                    <th>Harga Beli</th>
+                    <th>Harga Jual</th>
+                    <th>Pemasok</th>
+                    <th>Action</th>
+                </tr>
 
-            <tr ng-repeat="d in data | filter:search" ng-class="watchStock($index)">
-                <td xeditable
-                    data-original-title="Edit nama"
-                    data-type="text"
-                    data-placeholder="Required"
-                    data-url="/api/items"
-                    data-pk="{{ d._id }}"
-                    data-name="name"
-                    data-field="Nama"
-                    data-category="item"
-                    ng-model="d.name"
-                    ng-bind-html-unsafe="d.name | highlight:search" />
+                <tr ng-repeat="d in data | filter:search" ng-class="watchStock($index)">
+                    <td xeditable
+                        data-original-title="Edit nama"
+                        data-type="text"
+                        data-placeholder="Required"
+                        data-url="/api/items"
+                        data-pk="{{ d._id }}"
+                        data-name="name"
+                        data-field="Nama"
+                        data-category="item"
+                        ng-model="d.name"
+                        ng-bind-html-unsafe="d.name | highlight:search" />
 
-                <td xeditable
-                    data-original-title="Edit stok"
-                    data-type="number"
-                    data-placeholder="Required"
-                    data-url="/api/items"
-                    data-pk="{{ d._id }}"
-                    data-name="stock"
-                    data-field="Stok"
-                    data-category="item"
-                    data-min=0
-                    ng-model="d.stock"
-                    ng-bind-html-unsafe="d.stock | highlight:search" />
+                    <td xeditable
+                        data-original-title="Edit stok"
+                        data-type="number"
+                        data-placeholder="Required"
+                        data-url="/api/items"
+                        data-pk="{{ d._id }}"
+                        data-name="stock"
+                        data-field="Stok"
+                        data-category="item"
+                        data-min=0
+                        ng-model="d.stock"
+                        ng-bind-html-unsafe="d.stock | highlight:search" />
 
-                <td xeditable
-                    data-original-title="Edit harga beli"
-                    data-type="number"
-                    data-format="currency"
-                    data-placeholder="Required"
-                    data-url="/api/items"
-                    data-pk="{{ d._id }}"
-                    data-name="purchase_price"
-                    data-field="Harga Beli"
-                    data-category="item"
-                    data-min=0
-                    data-value="{{ d.purchase_price }}"
-                    ng-model="d.purchase_price"
-                    ng-bind-html-unsafe="d.purchase_price | currency:'IDR' | highlight:search" />
+                    <td xeditable
+                        data-original-title="Edit harga beli"
+                        data-type="number"
+                        data-format="currency"
+                        data-placeholder="Required"
+                        data-url="/api/items"
+                        data-pk="{{ d._id }}"
+                        data-name="purchase_price"
+                        data-field="Harga Beli"
+                        data-category="item"
+                        data-min=0
+                        data-value="{{ d.purchase_price }}"
+                        ng-model="d.purchase_price"
+                        ng-bind-html-unsafe="d.purchase_price | currency:'IDR' | highlight:search" />
 
-                <td xeditable
-                    data-original-title="Edit harga jual"
-                    data-type="number"
-                    data-placeholder="Required"
-                    data-url="/api/items"
-                    data-pk="{{ d._id }}"
-                    data-name="sales_price"
-                    data-field="Harga Beli"
-                    data-category="item"
-                    data-min=0
-                    data-value="{{ d.sales_price }}"
-                    ng-model="d.sales_price"
-                    ng-bind-html-unsafe="d.sales_price | currency:'IDR' | highlight:search" />
+                    <td xeditable
+                        data-original-title="Edit harga jual"
+                        data-type="number"
+                        data-placeholder="Required"
+                        data-url="/api/items"
+                        data-pk="{{ d._id }}"
+                        data-name="sales_price"
+                        data-field="Harga Beli"
+                        data-category="item"
+                        data-min=0
+                        data-value="{{ d.sales_price }}"
+                        ng-model="d.sales_price"
+                        ng-bind-html-unsafe="d.sales_price | currency:'IDR' | highlight:search" />
 
-                <td xeditable
-                    data-original-title="Edit nama pemasok"
-                    data-type="select"
-                    data-showbuttons=true
-                    data-source="/api/group/suppliers"
-                    data-url="/api/items"
-                    data-pk="{{ d._id }}"
-                    data-name="suppliers"
-                    data-field="Nama Pemasok"
-                    data-category="item"
-                    data-value="{{ d.suppliers._id }}"
-                    ng-model="d.suppliers"
-                    ng-bind-html-unsafe="d.suppliers.name | highlight:search" />
-                <td><confirm-delete ng-click="remove(d._id)" /></td>
-            </tr>
-        </table>
+                    <td xeditable
+                        data-original-title="Edit nama pemasok"
+                        data-type="select"
+                        data-showbuttons=true
+                        data-source="/api/group/suppliers"
+                        data-url="/api/items"
+                        data-pk="{{ d._id }}"
+                        data-name="suppliers"
+                        data-field="Nama Pemasok"
+                        data-category="item"
+                        data-value="{{ d.suppliers._id }}"
+                        ng-model="d.suppliers"
+                        ng-bind-html-unsafe="d.suppliers.name | highlight:search" />
+                    <td><confirm-delete ng-click="remove(d._id)" /></td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <div class="panel panel-default"

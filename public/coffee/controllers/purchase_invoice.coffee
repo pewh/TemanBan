@@ -28,10 +28,6 @@ app.controller 'PurchaseInvoiceController', ($scope, $stateParams, Restangular, 
 
         _.reduce stock, (c, v) -> c + v
 
-    $scope.edit = (id) ->
-        Restangular.one('purchase_invoices', id).put().then (invoice) ->
-            console.log invoice
-
     $scope.remove = (id) ->
         Restangular.one('purchase_invoices', id).remove().then (invoice) ->
             SocketService.emit 'delete:purchase_invoice', invoice
@@ -40,14 +36,6 @@ app.controller 'PurchaseInvoiceController', ($scope, $stateParams, Restangular, 
 
     $scope.itemlist = (invoiceId) ->
         $scope.collapseInvoice[invoiceId] = not $scope.collapseInvoice[invoiceId]
-
-    $scope.invoiceDetail = Restangular.one('purchase_invoices', $stateParams.id).get()
-
-    $scope.filteredItems = ->
-        _.where($scope.items.$$v, { suppliers: {_id: $scope.invoiceDetail.supplier } })
-
-    $scope.clear = (index) ->
-        $scope.invoiceDetail.details.splice(index, 1)
 
     $scope.$on '$destroy', (event) ->
         SocketService.removeAllListeners()

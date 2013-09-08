@@ -80,6 +80,7 @@ exports.users =
         fields = _.keys(req.body)
         values = _.map fields, (field) -> req.body[field]
         content = _.zipObject(fields, values)
+        console.log 'tes'
 
         db.update
             res: res
@@ -265,17 +266,20 @@ exports.purchase_invoices =
 
     update: (req, res) ->
         fields = _.keys(req.body)
-        values = _.map fields, (field) -> req.body[field]
-        content = _.zipObject(fields, values)
+        #values = _.map fields, (field) -> req.body[field]
+        #content = _.zipObject(fields, values)
 
         db.update
             res: res
             model: db.PurchaseInvoiceModel
             id: req.params.id
-            replace: (data) -> data = content
+            replace: (data) ->
+                fields.forEach (field) ->
+                    data[field] = req.body[field]
+                return data
 
     patch: (req, res) ->
-        db.update
+        db.patch
             res: res
             model: db.PurchaseInvoiceModel
             id: req.body.pk
