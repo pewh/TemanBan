@@ -129,33 +129,46 @@ app.directive 'dateRangePicker', ->
     restrict: 'A'
     replace: true
     scope:
-        dateStart: '='
-        dateEnd: '='
+        dateStart: '&'
+        dateEnd: '&'
+        onChange: '&change'
     template: """
               <div class=input-group>
                   <span class=input-group-addon>
                       <i class="glyphicon glyphicon-calendar"></i>
                   </span>
-                  <input class=form-control />
+                  <input id=daterangepicker
+                         class="form-control readonly-fake"
+                         readonly
+                         data-datestart="{{ dateStart }}"
+                         data-dateend="{{ dateEnd }}"
+                         value="{{ dateStart | date:'dd MMM y' }} - {{ dateEnd | date:'dd MMM y' }}">
+                  </input>
               </div>
               """
     link: (scope, element, attrs) ->
-        dateFormat = 'D MMM YYYY'
-        currentVal = "#{moment().startOf('week').format(dateFormat)} - #{moment().format(dateFormat)}"
-        element.find('input').val(currentVal)
+        scope.dateStart = moment().startOf('week').toISOString()
+        scope.dateEnd = moment().toISOString()
 
-        element.daterangepicker
+        element.find('#daterangepicker').daterangepicker
             ranges:
-                'Minggu ini': [moment().startOf('week'), moment()]
-                'Bulan ini': [moment().startOf('month'), moment()]
-                'Tahun ini': [moment().startOf('year'), moment()]
+                'This week': [moment().startOf('week'), moment()]
+                'This month': [moment().startOf('month'), moment()]
+                'This year': [moment().startOf('year'), moment()]
             startDate: moment().startOf('week')
             endDate: moment()
+            maxDate: moment()
+            format: 'DD MMM YYYY'
         ,
             (start, end) ->
-                startRange = start.format(dateFormat)
-                endRange = end.format(dateFormat)
-                element.find('input').val(startRange + ' - ' + endRange)
+                scope.dateStart = start.add('day', 1).toISOString()
+                scope.dateEnd = end.add('day', 1).toISOString()
+
+                scope.$apply ->
+                    scope.onChange
+                        dateStart: start
+                        dateEnd: end
+
 
 app.directive 'formGroup', ->
     template: """

@@ -453,28 +453,33 @@
       restrict: 'A',
       replace: true,
       scope: {
-        dateStart: '=',
-        dateEnd: '='
+        dateStart: '&',
+        dateEnd: '&',
+        onChange: '&change'
       },
-      template: "<div class=input-group>\n    <span class=input-group-addon>\n        <i class=\"glyphicon glyphicon-calendar\"></i>\n    </span>\n    <input class=form-control />\n</div>",
+      template: "<div class=input-group>\n    <span class=input-group-addon>\n        <i class=\"glyphicon glyphicon-calendar\"></i>\n    </span>\n    <input id=daterangepicker\n           class=\"form-control readonly-fake\"\n           readonly\n           data-datestart=\"{{ dateStart }}\"\n           data-dateend=\"{{ dateEnd }}\"\n           value=\"{{ dateStart | date:'dd MMM y' }} - {{ dateEnd | date:'dd MMM y' }}\">\n    </input>\n</div>",
       link: function(scope, element, attrs) {
-        var currentVal, dateFormat;
-        dateFormat = 'D MMM YYYY';
-        currentVal = "" + (moment().startOf('week').format(dateFormat)) + " - " + (moment().format(dateFormat));
-        element.find('input').val(currentVal);
-        return element.daterangepicker({
+        scope.dateStart = moment().startOf('week').toISOString();
+        scope.dateEnd = moment().toISOString();
+        return element.find('#daterangepicker').daterangepicker({
           ranges: {
-            'Minggu ini': [moment().startOf('week'), moment()],
-            'Bulan ini': [moment().startOf('month'), moment()],
-            'Tahun ini': [moment().startOf('year'), moment()]
+            'This week': [moment().startOf('week'), moment()],
+            'This month': [moment().startOf('month'), moment()],
+            'This year': [moment().startOf('year'), moment()]
           },
           startDate: moment().startOf('week'),
-          endDate: moment()
+          endDate: moment(),
+          maxDate: moment(),
+          format: 'DD MMM YYYY'
         }, function(start, end) {
-          var endRange, startRange;
-          startRange = start.format(dateFormat);
-          endRange = end.format(dateFormat);
-          return element.find('input').val(startRange + ' - ' + endRange);
+          scope.dateStart = start.add('day', 1).toISOString();
+          scope.dateEnd = end.add('day', 1).toISOString();
+          return scope.$apply(function() {
+            return scope.onChange({
+              dateStart: start,
+              dateEnd: end
+            });
+          });
         });
       }
     };

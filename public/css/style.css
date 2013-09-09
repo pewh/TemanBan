@@ -132,3 +132,7 @@ input[type=datetime-local]::-webkit-outer-spin-button {
 .assets-block.calculate {
     color: #2D8B2D;
 }
+
+.readonly-fake[readonly] {
+    background: #fff;
+}
