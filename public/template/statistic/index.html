@@ -25,15 +25,15 @@
                     <div class="col-lg-6 col-md-6-col-sm-6">
                         <div class="assets-block purchase">
                             <p class=header>Total Pembelian</p>
-                            <p class=value>Rp500.000.000,-</p>
+                            <p class=value ng-bind="purchaseTotal | currency:'IDR'"></p>
                         </div>
                         <div class="assets-block sales">
                             <p class=header>Total Penjualan</p>
-                            <p class=value>Rp200.000.000,-</p>
+                            <p class=value ng-bind="salesTotal | currency:'IDR'"></p>
                         </div>
                         <div class="assets-block calculate">
-                            <p class=header>Keuntungan</p>
-                            <p class=value>Rp200.000.000,-</p>
+                            <p class="header" ng-class="{true: 'text-warning'}[currencyStatus=='Kerugian']" ng-bind="currencyStatus"></p>
+                            <p class=value ng-bind="calcTotal | currency:'IDR'"></p>
                         </div>
                     </div>
 
