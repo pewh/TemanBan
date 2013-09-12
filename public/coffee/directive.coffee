@@ -148,7 +148,7 @@ app.directive 'chartLine', ->
                 crosshairs: true
                 formatter: ->
                     """
-                    #{moment(parseInt(@x, 10)).format('D MMM YY')} <br />
+                    <b>#{moment(parseInt(@x, 10)).format('D MMM YY')}</b> <br />
                     Beli: Rp.#{@points[0].y} <br />
                     Jual: Rp.#{@points[1].y}
                     """
@@ -188,6 +188,8 @@ app.directive 'dateRangePicker', ->
     scope:
         dateStart: '&'
         dateEnd: '&'
+        ctrlDateStart: '='
+        ctrlDateEnd: '='
         onChange: '&change'
     template: """
               <div class=input-group>
@@ -226,7 +228,8 @@ app.directive 'dateRangePicker', ->
                     scope.onChange
                         dateStart: start
                         dateEnd: end
-
+                        ctrlDateStart: start
+                        ctrlDateEnd: end
 
 app.directive 'formGroup', ->
     template: """

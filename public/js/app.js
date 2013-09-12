@@ -474,7 +474,7 @@
             shared: true,
             crosshairs: true,
             formatter: function() {
-              return "" + (moment(parseInt(this.x, 10)).format('D MMM YY')) + " <br />\nBeli: Rp." + this.points[0].y + " <br />\nJual: Rp." + this.points[1].y;
+              return "<b>" + (moment(parseInt(this.x, 10)).format('D MMM YY')) + "</b> <br />\nBeli: Rp." + this.points[0].y + " <br />\nJual: Rp." + this.points[1].y;
             }
           },
           legend: {
@@ -525,6 +525,8 @@
       scope: {
         dateStart: '&',
         dateEnd: '&',
+        ctrlDateStart: '=',
+        ctrlDateEnd: '=',
         onChange: '&change'
       },
       template: "<div class=input-group>\n    <span class=input-group-addon>\n        <i class=\"glyphicon glyphicon-calendar\"></i>\n    </span>\n    <input id=daterangepicker\n           class=\"form-control readonly-fake\"\n           readonly\n           data-datestart=\"{{ dateStart }}\"\n           data-dateend=\"{{ dateEnd }}\"\n           value=\"{{ dateStart | date:'dd MMM y' }} - {{ dateEnd | date:'dd MMM y' }}\">\n    </input>\n</div>",
@@ -548,7 +550,9 @@
           return scope.$apply(function() {
             return scope.onChange({
               dateStart: start,
-              dateEnd: end
+              dateEnd: end,
+              ctrlDateStart: start,
+              ctrlDateEnd: end
             });
           });
         });
