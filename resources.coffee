@@ -1,5 +1,7 @@
 _ = require 'lodash'
+async = require 'async'
 db = require './db'
+moment = require 'moment'
 
 exports.helper =
     credentials: (req, res) ->
@@ -53,6 +55,114 @@ exports.helper =
         db.ItemModel.find({ suppliers: req.params.id }).exec (err, data) ->
             if err then res.json(err, 500) else res.json(data)
 
+    populatePurchaseTransaction: (req, res) ->
+        getTotalPurchaseCost = (obj) ->
+            details = _.pluck(obj, 'details')[0]
+
+            _.reduce details, (prev, key) ->
+                prev + (key.quantity * key.item.purchase_price)
+            , 0
+
+        getTotalSalesCost = (obj) ->
+            details = _.flatten( _.pluck(obj, 'details') )
+
+            _.reduce details, (prev, key) ->
+                prev + (key.quantity * key.item.sales_price)
+            , 0
+
+        findCriteria = {}
+
+        if req.params.startDate? and req.params.endDate?
+            findCriteria =
+                created_at:
+                    $gte: req.params.startDate
+                    $lt: req.params.endDate
+
+        # Find max & min date based on range date
+        async.parallel([
+            (callback) ->
+                db.PurchaseInvoiceModel.find(findCriteria).exec (err, data) ->
+                    callback(null, data)
+            (callback) ->
+                db.SalesInvoiceModel.find(findCriteria).exec (err, data) ->
+                    callback(null, data)
+        ], (err, result) ->
+            flattenArray = _.flatten(result)
+            createdAtValues = _.pluck(flattenArray, 'created_at')
+            timestampValues = _.map createdAtValues, (date) ->
+                dateWithoutTime = new Date(date).setHours(0,0,0,0)
+                return Date.UTC.apply(this, moment(dateWithoutTime).toArray())
+
+            # get min & max date
+            minDate = moment(_.min(timestampValues))
+            maxDate = moment(_.max(timestampValues))
+
+            # create range based on min & max date
+            currentDate = minDate
+            dates = []
+
+            while currentDate <= maxDate
+                dates.push
+                    x: '' + currentDate.unix() + '000'
+                    y: 0
+                currentDate.add('day', 1)
+
+            # ASYNC for get transaction history
+            async.parallel([
+                (callback) ->
+                    db.PurchaseInvoiceModel.find(findCriteria)
+                        .populate('details.item')
+                        .sort('created_at')
+                        .exec (err, data) ->
+                            groupedData = _.groupBy data, (obj) ->
+                                date = new Date(obj.created_at).setHours(0,0,0,0)
+                                return Date.UTC.apply(this, moment(date).toArray())
+
+                            keyData = _.keys(groupedData)
+                            valData = _.values(groupedData).map(getTotalPurchaseCost)
+                            zippedData = _.zip(keyData, valData)
+
+                            result = _.map zippedData, (data) ->
+                                _.object ['x', 'y'], data
+
+                            callback(null,
+                                name: 'Beli'
+                                data: result
+                            )
+
+                (callback) ->
+                    db.SalesInvoiceModel.find(findCriteria)
+                        .populate('details.item')
+                        .sort('created_at')
+                        .exec (err, data) ->
+                            groupedData = _.groupBy data, (obj) ->
+                                date = new Date(obj.created_at).setHours(0, 0, 0, 0)
+                                return Date.UTC.apply(this, moment(date).toArray())
+
+                            keyData = _.keys(groupedData)
+                            valData = _.values(groupedData).map(getTotalSalesCost)
+                            zippedData = _.zip(keyData, valData)
+
+                            result = _.map zippedData, (data) ->
+                                _.object ['x', 'y'], data
+
+                            callback(null,
+                                name: 'Jual'
+                                data: result
+                            )
+            ], (err, results) ->
+                _.map results, (result) ->
+                    _.each dates, (date) ->
+                        result.data.push(date) unless _.contains(result.data, date)
+
+                    result.data = _.sortBy result.data, (resultData) -> resultData.x
+
+                    result.data = _.uniq result.data, 'x'
+
+                res.json results
+            )
+        )
+
 
 exports.users =
     retrieve: (req, res) ->
@@ -80,7 +190,6 @@ exports.users =
         fields = _.keys(req.body)
         values = _.map fields, (field) -> req.body[field]
         content = _.zipObject(fields, values)
-        console.log 'tes'
 
         db.update
             res: res

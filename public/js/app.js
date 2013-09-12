@@ -322,7 +322,6 @@
           });
         });
         return $scope.$watch(attr.ngModel, function(newValue, oldValue) {
-          console.log('tes');
           if (newValue) {
             return element.addClass(classToToggle);
           } else {
@@ -448,6 +447,77 @@
     };
   });
 
+  app.directive('chartLine', function() {
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: {
+        items: '='
+      },
+      template: '<div style="height: 200px"></div>',
+      link: function(scope, element, attrs) {
+        var chart, idContainer, options;
+        idContainer = attrs.id;
+        element.find('div').attr('id', idContainer);
+        options = {
+          credits: {
+            enabled: false
+          },
+          chart: {
+            renderTo: idContainer,
+            plotShadow: null
+          },
+          title: {
+            text: attrs.title
+          },
+          tooltip: {
+            shared: true,
+            crosshairs: true,
+            formatter: function() {
+              return "" + (moment(parseInt(this.x, 10)).format('D MMM YY')) + " <br />\nBeli: Rp." + this.points[0].y + " <br />\nJual: Rp." + this.points[1].y;
+            }
+          },
+          legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            y: 20,
+            floating: true,
+            borderWidth: 0
+          },
+          xAxis: {
+            type: 'datetime',
+            tickInterval: 24 * 3600 * 1000,
+            dateTimeLabelFormats: {
+              day: '%e %b %y'
+            },
+            labels: {
+              align: 'center'
+            }
+          },
+          yAxis: {
+            title: {
+              text: 'Total Transaksi (Rp.)'
+            }
+          },
+          series: [
+            {
+              name: 'Beli',
+              color: '#D9534F'
+            }, {
+              name: 'Jual',
+              color: '#1f6377'
+            }
+          ]
+        };
+        chart = new Highcharts.Chart(options);
+        return scope.$watch('items', function(newVal) {
+          chart.series[0].setData(newVal[0].data, true);
+          return chart.series[1].setData(newVal[1].data, true);
+        });
+      }
+    };
+  });
+
   app.directive('dateRangePicker', function() {
     return {
       restrict: 'A',
@@ -470,7 +540,8 @@
           startDate: moment().startOf('week'),
           endDate: moment(),
           maxDate: moment(),
-          format: 'DD MMM YYYY'
+          format: 'DD MMM YYYY',
+          showDropdowns: true
         }, function(start, end) {
           scope.dateStart = start.add('day', 1).toISOString();
           scope.dateEnd = end.add('day', 1).toISOString();
@@ -1147,8 +1218,8 @@
     };
   });
 
-  app.controller('StatisticController', function($scope) {
-    return $scope.asset = [
+  app.controller('StatisticController', function($scope, Restangular) {
+    $scope.asset = [
       {
         name: 'Beli',
         y: 23,
@@ -1159,6 +1230,9 @@
         color: '#1f6377'
       }
     ];
+    return Restangular.one('purchase/range').get().then(function(data) {
+      return $scope.transaction = data;
+    });
   });
 
   app.controller('SupplierController', function($scope, $routeParams, $location, Restangular, FlashService, MomentService, SocketService, filterFilter) {

@@ -23,7 +23,6 @@ app.directive 'buttonToggle', ->
                 ngModel.$setViewValue(!checked)
 
         $scope.$watch attr.ngModel, (newValue, oldValue) ->
-            console.log 'tes'
             if newValue
                 element.addClass(classToToggle)
             else
@@ -125,6 +124,64 @@ app.directive 'chartPie', ->
             chart.series[0].setData(newVal, true)
         , true
 
+app.directive 'chartLine', ->
+    restrict: 'E'
+    replace: true
+    scope:
+        items: '='
+    template: '<div style="height: 200px"></div>'
+
+    link: (scope, element, attrs) ->
+        idContainer = attrs.id
+        element.find('div').attr('id', idContainer)
+
+        options =
+            credits:
+                enabled: false
+            chart:
+                renderTo: idContainer
+                plotShadow: null
+            title:
+                text: attrs.title
+            tooltip:
+                shared: true
+                crosshairs: true
+                formatter: ->
+                    """
+                    #{moment(parseInt(@x, 10)).format('D MMM YY')} <br />
+                    Beli: Rp.#{@points[0].y} <br />
+                    Jual: Rp.#{@points[1].y}
+                    """
+            legend:
+                align: 'right'
+                verticalAlign: 'top'
+                y: 20
+                floating: true
+                borderWidth: 0
+            xAxis:
+                type: 'datetime'
+                tickInterval: 24 * 3600 * 1000 # one day
+                dateTimeLabelFormats:
+                    day: '%e %b %y'
+                labels:
+                    align: 'center'
+            yAxis:
+                title:
+                    text: 'Total Transaksi (Rp.)'
+            series: [
+                name: 'Beli'
+                color: '#D9534F'
+            ,
+                name: 'Jual'
+                color: '#1f6377'
+            ]
+
+        chart = new Highcharts.Chart(options)
+
+        scope.$watch 'items', (newVal) ->
+            chart.series[0].setData(newVal[0].data, true)
+            chart.series[1].setData(newVal[1].data, true)
+
 app.directive 'dateRangePicker', ->
     restrict: 'A'
     replace: true
@@ -159,6 +216,7 @@ app.directive 'dateRangePicker', ->
             endDate: moment()
             maxDate: moment()
             format: 'DD MMM YYYY'
+            showDropdowns: true
         ,
             (start, end) ->
                 scope.dateStart = start.add('day', 1).toISOString()

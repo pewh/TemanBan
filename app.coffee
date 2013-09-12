@@ -1,5 +1,6 @@
 express     = require('express')
 app         = express()
+gzippo      = require('gzippo')
 server      = require('http').createServer(app)
 io          = require('socket.io').listen(server)
 resources   = require('./resources')
@@ -8,7 +9,7 @@ restful     = require('./restful')
 # CONFIG
 app.set 'port', process.env.PORT || 8000
 app.use express.bodyParser()
-app.use express.static('public')
+app.use gzippo.staticGzip('public')
 app.use express.errorHandler(
     dumpExceptions: true
     showStack: true
@@ -46,6 +47,8 @@ app.get  '/api/group/suppliers',         resources.helper.populateSuppliers
 app.get  '/api/suppliers/:id/items',     resources.helper.findSuppliersByItems
 app.get  '/api/suppliers-for-items/:id', resources.helper.findSuppliersByItems
 app.post '/auth/login',                  resources.helper.credentials
+
+app.get  '/api/purchase/range/:startDate?/:endDate?', resources.helper.populatePurchaseTransaction
 
 # SOCKETS
 io.sockets.on 'connection', (socket) ->
