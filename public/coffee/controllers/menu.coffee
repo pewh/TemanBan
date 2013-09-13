@@ -26,7 +26,7 @@ app.controller 'MenuController', ($scope, Restangular, AuthenticationService, Fl
                 detail: """
                         Nama:       <strong>#{data.name}</strong> <br />
                         Harga Beli: <strong>#{data.purchase_price}</strong> <br />
-                        Harga Jual: <strong>#{data.sales_price}</strong>
+                        Harga Jual: <strong>#{data.sales_price}</strong> <br />
                         Pemasok:    <strong>#{supplier.name}</strong> <br />
                         """
             
@@ -47,10 +47,18 @@ app.controller 'MenuController', ($scope, Restangular, AuthenticationService, Fl
     SocketService.on 'delete:item', (data) ->
         $scope.newNotification = true
 
-        $scope.notifications.push
-            date: MomentService.currentTime()
-            labelAction: 'label-danger'
-            msg: "#{$scope.currentUser} menghapus barang #{data.name}"
+        Restangular.one('suppliers', data.suppliers).getList().then (supplier) ->
+            $scope.notifications.push
+                date: MomentService.currentTime()
+                labelAction: 'label-danger'
+                msg: "#{$scope.currentUser} menghapus barang #{data.name}"
+                detail: """
+                        Nama:       <strong>#{data.name}</strong> <br />
+                        Stok:       <strong>#{data.stock}</strong> <br />
+                        Harga Beli: <strong>#{data.purchase_price}</strong> <br />
+                        Harga Jual: <strong>#{data.sales_price}</strong> <br />
+                        Pemasok:    <strong>#{supplier.name}</strong> <br />
+                        """
             
 
     # SUPPLIER
@@ -104,6 +112,7 @@ app.controller 'MenuController', ($scope, Restangular, AuthenticationService, Fl
                     Kontak: <strong>#{data.contact}</strong>
                     """
             
+
     SocketService.on 'update:customer', (data) ->
         $scope.newNotification = true
 
@@ -118,6 +127,7 @@ app.controller 'MenuController', ($scope, Restangular, AuthenticationService, Fl
                     Sesudah: <strong>#{data.newValue}</strong> <br />
                     """
             
+
     SocketService.on 'delete:customer', (data) ->
         $scope.newNotification = true
 
@@ -125,6 +135,25 @@ app.controller 'MenuController', ($scope, Restangular, AuthenticationService, Fl
             date: MomentService.currentTime()
             labelAction: 'label-danger'
             msg: "#{$scope.currentUser} menghapus pelanggan #{data.name}"
+
+
+    # INVOICE
+    SocketService.on 'delete:purchase_invoice', (data) ->
+        $scope.newNotification = true
+
+        $scope.notifications.push
+            date: MomentService.currentTime()
+            labelAction: 'label-danger'
+            msg: "#{$scope.currentUser} menghapus faktur pembelian #{data.code}"
+
+
+    SocketService.on 'delete:sales_invoice', (data) ->
+        $scope.newNotification = true
+
+        $scope.notifications.push
+            date: MomentService.currentTime()
+            labelAction: 'label-danger'
+            msg: "#{$scope.currentUser} menghapus faktur penjualan  #{data.code}"
 
     $scope.$on '$destroy', (event) ->
         SocketService.removeAllListeners()

@@ -652,7 +652,7 @@
           date: MomentService.currentTime(),
           labelAction: 'label-info',
           msg: "" + $scope.currentUser + " menambah barang " + data.name,
-          detail: "Nama:       <strong>" + data.name + "</strong> <br />\nHarga Beli: <strong>" + data.purchase_price + "</strong> <br />\nHarga Jual: <strong>" + data.sales_price + "</strong>\nPemasok:    <strong>" + supplier.name + "</strong> <br />"
+          detail: "Nama:       <strong>" + data.name + "</strong> <br />\nHarga Beli: <strong>" + data.purchase_price + "</strong> <br />\nHarga Jual: <strong>" + data.sales_price + "</strong> <br />\nPemasok:    <strong>" + supplier.name + "</strong> <br />"
         });
       });
     });
@@ -667,10 +667,13 @@
     });
     SocketService.on('delete:item', function(data) {
       $scope.newNotification = true;
-      return $scope.notifications.push({
-        date: MomentService.currentTime(),
-        labelAction: 'label-danger',
-        msg: "" + $scope.currentUser + " menghapus barang " + data.name
+      return Restangular.one('suppliers', data.suppliers).getList().then(function(supplier) {
+        return $scope.notifications.push({
+          date: MomentService.currentTime(),
+          labelAction: 'label-danger',
+          msg: "" + $scope.currentUser + " menghapus barang " + data.name,
+          detail: "Nama:       <strong>" + data.name + "</strong> <br />\nStok:       <strong>" + data.stock + "</strong> <br />\nHarga Beli: <strong>" + data.purchase_price + "</strong> <br />\nHarga Jual: <strong>" + data.sales_price + "</strong> <br />\nPemasok:    <strong>" + supplier.name + "</strong> <br />"
+        });
       });
     });
     SocketService.on('create:supplier', function(data) {
@@ -723,6 +726,22 @@
         date: MomentService.currentTime(),
         labelAction: 'label-danger',
         msg: "" + $scope.currentUser + " menghapus pelanggan " + data.name
+      });
+    });
+    SocketService.on('delete:purchase_invoice', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-danger',
+        msg: "" + $scope.currentUser + " menghapus faktur pembelian " + data.code
+      });
+    });
+    SocketService.on('delete:sales_invoice', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-danger',
+        msg: "" + $scope.currentUser + " menghapus faktur penjualan  " + data.code
       });
     });
     return $scope.$on('$destroy', function(event) {

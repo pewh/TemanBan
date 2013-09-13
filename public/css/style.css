@@ -1,3 +1,25 @@
+@-webkit-keyframes blinker {
+    0%    { color: #d9534f }
+    25%   { color: #777 }
+    50%   { color: #d9534f }
+    75%   { color: #777 }
+    99%  { color: #d9534f }
+}
+@-moz-keyframes blinker {
+    0%    { color: #d9534f }
+    25%   { color: #777 }
+    50%   { color: #d9534f }
+    75%   { color: #777 }
+    99%  { color: #d9534f }
+}
+@keyframes blinker {
+    0%    { color: #d9534f }
+    25%   { color: #777 }
+    50%   { color: #d9534f }
+    75%   { color: #777 }
+    99%  { color: #d9534f }
+}
+
 body { background-color: #f6f6f6 }
 
 #content {
@@ -191,4 +213,11 @@ input[type=datetime-local]::-webkit-outer-spin-button {
 .dropdown-submenu li a.dropdown-toggle:hover {
     color: #000;
     background: transparent;
+}
+
+.animate-highlight-notification {
+    -webkit-animation: blinker normal 2s;
+    -moz-animation: blinker normal 2s;
+    animation: blinker normal 2s;
+    color: #d9534f;
 }
