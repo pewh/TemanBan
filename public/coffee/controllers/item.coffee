@@ -36,7 +36,6 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
             items.post($scope.item).then (item) ->
                 SocketService.emit 'create:item', item
                 $scope.item =
-                    stock: 1
                     purchase_price: 1
                     sales_price: 1
 

@@ -1,36 +1,43 @@
-app.controller 'MenuController', ($scope, AuthenticationService) ->
+app.controller 'MenuController', ($scope, AuthenticationService, FlashService, MomentService, SocketService) ->
     $scope.activeLink = 'item'
     $scope.isLoggedIn = AuthenticationService.isLoggedIn()
     $scope.currentUser = AuthenticationService.currentUser()
     $scope.currentRole = AuthenticationService.currentRole()
     $scope.logout = -> AuthenticationService.logout()
+    $scope.notifications = []
 
+    $scope.newNotification = true
+
+    $scope.removeNewNotificationStatus = ->
+        $scope.newNotification = false
+
+    $scope.clearAllNotification = ->
+        FlashService.clear()
+
+    SocketService.on 'create:item', (data) ->
+        $scope.newNotification = true
+
+        $scope.notifications.push
+            date: MomentService.currentTime()
+            user: $scope.currentUser
+            msg: "#{$scope.currentUser} menambah barang #{data.name}"
+            
+    SocketService.on 'update:item', (data) ->
+        $scope.newNotification = true
+
+        $scope.notifications.push
+            date: MomentService.currentTime()
+            msg: 'Barang telah diedit'
+            
+    SocketService.on 'delete:item', (data) ->
+        $scope.newNotification = true
+
+        $scope.notifications.push
+            date: MomentService.currentTime()
+            msg: 'Barang telah dihapus'
+            
     ###
     $scope.count = {}
-
-    categories = [
-        resource: ItemResource
-        scopeName: 'item'
-        event: ['connect', 'create:item', 'delete:item', 'search:item']
-    ,
-        resource: SupplierResource
-        scopeName: 'supplier'
-        event: ['connect', 'create:supplier', 'delete:supplier', 'search:supplier']
-    ,
-        resource: CustomerResource
-        scopeName: 'customer'
-        event: ['connect', 'create:customer', 'delete:customer', 'search:customer']
-    ]
-
-    categories.map (category) ->
-        category.event.map (event) ->
-            SocketService.on event, (data) ->
-                if event.match(/^search:/)?
-                    $scope.count[category.scopeName] = data
-                else
-                    category.resource.query (res) ->
-                        $scope.count[category.scopeName] = res.length
-            
     ###
     ###
 

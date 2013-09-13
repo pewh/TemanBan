@@ -136,3 +136,12 @@ input[type=datetime-local]::-webkit-outer-spin-button {
 .readonly-fake[readonly] {
     background: #fff;
 }
+
+.toast-message > a {
+    color: #fff;
+    font-weight: bold;
+}
+
+.disabled-dropdown > i {
+    color: #bbb;
+}

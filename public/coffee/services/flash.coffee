@@ -1,1 +1,3 @@
-app.factory 'FlashService', ($rootScope) -> toastr
+app.factory 'FlashService', ($rootScope) ->
+    toastr.options.onclick = -> toastr.clear()
+    return toastr

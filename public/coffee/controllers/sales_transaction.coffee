@@ -15,7 +15,10 @@ app.controller 'SalesTransactionController', ($scope, Restangular, FlashService,
         $scope.cart = []
 
     SocketService.on 'create:sales_invoice', (data) ->
-        message = "Faktur penjualan #{data.code} telah ditambah"
+        message = """
+                  Faktur penjualan #{data.code} telah ditambah <br />
+                  Klik <a href="/#/invoice/sales">disini</a> untuk melihat
+                  """
         FlashService.info message, MomentService.currentTime()
         clearCart()
 

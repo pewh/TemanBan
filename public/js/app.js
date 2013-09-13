@@ -443,6 +443,9 @@
   });
 
   app.factory('FlashService', function($rootScope) {
+    toastr.options.onclick = function() {
+      return toastr.clear();
+    };
     return toastr;
   });
 
@@ -575,7 +578,6 @@
         return items.post($scope.item).then(function(item) {
           SocketService.emit('create:item', item);
           $scope.item = {
-            stock: 1,
             purchase_price: 1,
             sales_price: 1
           };
@@ -627,39 +629,46 @@
     };
   });
 
-  app.controller('MenuController', function($scope, AuthenticationService) {
+  app.controller('MenuController', function($scope, AuthenticationService, FlashService, MomentService, SocketService) {
     $scope.activeLink = 'item';
     $scope.isLoggedIn = AuthenticationService.isLoggedIn();
     $scope.currentUser = AuthenticationService.currentUser();
     $scope.currentRole = AuthenticationService.currentRole();
-    return $scope.logout = function() {
+    $scope.logout = function() {
       return AuthenticationService.logout();
     };
+    $scope.notifications = [];
+    $scope.newNotification = true;
+    $scope.removeNewNotificationStatus = function() {
+      return $scope.newNotification = false;
+    };
+    $scope.clearAllNotification = function() {
+      return FlashService.clear();
+    };
+    SocketService.on('create:item', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        user: $scope.currentUser,
+        msg: "" + $scope.currentUser + " menambah barang " + data.name
+      });
+    });
+    SocketService.on('update:item', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        msg: 'Barang telah diedit'
+      });
+    });
+    return SocketService.on('delete:item', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        msg: 'Barang telah dihapus'
+      });
+    });
     /*
     $scope.count = {}
-    
-    categories = [
-        resource: ItemResource
-        scopeName: 'item'
-        event: ['connect', 'create:item', 'delete:item', 'search:item']
-    ,
-        resource: SupplierResource
-        scopeName: 'supplier'
-        event: ['connect', 'create:supplier', 'delete:supplier', 'search:supplier']
-    ,
-        resource: CustomerResource
-        scopeName: 'customer'
-        event: ['connect', 'create:customer', 'delete:customer', 'search:customer']
-    ]
-    
-    categories.map (category) ->
-        category.event.map (event) ->
-            SocketService.on event, (data) ->
-                if event.match(/^search:/)?
-                    $scope.count[category.scopeName] = data
-                else
-                    category.resource.query (res) ->
-                        $scope.count[category.scopeName] = res.length
     */
 
     /*
@@ -768,7 +777,7 @@
     };
     SocketService.on('create:purchase_invoice', function(data) {
       var message;
-      message = "Faktur pembelian " + data.code + " telah ditambah";
+      message = "Faktur pembelian " + data.code + " telah ditambah <br />\nKlik <a href=\"/#/invoice/purchase\">disini</a> untuk melihat";
       FlashService.info(message, MomentService.currentTime());
       return clearCart();
     });
@@ -903,7 +912,7 @@
     };
     SocketService.on('create:sales_invoice', function(data) {
       var message;
-      message = "Faktur penjualan " + data.code + " telah ditambah";
+      message = "Faktur penjualan " + data.code + " telah ditambah <br />\nKlik <a href=\"/#/invoice/sales\">disini</a> untuk melihat";
       FlashService.info(message, MomentService.currentTime());
       return clearCart();
     });
