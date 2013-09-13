@@ -42,11 +42,7 @@
                     <td ng-bind-html-unsafe="d.discount | percent | highlight:search" />
                     <td ng-bind-html-unsafe="calculateTotalPrice(d.details) | currency:'IDR' | highlight:search" ng-hide=d.discount />
                     <td ng-bind-html-unsafe="(calculateTotalPrice(d.details) * d.discount / 100) | currency:'IDR'" ng-show=d.discount></td>
-                    <td>
-                        <a href="/#/invoice/sales/{{ d._id }}/edit">Edit</a>
-                        |
-                        <confirm-delete ng-click="remove(d._id)" />
-                    </td>
+                    <td><confirm-delete ng-click="remove(d._id)" /></td>
                 </tr>
 
                 <tr class=dark-table-background ng-show="collapseInvoice[d._id]">

@@ -39,11 +39,7 @@
                     <td ng-bind-html-unsafe="d.code | highlight:search" />
                     <td ng-bind-html-unsafe="d.supplier.name || '-' | highlight:search" />
                     <td ng-bind-html-unsafe="calculateTotalPrice(d.details) | currency:'IDR' | highlight:search" />
-                    <td>
-                        <a href="/#/invoice/purchase/{{ d._id }}/edit">Edit</a>
-                        |
-                        <confirm-delete ng-click="remove(d._id)" />
-                    </td>
+                    <td><confirm-delete ng-click="remove(d._id)" /></td>
                 </tr>
 
                 <tr class=dark-table-background ng-show="collapseInvoice[d._id]">
