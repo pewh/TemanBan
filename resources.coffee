@@ -55,6 +55,14 @@ exports.helper =
         db.ItemModel.find({ suppliers: req.params.id }).exec (err, data) ->
             if err then res.json(err, 500) else res.json(data)
 
+    populateMostWantedStock: (req, res) ->
+        db.SalesInvoiceModel.find(
+            created_at:
+                $gt: moment().subtract('week', 2)
+        ).populate('details.item')
+        .exec (err, data) ->
+            res.json data
+
     populatePurchaseTransaction: (req, res) ->
         getTotalPurchaseCost = (obj) ->
             details = _.pluck(obj, 'details')[0]

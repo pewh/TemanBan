@@ -49,6 +49,7 @@ app.get  '/api/suppliers-for-items/:id', resources.helper.findSuppliersByItems
 app.post '/auth/login',                  resources.helper.credentials
 
 app.get  '/api/purchase/range/:startDate?/:endDate?', resources.helper.populatePurchaseTransaction
+app.get  '/api/stock/items', resources.helper.populateMostWantedStock
 
 # SOCKETS
 io.sockets.on 'connection', (socket) ->

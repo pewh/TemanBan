@@ -11,6 +11,7 @@ app.controller 'SalesTransactionController', ($scope, Restangular, FlashService,
     clearCart = ->
         $scope.code = ''
         $scope.customer = ''
+        $scope.discount = 0
         $scope.cart = []
 
     SocketService.on 'create:sales_invoice', (data) ->
@@ -55,6 +56,7 @@ app.controller 'SalesTransactionController', ($scope, Restangular, FlashService,
             created_at: $scope.datetime
             code: $scope.code
             customer: $scope.customer
+            discount: $scope.discount
             details: items
 
         Restangular.all('sales_invoices').post(invoice).then (result) ->

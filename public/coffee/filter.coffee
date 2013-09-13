@@ -16,3 +16,7 @@ app.filter 'currency', ->
             ) + chosenCurrency.suffix
         else
             return '-'
+
+app.filter 'percent', ->
+    return (number) ->
+        return if number then number + '%' else '-'

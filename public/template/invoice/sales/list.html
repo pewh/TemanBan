@@ -1,0 +1,107 @@
+<div class=row>
+    <div class="col-lg-9">
+        <h2 class="pull-left title">Faktur Penjualan</h2>
+    </div>
+
+    <div class="col-lg-3 form-inline">
+        <div class=form-group>
+            <input type=search ng-model=search ng-show=data class=form-control placeholder=Pencarian />
+        </div>
+
+        <a href="/#/transaction/purchase" class="btn btn-default pull-right">
+            <i class="glyphicon glyphicon-plus"></i>
+        </a>
+    </div>
+</div>
+
+<div class=row role=main>
+    <div ng-class="col-lg-12">
+        <table class="table table-editable" ng-show="data || data | filter:search">
+            <tr>
+                <th></th>
+                <th>Tanggal</th>
+                <th>Faktur</th>
+                <th>Nama Pelanggan</th>
+                <th>Diskon</th>
+                <th>Total Harga</th>
+                <th>Action</th>
+            </tr>
+
+            <tbody ng-repeat="d in data | filter:search">
+                <tr>
+                    <td class=arrow-collapse>
+                        <p class="glyphicon"
+                           ng-init="collapseInvoice[d._id] = false"
+                           ng-click="itemlist(d._id)"
+                           ng-class="{true: 'glyphicon-chevron-up', false: 'glyphicon-chevron-down'}[collapseInvoice[d._id]]">
+                        </a>
+                    </td>
+                    <td ng-bind-html-unsafe="d.created_at | date:'dd MMM y hh:mm:ss' | highlight:search" />
+                    <td ng-bind-html-unsafe="d.code | highlight:search" />
+                    <td ng-bind-html-unsafe="d.customer.name || '-' | highlight:search" />
+                    <td ng-bind-html-unsafe="d.discount | percent | highlight:search" />
+                    <td ng-bind-html-unsafe="calculateTotalPrice(d.details) | currency:'IDR' | highlight:search" ng-hide=d.discount />
+                    <td ng-bind-html-unsafe="(calculateTotalPrice(d.details) * d.discount / 100) | currency:'IDR'" ng-show=d.discount></td>
+                    <td>
+                        <a href="/#/invoice/sales/{{ d._id }}/edit">Edit</a>
+                        |
+                        <confirm-delete ng-click="remove(d._id)" />
+                    </td>
+                </tr>
+
+                <tr class=dark-table-background ng-show="collapseInvoice[d._id]">
+                    <td colspan=6 class=row>
+                        <div class=col-lg-6>
+                            <table class="table table-bordered">
+                                <tr class=active>
+                                    <th>No</th>
+                                    <th>Nama Barang</th>
+                                    <th>Harga Jual</th>
+                                    <th>Qty.</th>
+                                    <th>Total Harga</th>
+                                </tr>
+                                <tr ng-repeat="detail in d.details">
+                                    <td ng-bind="$index + 1" />
+                                    <td ng-bind="detail.item.name" />
+                                    <td ng-bind="detail.item.sales_price | currency:'IDR'" />
+                                    <td ng-bind="detail.quantity || '0'" />
+                                    <td ng-bind="(detail.item.sales_price * detail.quantity) | currency:'IDR'" />
+                                </tr>
+                                <tr class="active" ng-show=d.discount>
+                                    <th />
+                                    <th colspan=2>Diskon: {{ d.discount }}%</th>
+                                    <th />
+                                    <th ng-bind="calculateTotalPrice(d.details) | currency:'IDR'"></th>
+                                </tr>
+                                <tr class="active">
+                                    <th />
+                                    <th colspan=2>TOTAL</th>
+                                    <th ng-bind="calculateTotalQty(d.details)"></th>
+                                    <th ng-bind="calculateTotalPrice(d.details) | currency:'IDR'" ng-hide=d.discount></th>
+                                    <th ng-bind="(calculateTotalPrice(d.details) * d.discount / 100) | currency:'IDR'" ng-show=d.discount></th>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel panel-default"
+         ng-class="col-lg-12"
+         ng-hide=data>
+        <div class=panel-body>
+            Klik tombol + utk menambah data
+        </div>
+    </div>
+
+    <div class="panel panel-default"
+         ng-class="col-lg-12"
+         ng-hide="!(data && search) || (data | filter:search)">
+        <div class=panel-body>
+            Data tidak ditemukan
+        </div>
+    </div>
+
+</div>
