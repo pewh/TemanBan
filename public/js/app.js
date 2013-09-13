@@ -629,7 +629,7 @@
     };
   });
 
-  app.controller('MenuController', function($scope, AuthenticationService, FlashService, MomentService, SocketService) {
+  app.controller('MenuController', function($scope, Restangular, AuthenticationService, FlashService, MomentService, SocketService) {
     $scope.activeLink = 'item';
     $scope.isLoggedIn = AuthenticationService.isLoggedIn();
     $scope.currentUser = AuthenticationService.currentUser();
@@ -637,34 +637,37 @@
     $scope.logout = function() {
       return AuthenticationService.logout();
     };
+    $scope.suppliers = Restangular.all('suppliers').$$v;
     $scope.notifications = [];
     $scope.newNotification = true;
     $scope.removeNewNotificationStatus = function() {
       return $scope.newNotification = false;
     };
     $scope.clearAllNotification = function() {
-      return FlashService.clear();
+      return $scope.notifications.splice(0);
     };
     SocketService.on('create:item', function(data) {
       $scope.newNotification = true;
+      console.log($scope.suppliers);
       return $scope.notifications.push({
         date: MomentService.currentTime(),
-        user: $scope.currentUser,
-        msg: "" + $scope.currentUser + " menambah barang " + data.name
+        msg: "" + $scope.currentUser + " menambah barang " + data.name,
+        detail: "Pemasok:    <strong>" + data.suppliers.name + "</strong> <br />\nHarga Beli: <strong>" + data.purchase_price + "</strong> <br />\nHarga Jual: <strong>" + data.sales_price + "</strong>"
       });
     });
     SocketService.on('update:item', function(data) {
       $scope.newNotification = true;
       return $scope.notifications.push({
         date: MomentService.currentTime(),
-        msg: 'Barang telah diedit'
+        msg: "" + $scope.currentUser + " mengedit barang " + data.name,
+        detail: "<strong>" + data.field + "</strong> <br />\n<li class=divider />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong> <br />"
       });
     });
     return SocketService.on('delete:item', function(data) {
       $scope.newNotification = true;
       return $scope.notifications.push({
         date: MomentService.currentTime(),
-        msg: 'Barang telah dihapus'
+        msg: "" + $scope.currentUser + " menghapus barang " + data.name
       });
     });
     /*
