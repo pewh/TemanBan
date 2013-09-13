@@ -637,7 +637,6 @@
     $scope.logout = function() {
       return AuthenticationService.logout();
     };
-    $scope.suppliers = Restangular.all('suppliers').$$v;
     $scope.notifications = [];
     $scope.newNotification = true;
     $scope.removeNewNotificationStatus = function() {
@@ -648,69 +647,87 @@
     };
     SocketService.on('create:item', function(data) {
       $scope.newNotification = true;
-      console.log($scope.suppliers);
-      return $scope.notifications.push({
-        date: MomentService.currentTime(),
-        msg: "" + $scope.currentUser + " menambah barang " + data.name,
-        detail: "Pemasok:    <strong>" + data.suppliers.name + "</strong> <br />\nHarga Beli: <strong>" + data.purchase_price + "</strong> <br />\nHarga Jual: <strong>" + data.sales_price + "</strong>"
+      return Restangular.one('suppliers', data.suppliers).getList().then(function(supplier) {
+        return $scope.notifications.push({
+          date: MomentService.currentTime(),
+          labelAction: 'label-info',
+          msg: "" + $scope.currentUser + " menambah barang " + data.name,
+          detail: "Nama:       <strong>" + data.name + "</strong> <br />\nHarga Beli: <strong>" + data.purchase_price + "</strong> <br />\nHarga Jual: <strong>" + data.sales_price + "</strong>\nPemasok:    <strong>" + supplier.name + "</strong> <br />"
+        });
       });
     });
     SocketService.on('update:item', function(data) {
       $scope.newNotification = true;
       return $scope.notifications.push({
         date: MomentService.currentTime(),
+        labelAction: 'label-warning',
         msg: "" + $scope.currentUser + " mengedit barang " + data.name,
         detail: "<strong>" + data.field + "</strong> <br />\n<li class=divider />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong> <br />"
       });
     });
-    return SocketService.on('delete:item', function(data) {
+    SocketService.on('delete:item', function(data) {
       $scope.newNotification = true;
       return $scope.notifications.push({
         date: MomentService.currentTime(),
+        labelAction: 'label-danger',
         msg: "" + $scope.currentUser + " menghapus barang " + data.name
       });
     });
-    /*
-    $scope.count = {}
-    */
-
-    /*
-    
-    SocketService.on 'connect', (data) ->
-        ItemResource.query (res) -> $scope.count.item = res.length
-        SupplierResource.query (res) -> $scope.count.supplier = res.length
-        CustomerResource.query (res) -> $scope.count.customer = res.length
-    
-    # ITEM
-    SocketService.on 'create:item', (data) ->
-        ItemResource.query (res) ->
-            $scope.count.item = res.length
-    
-    SocketService.on 'delete:item', (data) ->
-        console.log 'oe'
-        ItemResource.query (res) -> $scope.count.item = res.length
-    
-    SocketService.on 'search:item', (data) -> $scope.count.item = data
-    
-    # SUPPLIER
-    SocketService.on 'create:supplier', (data) ->
-        SupplierResource.query (res) -> $scope.count.supplier = res.length
-    
-    SocketService.on 'delete:supplier', (data) ->
-        SupplierResource.query (res) -> $scope.count.supplier = res.length
-    
-    SocketService.on 'search:supplier', (data) -> $scope.count.supplier = data
-    
-    # CUSTOMER
-    SocketService.on 'create:customer', (data) ->
-        CustomerResource.query (res) -> $scope.count.customer = res.length
-    
-    SocketService.on 'delete:customer', (data) ->
-        CustomerResource.query (res) -> $scope.count.customer = res.length
-    
-    SocketService.on 'search:customer', (data) -> $scope.count.customer = data
-    */
-
+    SocketService.on('create:supplier', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-info',
+        msg: "" + $scope.currentUser + " menambah pemasok " + data.name,
+        detail: "Nama:   <strong>" + data.name + "</strong> <br />\nAlamat: <strong>" + data.address + "</strong> <br />\nKontak: <strong>" + data.contact + "</strong>"
+      });
+    });
+    SocketService.on('update:supplier', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-warning',
+        msg: "" + $scope.currentUser + " mengedit pemasok " + data.name,
+        detail: "<strong>" + data.field + "</strong> <br />\n<li class=divider />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong> <br />"
+      });
+    });
+    SocketService.on('delete:supplier', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-danger',
+        msg: "" + $scope.currentUser + " menghapus pemasok " + data.name
+      });
+    });
+    SocketService.on('create:customer', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-info',
+        msg: "" + $scope.currentUser + " menambah pelanggan " + data.name,
+        detail: "Nama:   <strong>" + data.name + "</strong> <br />\nAlamat: <strong>" + data.address + "</strong> <br />\nKontak: <strong>" + data.contact + "</strong>"
+      });
+    });
+    SocketService.on('update:customer', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-warning',
+        msg: "" + $scope.currentUser + " mengedit pelanggan " + data.name,
+        detail: "<strong>" + data.field + "</strong> <br />\n<li class=divider />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong> <br />"
+      });
+    });
+    SocketService.on('delete:customer', function(data) {
+      $scope.newNotification = true;
+      return $scope.notifications.push({
+        date: MomentService.currentTime(),
+        labelAction: 'label-danger',
+        msg: "" + $scope.currentUser + " menghapus pelanggan " + data.name
+      });
+    });
+    return $scope.$on('$destroy', function(event) {
+      return SocketService.removeAllListeners();
+    });
   });
 
   app.controller('PurchaseInvoiceController', function($scope, $stateParams, Restangular, SocketService, FlashService, MomentService) {

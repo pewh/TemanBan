@@ -29,12 +29,12 @@
                 </a></li>
                 <li class=divider />
                 <li class=dropdown-header>Ada {{ notifications.length }} pemberitahuan</li>
-                <li class="dropdown-submenu" ng-repeat="notification in notifications | orderBy:'date':true">
+                <li ng-class="{'dropdown-submenu':notification.detail}" ng-repeat="notification in notifications | orderBy:'date':true">
                     <a class=dropdown-toggle data-toggle=dropdown href="javascript:void(0)">
-                        <strong>[{{ notification.date }}]</strong>
+                        <span class="label {{ notification.labelAction }}">{{ notification.date }}</span>
                         {{ notification.msg }}
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu" ng-show="notification.detail">
                         <li>
                             <a class=dropdown-toggle
                                 data-toggle=dropdown

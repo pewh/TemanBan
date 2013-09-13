@@ -276,19 +276,8 @@ exports.suppliers =
             model: db.SupplierModel
             body: content
 
-    update: (req, res) ->
-        fields = _.keys(req.body)
-        values = _.map fields, (field) -> req.body[field]
-        content = _.zipObject(fields, values)
-
-        db.update
-            res: res
-            model: db.SupplierModel
-            id: req.params.id
-            replace: (data) -> data = content
-
     patch: (req, res) ->
-        db.update
+        db.patch
             res: res
             model: db.SupplierModel
             id: req.body.pk
@@ -322,19 +311,8 @@ exports.customers =
             model: db.CustomerModel
             body: content
 
-    update: (req, res) ->
-        fields = _.keys(req.body)
-        values = _.map fields, (field) -> req.body[field]
-        content = _.zipObject(fields, values)
-
-        db.update
-            res: res
-            model: db.CustomerModel
-            id: req.params.id
-            replace: (data) -> data = content
-
     patch: (req, res) ->
-        db.update
+        db.patch
             res: res
             model: db.CustomerModel
             id: req.body.pk
