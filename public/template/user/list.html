@@ -1,0 +1,84 @@
+<div class=row>
+    <div class="col-lg-9">
+        <h2 class="pull-left title">Account</h2>
+    </div>
+
+    <div class="col-lg-3 form-inline">
+        <button class="btn btn-default"
+           btn-checkbox
+           ng-class="{'pull-right': data}"
+           ng-model=showNewForm>
+            <i class="glyphicon glyphicon-plus"></i>
+        </button>
+    </div>
+</div>
+
+<div class=row role=main>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 pull-right well well-lg"
+         ng-show=showNewForm
+         ui-view />
+
+    <div ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]">
+        <table class="table table-editable" ng-show="data || data | filter:search">
+            <tr>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Jabatan</th>
+                <th>Action</th>
+            </tr>
+
+            <tbody ng-repeat="d in data | filter:hideCurrentUserInfo()">
+                <tr>
+                    <td xeditable
+                        data-original-title="Edit username"
+                        data-type="text"
+                        data-placeholder="Required"
+                        data-url="/api/users"
+                        data-pk="{{ d._id }}"
+                        data-name="username"
+                        data-field="Username"
+                        data-category="user"
+                        ng-model="d.username"
+                        ng-bind="d.username" />
+
+                    <td xeditable
+                        data-original-title="Edit password"
+                        data-type="text"
+                        data-placeholder="Required"
+                        data-url="/api/users"
+                        data-pk="{{ d._id }}"
+                        data-name="password"
+                        data-field="Password"
+                        data-category="user"
+                        ng-model="d.password"
+                        ng-bind="d.password" />
+
+                    <td xeditable
+                        data-original-title="Edit jabatan"
+                        data-type="select"
+                        data-showbuttons=true
+                        data-source="[{value:'Sales',text:'Sales'},{value:'Manager',text:'Manager'},{value:'Komisaris',text:'Komisaris'}]"
+                        data-placeholder="Required"
+                        data-url="/api/users"
+                        data-pk="{{ d._id }}"
+                        data-name="role"
+                        data-field="Jabatan"
+                        data-category="user"
+                        ng-model="d.role"
+                        ng-bind="d.role" />
+
+                    <td><confirm-delete ng-click="remove(d._id)" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel panel-default"
+         ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]"
+         ng-hide=data>
+        <div class=panel-body>
+            Klik tombol + utk menambah data
+        </div>
+    </div>
+
+</div>

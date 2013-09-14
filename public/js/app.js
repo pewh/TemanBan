@@ -14,6 +14,18 @@
       url: '/',
       templateUrl: '/template/home.html',
       controller: 'HomeController'
+    }).state('user', {
+      url: '/user',
+      templateUrl: '/template/user/list.html',
+      controller: 'UserController'
+    }).state('user.new', {
+      url: '/new',
+      templateUrl: '/template/user/new.html',
+      controller: 'UserController'
+    }).state('user.edit', {
+      url: '/:id/edit',
+      templateUrl: '/template/user/edit.html',
+      controller: 'UserController'
     }).state('item', {
       url: '/item',
       templateUrl: '/template/item/list.html',
@@ -61,13 +73,13 @@
     });
   });
 
-  app.run(function($rootScope, $location, Restangular, AuthenticationService, SocketService) {
+  app.run(function($rootScope, Restangular, AuthenticationService, SocketService) {
     Restangular.setBaseUrl('/api');
     Restangular.setRestangularFields({
       id: '_id'
     });
     if (location.pathname === '/login.html' && AuthenticationService.isLoggedIn()) {
-      $location.path('/').replace();
+      location.replace('/');
     }
     return $rootScope.$on('$stateChangeStart', function(event, next, current) {
       if (!AuthenticationService.isLoggedIn()) {
@@ -151,7 +163,7 @@
               if (attr.nocommit == null) {
                 return SocketService.emit("update:" + attr.category, {
                   field: attr.field,
-                  name: response.name,
+                  name: response.name || response.username,
                   oldValue: element.text(),
                   newValue: newValue
                 });
@@ -418,7 +430,7 @@
           if (data.length) {
             SessionService.set('authenticated', true);
             SessionService.set('username', credentials.username);
-            SessionService.set('role', credentials.role);
+            SessionService.set('role', data[0].role);
             return location.replace('/');
           } else {
             return FlashService.error('Username atau password salah');
@@ -644,6 +656,13 @@
     };
     $scope.clearAllNotification = function() {
       return $scope.notifications.splice(0);
+    };
+    $scope.onlyFor = function(arr) {
+      if (_.contains(arr, $scope.currentRole)) {
+        return true;
+      } else {
+        return false;
+      }
     };
     SocketService.on('create:item', function(data) {
       $scope.newNotification = true;
@@ -1134,6 +1153,76 @@
 
     $scope.$on('$routeChangeStart', function(scope, next, current) {
       return SocketService.emit('search:supplier', $scope.data.length);
+    });
+    return $scope.$on('$destroy', function(event) {
+      return SocketService.removeAllListeners();
+    });
+  });
+
+  app.controller('UserController', function($scope, $routeParams, $location, Restangular, FlashService, MomentService, SocketService, SessionService, filterFilter) {
+    var reload, users;
+    users = Restangular.all('users');
+    $scope.roles = [
+      {
+        value: 'Sales',
+        text: 'Sales'
+      }, {
+        value: 'Manager',
+        text: 'Manager'
+      }, {
+        value: 'Komisaris',
+        text: 'Komisaris'
+      }
+    ];
+    (reload = function() {
+      return $scope.data = users.getList();
+    })();
+    $scope.hideCurrentUserInfo = function() {
+      return function(data) {
+        return data.username !== SessionService.get('username');
+      };
+    };
+    SocketService.on('create:user', function(data) {
+      FlashService.info("Username " + data.username + " telah ditambah", MomentService.currentTime());
+      return reload();
+    });
+    SocketService.on('update:user', function(data) {
+      var message;
+      message = "Username telah di-update <br />\nNama:    <strong>" + data.name + "</strong> <br />\nKolom:   <strong>" + data.field + "</strong> <br />\nSebelum: <strong>" + data.oldValue + "</strong> <br />\nSesudah: <strong>" + data.newValue + "</strong>";
+      FlashService.info(message, MomentService.currentTime());
+      return reload();
+    });
+    SocketService.on('delete:user', function(data) {
+      FlashService.info("Username " + data.username + " telah dihapus", MomentService.currentTime());
+      return reload();
+    });
+    $scope.add = function() {
+      return users.post($scope.user).then(function(user) {
+        SocketService.emit('create:user', user);
+        $scope.user = {
+          username: '',
+          password: ''
+        };
+        return angular.element('#username').focus();
+      }, function(err) {
+        if (err.status === 500) {
+          if (err.data.code === 11000) {
+            return FlashService.error('Username sudah ada', MomentService.currentTime());
+          }
+        }
+      });
+    };
+    $scope.remove = function(id) {
+      return Restangular.one('users', id).remove().then(function(user) {
+        return SocketService.emit('delete:user', user);
+      });
+    };
+    $scope.$watch('showNewForm', function(val) {
+      if ($scope.showNewForm) {
+        return $location.path('/user/new');
+      } else {
+        return $location.path('/user');
+      }
     });
     return $scope.$on('$destroy', function(event) {
       return SocketService.removeAllListeners();

@@ -13,7 +13,7 @@ User = new Schema
         required: true
     role:
         type: String
-        enum: ['manager', 'staff', 'commissioner']
+        enum: ['Sales', 'Manager', 'Komisaris']
 
 Supplier = new Schema
     name:

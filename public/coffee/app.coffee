@@ -9,6 +9,19 @@ app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locat
             templateUrl: '/template/home.html'
             controller: 'HomeController'
 
+        .state 'user',
+            url: '/user'
+            templateUrl: '/template/user/list.html'
+            controller: 'UserController'
+        .state 'user.new',
+            url: '/new'
+            templateUrl: '/template/user/new.html'
+            controller: 'UserController'
+        .state 'user.edit',
+            url: '/:id/edit'
+            templateUrl: '/template/user/edit.html'
+            controller: 'UserController'
+
         .state 'item',
             url: '/item'
             templateUrl: '/template/item/list.html'
@@ -61,12 +74,12 @@ app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locat
             templateUrl: '/template/statistic/index.html'
             controller: 'StatisticController'
 
-app.run ($rootScope, $location, Restangular, AuthenticationService, SocketService) ->
+app.run ($rootScope, Restangular, AuthenticationService, SocketService) ->
     Restangular.setBaseUrl '/api'
     Restangular.setRestangularFields id: '_id'
 
     if location.pathname == '/login.html' and AuthenticationService.isLoggedIn()
-        $location.path('/').replace()
+        location.replace '/'
 
     $rootScope.$on '$stateChangeStart', (event, next, current) ->
         location.replace '/login.html' if not AuthenticationService.isLoggedIn()

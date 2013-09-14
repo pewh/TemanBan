@@ -10,7 +10,7 @@ app.factory 'AuthenticationService', ($rootScope, $location, $http, SessionServi
             if data.length
                 SessionService.set 'authenticated', true
                 SessionService.set 'username', credentials.username
-                SessionService.set 'role', credentials.role
+                SessionService.set 'role', data[0].role
                 location.replace '/'
             else
                 FlashService.error 'Username atau password salah'

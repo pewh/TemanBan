@@ -194,19 +194,8 @@ exports.users =
             model: db.UserModel
             body: content
 
-    update: (req, res) ->
-        fields = _.keys(req.body)
-        values = _.map fields, (field) -> req.body[field]
-        content = _.zipObject(fields, values)
-
-        db.update
-            res: res
-            model: db.UserModel
-            id: req.params.id
-            replace: (data) -> data = content
-
     patch: (req, res) ->
-        db.update
+        db.patch
             res: res
             model: db.UserModel
             id: req.body.pk

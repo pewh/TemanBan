@@ -14,6 +14,12 @@ app.controller 'MenuController', ($scope, Restangular, AuthenticationService, Fl
     $scope.clearAllNotification = ->
         $scope.notifications.splice(0)
 
+    $scope.onlyFor = (arr) ->
+        if _.contains(arr, $scope.currentRole)
+            return true
+        else
+            return false
+
     # ITEM
     SocketService.on 'create:item', (data) ->
         $scope.newNotification = true
@@ -154,6 +160,7 @@ app.controller 'MenuController', ($scope, Restangular, AuthenticationService, Fl
             date: MomentService.currentTime()
             labelAction: 'label-danger'
             msg: "#{$scope.currentUser} menghapus faktur penjualan  #{data.code}"
+
 
     $scope.$on '$destroy', (event) ->
         SocketService.removeAllListeners()

@@ -17,7 +17,7 @@ app.use express.errorHandler(
 
 models = [
     name: 'user'
-    allow: ['GET', 'POST', 'PUT', 'DELETE']
+    allow: ['GET', 'POST', 'PATCH', 'DELETE']
 ,
     name: 'item'
     allow: ['GET', 'POST', 'PATCH', 'DELETE']
@@ -57,7 +57,7 @@ io.sockets.on 'connection', (socket) ->
         socket.on "create:#{resource.name}", (data) -> io.sockets.emit("create:#{resource.name}", data)
         socket.on "update:#{resource.name}", (data) -> io.sockets.emit("update:#{resource.name}", data)
         socket.on "delete:#{resource.name}", (data) -> io.sockets.emit("delete:#{resource.name}", data)
-        socket.on "search:#{resource.name}", (data) -> socket.emit("search:#{resource.name}", data)
+        #socket.on "search:#{resource.name}", (data) -> socket.emit("search:#{resource.name}", data)
 
 # START SERVER
 server.listen app.get('port'), -> console.log 'Running on http://localhost:8000'

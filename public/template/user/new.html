@@ -1,0 +1,30 @@
+<form class=form-horizontal name=addForm>
+    <!-- name -->
+    <div class=form-group>
+        <label for=username>Username</label>
+        <input type=text name=username id=username class=form-control ng-model=user.username autocomplete=off maxlength=30 required autofocus />
+    </div>
+
+    <!-- address -->
+    <div class=form-group>
+        <label for=password>Password</label>
+        <input type=text name=password id=password class=form-control ng-model=user.password autocomplete=off maxlength=50 required />
+    </div>
+
+    <!-- contact -->
+    <div class=form-group>
+        <label for=role>Jabatan</label>
+        <select id=role
+                class=form-control
+                required
+                ng-options="role.value as role.text for role in roles"
+                ng-model=user.role>
+        </select>
+        <!--<input type=text name=role id=role class=form-control ng-model=user.role autocomplete=off maxlength=50 />-->
+    </div>
+
+    <!-- submit -->
+    <div class=form-group>
+        <button class="btn btn-primary" ng-click=add() ng-disabled=!addForm.$valid>Save</button>
+    </div>
+</form>

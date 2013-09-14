@@ -60,7 +60,7 @@ app.directive 'xeditable', (FlashService, MomentService, SocketService, Restangu
                     unless attr.nocommit?
                         SocketService.emit "update:#{attr.category}",
                             field: attr.field
-                            name: response.name
+                            name: response.name or response.username
                             oldValue: element.text()
                             newValue: newValue
 

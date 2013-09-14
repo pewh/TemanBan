@@ -49,20 +49,20 @@
             </ul>
         </li>
 
-        <li active-link><a href=/#/item>
+        <li active-link ng-show="onlyFor(['Sales','Manager'])"><a href=/#/item>
             <span class="badge badge-menu pull-right" ng-bind=count.item ng-show=count.item />
             Barang
         </a></li>
-        <li active-link><a href=/#/supplier>
+        <li active-link ng-show="onlyFor(['Sales','Manager'])"><a href=/#/supplier>
             <span class="badge badge-menu pull-right" ng-bind=count.supplier ng-show=count.supplier />
             Pemasok
         </a></li>
-        <li active-link><a href=/#/customer>
+        <li active-link ng-show="onlyFor(['Sales','Manager'])"><a href=/#/customer>
             <span class="badge badge-menu pull-right" ng-bind=count.customer ng-show=count.customer />
             Pelanggan
         </a></li>
 
-        <li active-link class="dropdown">
+        <li active-link ng-show="onlyFor(['Sales','Manager'])" class="dropdown">
             <a href="javascript:void(0)" class=dropdown-toggle data-toggle=dropdown>
                 Faktur
                 <b class=caret></b>
@@ -80,7 +80,7 @@
         </li>
 
 
-        <li class="dropdown">
+        <li class="dropdown" ng-show="onlyFor(['Sales','Manager'])">
             <a href="javascript:void(0)" class=dropdown-toggle data-toggle=dropdown>
                 Transaksi
                 <b class=caret></b>
@@ -95,18 +95,19 @@
             </ul>
         </li>
 
-        <li active-link><a href=/#/statistic>
+        <li active-link ng-show="onlyFor(['Manager','Komisaris'])"><a href=/#/statistic>
             Statistik
         </a></li>
 
         <ul class="nav navbar-nav pull-right" style="position: absolute; right: 0">
             <li class="dropdown">
-                <a href="javascript:" class=dropdown-toggle data-toggle=dropdown>
+                <a href="javascript:void(0)" class=dropdown-toggle data-toggle=dropdown>
                     Welcome, {{ currentUser }}!
                     <b class=caret></b>
                 </a>
                 <ul class="dropdown-menu pull-right">
-                    <li active-link><a href=/login.html ng-click=logout()>Logout</a></li>
+                    <li active-link ng-show="onlyFor(['Manager'])"><a href="/#/user">Account</a></li>
+                    <li><a href=/login.html ng-click=logout()>Logout</a></li>
                 </ul>
             </li>
         </ul>
