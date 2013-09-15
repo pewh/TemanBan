@@ -80,6 +80,7 @@ app.run ($rootScope, Restangular, AuthenticationService, SocketService) ->
 
     if location.pathname == '/login.html' and AuthenticationService.isLoggedIn()
         location.replace '/'
+    location.replace '/login.html' if not AuthenticationService.isLoggedIn() and location.pathname isnt '/login.html'
 
-    $rootScope.$on '$stateChangeStart', (event, next, current) ->
-        location.replace '/login.html' if not AuthenticationService.isLoggedIn()
+    $rootScope.$on '$stateChangeSuccess', (event, next, current) ->
+        console.log AuthenticationService.isLoggedIn()

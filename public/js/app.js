@@ -81,10 +81,11 @@
     if (location.pathname === '/login.html' && AuthenticationService.isLoggedIn()) {
       location.replace('/');
     }
-    return $rootScope.$on('$stateChangeStart', function(event, next, current) {
-      if (!AuthenticationService.isLoggedIn()) {
-        return location.replace('/login.html');
-      }
+    if (!AuthenticationService.isLoggedIn() && location.pathname !== '/login.html') {
+      location.replace('/login.html');
+    }
+    return $rootScope.$on('$stateChangeSuccess', function(event, next, current) {
+      return console.log(AuthenticationService.isLoggedIn());
     });
   });
 
