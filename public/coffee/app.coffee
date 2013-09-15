@@ -78,9 +78,8 @@ app.run ($rootScope, Restangular, AuthenticationService, SocketService) ->
     Restangular.setBaseUrl '/api'
     Restangular.setRestangularFields id: '_id'
 
-    if location.pathname == '/login.html' and AuthenticationService.isLoggedIn()
+    if location.pathname is '/login.html' and AuthenticationService.isLoggedIn()
         location.replace '/'
-    location.replace '/login.html' if not AuthenticationService.isLoggedIn() and location.pathname isnt '/login.html'
 
-    $rootScope.$on '$stateChangeSuccess', (event, next, current) ->
-        console.log AuthenticationService.isLoggedIn()
+    if location.pathname isnt '/login.html' and not AuthenticationService.isLoggedIn()
+        location.replace '/login.html'

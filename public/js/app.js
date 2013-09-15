@@ -81,12 +81,9 @@
     if (location.pathname === '/login.html' && AuthenticationService.isLoggedIn()) {
       location.replace('/');
     }
-    if (!AuthenticationService.isLoggedIn() && location.pathname !== '/login.html') {
-      location.replace('/login.html');
+    if (location.pathname !== '/login.html' && !AuthenticationService.isLoggedIn()) {
+      return location.replace('/login.html');
     }
-    return $rootScope.$on('$stateChangeSuccess', function(event, next, current) {
-      return console.log(AuthenticationService.isLoggedIn());
-    });
   });
 
   app.directive('activeLink', function($location) {
