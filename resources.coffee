@@ -332,6 +332,11 @@ exports.purchase_invoices =
         values = _.map fields, (field) -> req.body[field]
         content = _.zipObject(fields, values)
 
+        _.each content.details, (detail) ->
+            db.ItemModel.update({ _id: detail.item }, {
+                $inc: { stock: detail.quantity }
+            }).exec()
+
         db.create
             res: res
             model: db.PurchaseInvoiceModel
@@ -341,7 +346,7 @@ exports.purchase_invoices =
         fields = _.keys(req.body)
         #values = _.map fields, (field) -> req.body[field]
         #content = _.zipObject(fields, values)
-
+        
         db.update
             res: res
             model: db.PurchaseInvoiceModel
@@ -356,6 +361,11 @@ exports.purchase_invoices =
             res: res
             model: db.PurchaseInvoiceModel
             id: req.params.id
+            callback: (data) ->
+                _.each data.details, (detail) ->
+                    db.ItemModel.update({ _id: detail.item }, {
+                        $inc: { stock: detail.quantity * -1 }
+                    }).exec()
 
 exports.sales_invoices =
     retrieve: (req, res) ->
@@ -374,6 +384,11 @@ exports.sales_invoices =
         fields = _.keys(req.body)
         values = _.map fields, (field) -> req.body[field]
         content = _.zipObject(fields, values)
+
+        _.each content.details, (detail) ->
+            db.ItemModel.update({ _id: detail.item }, {
+                $inc: { stock: detail.quantity * -1 }
+            }).exec()
 
         db.create
             res: res
@@ -403,3 +418,8 @@ exports.sales_invoices =
             res: res
             model: db.SalesInvoiceModel
             id: req.params.id
+            callback: (data) ->
+                _.each data.details, (detail) ->
+                    db.ItemModel.update({ _id: detail.item }, {
+                        $inc: { stock: detail.quantity }
+                    }).exec()

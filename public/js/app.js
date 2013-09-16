@@ -574,6 +574,18 @@
       FlashService.info("Barang " + data.name + " telah dihapus", MomentService.currentTime());
       return reload();
     });
+    SocketService.on('create:purchase_invoice', function(data) {
+      return reload();
+    });
+    SocketService.on('delete:purchase_invoice', function(data) {
+      return reload();
+    });
+    SocketService.on('create:sales_invoice', function(data) {
+      return reload();
+    });
+    SocketService.on('delete:sales_invoice', function(data) {
+      return reload();
+    });
     $scope.watchStock = function(index) {
       var _ref;
       return {

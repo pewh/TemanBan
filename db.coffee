@@ -107,6 +107,13 @@ SalesInvoice = new Schema
 
 
 module.exports =
+    UserModel: mongoose.model('User', User)
+    ItemModel: mongoose.model('Item', Item)
+    SupplierModel: mongoose.model('Supplier', Supplier)
+    CustomerModel: mongoose.model('Customer', Customer)
+    PurchaseInvoiceModel: mongoose.model('PurchaseInvoice', PurchaseInvoice)
+    SalesInvoiceModel: mongoose.model('SalesInvoice', SalesInvoice)
+
     index: (options) ->
         model = options.model.find (err, data) ->
             if err then options.res.json(err, 500) else options.res.json(data)
@@ -150,11 +157,8 @@ module.exports =
     destroy: (options) ->
         options.model.findById options.id, (err, data) ->
             data? and data.remove (err) ->
-                if err then options.res.json(err, 500) else options.res.json(data)
-
-    UserModel: mongoose.model('User', User)
-    ItemModel: mongoose.model('Item', Item)
-    SupplierModel: mongoose.model('Supplier', Supplier)
-    CustomerModel: mongoose.model('Customer', Customer)
-    PurchaseInvoiceModel: mongoose.model('PurchaseInvoice', PurchaseInvoice)
-    SalesInvoiceModel: mongoose.model('SalesInvoice', SalesInvoice)
+                if err
+                    options.res.json(err, 500)
+                else
+                    options.callback(data) if options.callback?
+                    options.res.json(data)

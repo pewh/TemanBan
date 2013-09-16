@@ -25,6 +25,11 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
         FlashService.info "Barang #{data.name} telah dihapus", MomentService.currentTime()
         reload()
 
+    SocketService.on 'create:purchase_invoice', (data) -> reload()
+    SocketService.on 'delete:purchase_invoice', (data) -> reload()
+    SocketService.on 'create:sales_invoice', (data) -> reload()
+    SocketService.on 'delete:sales_invoice', (data) -> reload()
+
     $scope.watchStock = (index) ->
         'danger': !$scope.data.$$v[index].stock
         'warning': 0 < $scope.data.$$v[index].stock < 5
