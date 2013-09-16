@@ -26,7 +26,7 @@
                 <th>Action</th>
             </tr>
 
-            <tbody ng-repeat="d in data | filter:search">
+            <tbody ng-repeat="d in data | orderBy:'created_at':true | filter:search">
                 <tr>
                     <td class=arrow-collapse>
                         <p class="glyphicon"
