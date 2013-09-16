@@ -5,12 +5,39 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
         $scope.data = items.getList()
         $scope.suppliers = Restangular.all('suppliers').getList()
 
+
     SocketService.on 'create:item', (data) ->
+        Restangular.one('suppliers', data.suppliers).getList().then (supplier) ->
+            $scope.notifications.push
+                date: MomentService.currentTime()
+                labelAction: 'label-info'
+                msg: "#{$scope.currentUser} menambah barang #{data.name}"
+                detail: """
+                        Nama:       <strong>#{data.name}</strong> <br />
+                        Harga Beli: <strong>#{data.purchase_price}</strong> <br />
+                        Harga Jual: <strong>#{data.sales_price}</strong> <br />
+                        Pemasok:    <strong>#{supplier.name}</strong> <br />
+                        """
+
         message = "Barang #{data.name} telah ditambah"
         FlashService.info message, MomentService.currentTime()
+
+        $scope.showNotificationStatus()
         reload()
 
+
     SocketService.on 'update:item', (data) ->
+        $scope.notifications.push
+            date: MomentService.currentTime()
+            labelAction: 'label-warning'
+            msg: "#{$scope.currentUser} mengedit barang #{data.name}"
+            detail: """
+                    <strong>#{data.field}</strong> <br />
+                    <li class=divider />
+                    Sebelum: <strong>#{data.oldValue}</strong> <br />
+                    Sesudah: <strong>#{data.newValue}</strong> <br />
+                    """
+
         message = """
                   Barang telah di-update <br />
                   Nama:    <strong>#{data.name}</strong> <br />
@@ -19,16 +46,45 @@ app.controller 'ItemController', ($scope, $routeParams, $location, Restangular, 
                   Sesudah: <strong>#{data.newValue}</strong>
                   """
         FlashService.info message, MomentService.currentTime()
+
+        $scope.showNotificationStatus()
         reload()
+
 
     SocketService.on 'delete:item', (data) ->
+        Restangular.one('suppliers', data.suppliers).getList().then (supplier) ->
+            $scope.notifications.push
+                date: MomentService.currentTime()
+                labelAction: 'label-danger'
+                msg: "#{$scope.currentUser} menghapus barang #{data.name}"
+                detail: """
+                        Nama:       <strong>#{data.name}</strong> <br />
+                        Stok:       <strong>#{data.stock}</strong> <br />
+                        Harga Beli: <strong>#{data.purchase_price}</strong> <br />
+                        Harga Jual: <strong>#{data.sales_price}</strong> <br />
+                        Pemasok:    <strong>#{supplier.name}</strong> <br />
+                        """
+
         FlashService.info "Barang #{data.name} telah dihapus", MomentService.currentTime()
+
+        $scope.showNotificationStatus()
         reload()
 
-    SocketService.on 'create:purchase_invoice', (data) -> reload()
-    SocketService.on 'delete:purchase_invoice', (data) -> reload()
-    SocketService.on 'create:sales_invoice', (data) -> reload()
-    SocketService.on 'delete:sales_invoice', (data) -> reload()
+    SocketService.on 'create:purchase_invoice', (data) ->
+        $scope.showNotificationStatus()
+        reload()
+
+    SocketService.on 'delete:purchase_invoice', (data) ->
+        $scope.showNotificationStatus()
+        reload()
+
+    SocketService.on 'create:sales_invoice', (data) ->
+        $scope.showNotificationStatus()
+        reload()
+
+    SocketService.on 'delete:sales_invoice', (data) ->
+        $scope.showNotificationStatus()
+        reload()
 
     $scope.watchStock = (index) ->
         'danger': !$scope.data.$$v[index].stock

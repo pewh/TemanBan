@@ -20,6 +20,7 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
                   """
         FlashService.info message, MomentService.currentTime()
         clearCart()
+        $scope.showNotificationStatus()
 
     $scope.addToCart = ->
         selectedItem = (_.where $scope.items.$$v, _id: $scope.item)[0]

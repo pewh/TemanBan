@@ -12,7 +12,26 @@ app.controller 'SalesInvoiceController', ($scope, $stateParams, Restangular, Soc
         $scope.cart = []
 
     SocketService.on 'delete:sales_invoice', (data) ->
+        $scope.notifications.push
+            date: MomentService.currentTime()
+            labelAction: 'label-danger'
+            msg: "#{$scope.currentUser} menghapus faktur penjualan  #{data.code}"
+
         FlashService.info "Faktur jual #{data.code} telah dihapus", MomentService.currentTime()
+
+        $scope.showNotificationStatus()
+        reload()
+
+    SocketService.on 'create:sales_invoice', (data) ->
+        $scope.showNotificationStatus()
+        reload()
+
+    SocketService.on 'update:item', (data) ->
+        $scope.showNotificationStatus()
+        reload()
+
+    SocketService.on 'update:customer', (data) ->
+        $scope.showNotificationStatus()
         reload()
 
     $scope.calculateTotalPrice = (details) ->

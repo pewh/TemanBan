@@ -74,7 +74,8 @@ app.config ($routeProvider, $stateProvider, $urlRouterProvider, $provide, $locat
             templateUrl: '/template/statistic/index.html'
             controller: 'StatisticController'
 
-app.run ($rootScope, Restangular, AuthenticationService, SocketService) ->
+
+app.run ($rootScope, Restangular, AuthenticationService, SocketService, FlashService, MomentService) ->
     Restangular.setBaseUrl '/api'
     Restangular.setRestangularFields id: '_id'
 
@@ -83,3 +84,23 @@ app.run ($rootScope, Restangular, AuthenticationService, SocketService) ->
 
     if location.pathname isnt '/login.html' and not AuthenticationService.isLoggedIn()
         location.replace '/login.html'
+
+    # menu
+    $rootScope.isLoggedIn = AuthenticationService.isLoggedIn()
+    $rootScope.currentUser = AuthenticationService.currentUser()
+    $rootScope.currentRole = AuthenticationService.currentRole()
+    $rootScope.logout = -> AuthenticationService.logout()
+    $rootScope.newNotification = true
+    $rootScope.notifications = []
+
+    $rootScope.removeNewNotificationStatus = ->
+        $rootScope.newNotification = false
+
+    $rootScope.showNotificationStatus = ->
+        $rootScope.newNotification = true
+
+    $rootScope.clearAllNotification = ->
+        $rootScope.notifications.splice(0)
+
+    $rootScope.onlyFor = (arr) ->
+        return _.contains(arr, $rootScope.currentRole)
