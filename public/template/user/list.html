@@ -10,6 +10,10 @@
            ng-model=showNewForm>
             <i class="glyphicon glyphicon-plus"></i>
         </button>
+
+        <div class="form-group pull-right add-margin-right-10">
+            <input type=search ng-model=search ng-show=data class=form-control placeholder=Pencarian />
+        </div>
     </div>
 </div>
 
@@ -27,7 +31,7 @@
                 <th>Action</th>
             </tr>
 
-            <tbody ng-repeat="d in data | filter:hideCurrentUserInfo()">
+            <tbody ng-repeat="d in data | filter:hideCurrentUserInfo() | filter:search">
                 <tr>
                     <td xeditable
                         data-original-title="Edit username"
@@ -39,7 +43,7 @@
                         data-field="Username"
                         data-category="user"
                         ng-model="d.username"
-                        ng-bind="d.username" />
+                        ng-bind-html-unsafe="d.username | highlight:search" />
 
                     <td xeditable
                         data-original-title="Edit password"
@@ -51,7 +55,7 @@
                         data-field="Password"
                         data-category="user"
                         ng-model="d.password"
-                        ng-bind="d.password" />
+                        ng-bind-html-unsafe="d.password | highlight:search" />
 
                     <td xeditable
                         data-original-title="Edit jabatan"
@@ -65,7 +69,7 @@
                         data-field="Jabatan"
                         data-category="user"
                         ng-model="d.role"
-                        ng-bind="d.role" />
+                        ng-bind-html-unsafe="d.role | highlight:search" />
 
                     <td><confirm-delete ng-click="remove(d._id)" /></td>
                 </tr>
@@ -78,6 +82,14 @@
          ng-hide=data>
         <div class=panel-body>
             Klik tombol + utk menambah data
+        </div>
+    </div>
+
+    <div class="panel panel-default"
+         ng-class="{true: 'col-lg-9 col-md-9 col-sm-9', false: 'col-lg-12'}[showNewForm]"
+         ng-hide="!(data && search) || (data | filter:search)">
+        <div class=panel-body>
+            Data tidak ditemukan
         </div>
     </div>
 
