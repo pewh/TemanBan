@@ -14,8 +14,13 @@
 
 <hr />
 
-<div class=row role=main>
+<div class="panel panel-default" ng-hide=isDataExist()>
+    <div class=panel-body>
+        Data faktur kosong.
+    </div>
+</div>
 
+<div class=row role=main ng-show=isDataExist()>
     <div class="col-lg-6 col-md-12 col-sm-12">
         <chart-line id=transaction items=transaction />
     </div>

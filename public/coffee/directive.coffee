@@ -149,8 +149,8 @@ app.directive 'chartLine', ->
                 formatter: ->
                     """
                     <b>#{moment(parseInt(@x, 10)).format('D MMM YY')}</b> <br />
-                    Beli: Rp.#{@points[0].y} <br />
-                    Jual: Rp.#{@points[1].y}
+                    Beli: Rp.#{@points[0]?.y} <br />
+                    Jual: Rp.#{@points[1]?.y}
                     """
             legend:
                 align: 'right'
@@ -179,8 +179,9 @@ app.directive 'chartLine', ->
         chart = new Highcharts.Chart(options)
 
         scope.$watch 'items', (newVal) ->
-            chart.series[0].setData(newVal[0].data, true)
-            chart.series[1].setData(newVal[1].data, true)
+            if newVal?.length
+                chart.series[0].setData(newVal[0].data, true)
+                chart.series[1].setData(newVal[1].data, true)
 
 app.directive 'dateRangePicker', ->
     restrict: 'A'

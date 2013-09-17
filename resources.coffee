@@ -68,7 +68,7 @@ exports.helper =
             details = _.pluck(obj, 'details')[0]
 
             _.reduce details, (prev, key) ->
-                prev + (key.quantity * key.item.purchase_price)
+                prev + (key.quantity * key.item?.purchase_price)
             , 0
 
         getTotalSalesCost = (obj) ->

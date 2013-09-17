@@ -293,7 +293,8 @@
             shared: true,
             crosshairs: true,
             formatter: function() {
-              return "<b>" + (moment(parseInt(this.x, 10)).format('D MMM YY')) + "</b> <br />\nBeli: Rp." + this.points[0].y + " <br />\nJual: Rp." + this.points[1].y;
+              var _ref, _ref1;
+              return "<b>" + (moment(parseInt(this.x, 10)).format('D MMM YY')) + "</b> <br />\nBeli: Rp." + ((_ref = this.points[0]) != null ? _ref.y : void 0) + " <br />\nJual: Rp." + ((_ref1 = this.points[1]) != null ? _ref1.y : void 0);
             }
           },
           legend: {
@@ -330,8 +331,10 @@
         };
         chart = new Highcharts.Chart(options);
         return scope.$watch('items', function(newVal) {
-          chart.series[0].setData(newVal[0].data, true);
-          return chart.series[1].setData(newVal[1].data, true);
+          if (newVal != null ? newVal.length : void 0) {
+            chart.series[0].setData(newVal[0].data, true);
+            return chart.series[1].setData(newVal[1].data, true);
+          }
         });
       }
     };
@@ -1039,39 +1042,62 @@
     };
   });
 
-  app.controller('StatisticController', function($scope, Restangular) {
-    return Restangular.one('purchase/range').get().then(function(data) {
-      var salesRatio, total;
-      $scope.transaction = data;
-      $scope.purchaseTotal = _.reduce(data[0].data, function(prev, key) {
-        return prev + key.y;
-      }, 0);
-      $scope.salesTotal = _.reduce(data[1].data, function(prev, key) {
-        return prev + key.y;
-      }, 0);
-      $scope.calcTotal = $scope.salesTotal - $scope.purchaseTotal;
-      if ($scope.calcTotal < 0) {
-        $scope.currencyStatus = 'Kerugian';
-        $scope.calcTotal = Math.abs($scope.calcTotal);
-      } else {
-        $scope.currencyStatus = 'Keuntungan';
-      }
-      total = $scope.purchaseTotal + $scope.salesTotal;
-      salesRatio = {
-        purchase: $scope.purchaseTotal / total * 100,
-        sales: $scope.salesTotal / total * 100
-      };
-      return $scope.asset = [
-        {
-          name: 'Beli',
-          y: salesRatio.purchase,
-          color: '#d9534f'
-        }, {
-          name: 'Jual',
-          y: salesRatio.sales,
-          color: '#1f6377'
+  app.controller('StatisticController', function($scope, Restangular, SocketService) {
+    var reload;
+    (reload = function() {
+      return Restangular.one('purchase/range').get().then(function(data) {
+        var salesRatio, total;
+        $scope.transaction = data;
+        $scope.isDataExist = function() {
+          var chartData;
+          chartData = data[0].data[0].y || data[1].data[0].y;
+          return chartData;
+        };
+        $scope.purchaseTotal = _.reduce(data[0].data, function(prev, key) {
+          return prev + key.y;
+        }, 0);
+        $scope.salesTotal = _.reduce(data[1].data, function(prev, key) {
+          return prev + key.y;
+        }, 0);
+        $scope.calcTotal = $scope.salesTotal - $scope.purchaseTotal;
+        if ($scope.calcTotal < 0) {
+          $scope.currencyStatus = 'Kerugian';
+          $scope.calcTotal = Math.abs($scope.calcTotal);
+        } else {
+          $scope.currencyStatus = 'Keuntungan';
         }
-      ];
+        total = $scope.purchaseTotal + $scope.salesTotal;
+        salesRatio = {
+          purchase: $scope.purchaseTotal / total * 100,
+          sales: $scope.salesTotal / total * 100
+        };
+        return $scope.asset = [
+          {
+            name: 'Beli',
+            y: salesRatio.purchase,
+            color: '#d9534f'
+          }, {
+            name: 'Jual',
+            y: salesRatio.sales,
+            color: '#1f6377'
+          }
+        ];
+      });
+    })();
+    SocketService.on('update:item', function(data) {
+      return reload();
+    });
+    SocketService.on('create:purchase_invoice', function(data) {
+      return reload();
+    });
+    SocketService.on('delete:purchase_invoice', function(data) {
+      return reload();
+    });
+    SocketService.on('create:sales_invoice', function(data) {
+      return reload();
+    });
+    return SocketService.on('delete:sales_invoice', function(data) {
+      return reload();
     });
   });
 
