@@ -838,16 +838,14 @@
         return $scope.cart.push(selectedItem);
       }
     };
-    $scope.updateTotal = function(index) {
-      console.log(index);
-      return $scope.cart[index].total = $scope.cart[index].qty * $scope.cart[index].purchase_price;
-    };
-    $scope.grandTotal = function() {
-      var a, total;
-      total = _.pluck($scope.cart, 'total');
+    $scope.calculateTotalPrice = function() {
+      var a, total, totalPrice, totalQty;
+      totalQty = _.pluck($scope.cart, 'qty');
+      totalPrice = _.pluck($scope.cart, 'purchase_price');
+      total = _.zip(totalQty, totalPrice);
       a = _.reduce(total, function(c, x) {
-        return c + x;
-      });
+        return c + (x[0] * x[1]);
+      }, 0);
       return a;
     };
     $scope.clear = function(index) {
@@ -996,16 +994,14 @@
         }
       }
     };
-    $scope.updateTotal = function(index) {
-      console.log(index);
-      return $scope.cart[index].total = $scope.cart[index].qty * $scope.cart[index].sales_price;
-    };
-    $scope.grandTotal = function() {
-      var a, total;
-      total = _.pluck($scope.cart, 'total');
+    $scope.calculateTotalPrice = function() {
+      var a, total, totalPrice, totalQty;
+      totalQty = _.pluck($scope.cart, 'qty');
+      totalPrice = _.pluck($scope.cart, 'sales_price');
+      total = _.zip(totalQty, totalPrice);
       a = _.reduce(total, function(c, x) {
-        return c + x;
-      });
+        return c + (x[0] * x[1]);
+      }, 0);
       return a;
     };
     $scope.clear = function(index) {

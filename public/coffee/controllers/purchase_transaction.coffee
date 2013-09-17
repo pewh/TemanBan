@@ -30,13 +30,14 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
         else
             $scope.cart.push selectedItem
 
-    $scope.updateTotal = (index) ->
-        console.log index
-        $scope.cart[index].total = $scope.cart[index].qty * $scope.cart[index].purchase_price
+    $scope.calculateTotalPrice = ->
+        totalQty = _.pluck($scope.cart, 'qty')
+        totalPrice = _.pluck($scope.cart, 'purchase_price')
+        total = _.zip(totalQty, totalPrice)
 
-    $scope.grandTotal = ->
-        total = _.pluck($scope.cart, 'total')
-        a = _.reduce total, (c, x) -> c + x
+        a = _.reduce(total, (c, x) ->
+            c + (x[0] * x[1])
+        , 0)
         return a
 
     $scope.clear = (index) ->

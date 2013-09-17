@@ -59,8 +59,8 @@
             <tr class=active>
                 <th>No</th>
                 <th>Nama</th>
-                <th>Stok</th>
                 <th>Harga</th>
+                <th>Stok</th>
                 <th>Total</th>
                 <th style="width: 200px" />
             </tr>
@@ -68,6 +68,8 @@
             <tr ng-repeat="c in cart">
                 <td ng-bind="$index + 1" />
                 <td ng-bind-html-unsafe="c.name" />
+
+                <td ng-bind-html-unsafe="c.sales_price | currency:'IDR'" />
 
                 <td style="width:100px">
                     <form>
@@ -83,8 +85,6 @@
                     </form>
                 </td>
 
-                <td ng-bind-html-unsafe="c.sales_price | currency:'IDR'" />
-
                 <td style="width: 200px"
                     ng-model=c.total
                     ng-bind-html-unsafe="c.qty * c.sales_price | currency:'IDR'" />
@@ -93,14 +93,8 @@
             </tr>
 
             <tr class=active>
-                <th colspan=4 />
-                <th ng-bind="grandTotal()"></th>
-                <th></th>
-            </tr>
-
-            <tr class=active>
                 <th />
-                <th>Discount</th>
+                <th>Discount (%)</th>
                 <th>
                     <form name=tes>
                         <input type=number
@@ -108,11 +102,21 @@
                                min=0
                                max=100
                                required
+                               style="width: 70px"
                                ng-model=discount
                                ng-init="discount=0" />
                     </form>
                 </th>
+                <th />
+                <td ng-bind="calculateTotalPrice() | currency:'IDR'"></td>
+                <td></td>
+            </tr>
+
+            <tr class=active>
+                <th />
+                <th>TOTAL</th>
                 <th colspan=2 />
+                <th ng-bind="((1 - discount / 100) * calculateTotalPrice()) | currency:'IDR'"></th>
                 <th>
                     <a href="javascript:void(0)" class="btn btn-primary" ng-show=cart.length ng-click=submit() ng-disabled="!(code && customer)">Submit</a>
                     <a href="javascript:void(0)" class="btn btn-default" ng-show=cart.length ng-click=clearAll()>Clear All</a>

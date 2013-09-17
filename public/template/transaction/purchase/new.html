@@ -61,11 +61,11 @@
 
     <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12 table-responsive">
         <table class="table table-editable" ng-show="cart.length">
-            <tr>
+            <tr class=active>
                 <th>No</th>
                 <th>Nama</th>
-                <th>Stok</th>
                 <th>Harga</th>
+                <th>Stok</th>
                 <th>Total</th>
                 <th style="width: 200px" />
             </tr>
@@ -73,6 +73,7 @@
             <tr ng-repeat="c in cart">
                 <td ng-bind="$index + 1" />
                 <td ng-bind-html-unsafe="c.name" />
+                <td ng-bind-html-unsafe="c.purchase_price | currency:'IDR'" />
 
                 <td style="width:100px">
                     <form>
@@ -87,8 +88,6 @@
                     </form>
                 </td>
 
-                <td ng-bind-html-unsafe="c.purchase_price | currency:'IDR'" />
-
                 <td style="width: 200px"
                     ng-model=c.total
                     ng-bind-html-unsafe="c.qty * c.purchase_price | currency:'IDR'" />
@@ -96,9 +95,11 @@
                 <td><a href="javascript:void(0)" ng-click="clear($index)">Clear</a></td>
             </tr>
 
-            <tr>
-                <th colspan=4 />
-                <th ng-bind="grandTotal()"></th>
+            <tr class=active>
+                <th />
+                <th>TOTAL</th>
+                <th colspan=2 />
+                <th ng-bind="calculateTotalPrice() | currency:'IDR'"></th>
                 <th>
                     <a href="javascript:void(0)" class="btn btn-primary" ng-show=cart.length ng-click=submit() ng-disabled="!code">Submit</a>
                     <a href="javascript:void(0)" class="btn btn-default" ng-show=cart.length ng-click=clearAll()>Clear All</a>
