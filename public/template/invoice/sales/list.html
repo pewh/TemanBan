@@ -74,7 +74,7 @@
                                     <th colspan=2>TOTAL</th>
                                     <th ng-bind="calculateTotalQty(d.details)"></th>
                                     <th ng-bind="calculateTotalPrice(d.details) | currency:'IDR'" ng-hide=d.discount></th>
-                                    <th ng-bind="(calculateTotalPrice(d.details) * d.discount / 100) | currency:'IDR'" ng-show=d.discount></th>
+                                    <th ng-bind="(calculateTotalPrice(d.details) * (1 - d.discount / 100)) | currency:'IDR'" ng-show=d.discount></th>
                                 </tr>
                             </table>
                         </div>
