@@ -3,6 +3,9 @@ app.controller 'PurchaseTransactionController', ($scope, Restangular, FlashServi
     $scope.suppliers = Restangular.all('suppliers').getList()
     $scope.items = Restangular.all('items').getList()
 
+    $scope.selectFirst = ->
+        $scope.item = $scope.filteredItems()[0]._id if $scope.filteredItems().length
+
     setInterval ->
         $scope.$apply ->
             $scope.datetime = (new Date()).toISOString()

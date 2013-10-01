@@ -810,6 +810,11 @@
     $scope.cart = [];
     $scope.suppliers = Restangular.all('suppliers').getList();
     $scope.items = Restangular.all('items').getList();
+    $scope.selectFirst = function() {
+      if ($scope.filteredItems().length) {
+        return $scope.item = $scope.filteredItems()[0]._id;
+      }
+    };
     setInterval(function() {
       return $scope.$apply(function() {
         return $scope.datetime = (new Date()).toISOString();
@@ -961,6 +966,11 @@
     $scope.cart = [];
     $scope.customers = Restangular.all('customers').getList();
     $scope.items = Restangular.all('items').getList();
+    $scope.items.then(function(x) {
+      if (x.length) {
+        return $scope.item = x[0]._id;
+      }
+    });
     setInterval(function() {
       return $scope.$apply(function() {
         return $scope.datetime = (new Date()).toISOString();

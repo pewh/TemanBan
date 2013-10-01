@@ -3,6 +3,9 @@ app.controller 'SalesTransactionController', ($scope, Restangular, FlashService,
     $scope.customers = Restangular.all('customers').getList()
     $scope.items = Restangular.all('items').getList()
 
+    $scope.items.then (x) ->
+        $scope.item = x[0]._id if x.length
+
     setInterval ->
         $scope.$apply ->
             $scope.datetime = (new Date()).toISOString()

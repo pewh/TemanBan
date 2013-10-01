@@ -39,6 +39,7 @@
             <select id=suppliers
                     class=form-control
                     ng-model=supplier
+                    ng-change=selectFirst()
                     ng-disabled=cart.length
                     ng-options="supplier._id as supplier.name for supplier in suppliers">
                 <option value="" disabled>-- Pilih Pemasok --</option>

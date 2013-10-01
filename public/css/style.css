@@ -1,6 +1,6 @@
 @-webkit-keyframes blinker {
-    0%    { color: #d9534f }
-    25%   { color: #777 }
+    0%    { color: #d9534f; -webkit-transform: rotate(20deg) }
+    25%   { color: #777; -webkit-transform: rotate(-20deg) }
     50%   { color: #d9534f }
     75%   { color: #777 }
     99%  { color: #d9534f }
